@@ -16,11 +16,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.template.R
 
 @Composable
-fun AlphaScreen(viewModel: AlphaViewModel) {
+fun AlphaScreen() {
+
+    val viewModel = hiltViewModel<AlphaViewModel>()
     val text by viewModel.text.observeAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()

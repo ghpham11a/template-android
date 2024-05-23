@@ -18,6 +18,7 @@ import com.example.template.ui.components.bottomnavigation.BottomNavigationItem
 import com.example.template.ui.screens.alpha.AlphaScreen
 import com.example.template.ui.screens.alpha.AlphaViewModel
 import com.example.template.ui.screens.bravo.BravoScreen
+import com.example.template.ui.screens.bravo.BravoViewModel
 import com.example.template.ui.screens.charlie.CharlieScreen
 import com.example.template.ui.screens.delta.DeltaScreen
 import com.example.template.ui.theme.TemplateTheme
@@ -26,13 +27,11 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val alphaViewModel: AlphaViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             TemplateTheme {
-                MainScreen(alphaViewModel)
+                MainScreen()
             }
         }
     }
@@ -41,20 +40,24 @@ class MainActivity : ComponentActivity() {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(alphaViewModel: AlphaViewModel) {
+fun MainScreen() {
     val navController = rememberNavController()
     Scaffold(
         bottomBar = { BottomNavigation(navController = navController) }
     ) {
-        NavigationGraph(navController = navController, alphaViewModel = alphaViewModel)
+        NavigationGraph(
+            navController = navController
+        )
     }
 }
 
 @Composable
-fun NavigationGraph(navController: NavHostController, alphaViewModel: AlphaViewModel) {
+fun NavigationGraph(
+    navController: NavHostController
+) {
     NavHost(navController, startDestination = BottomNavigationItem.Alpha.screen_route) {
         composable(BottomNavigationItem.Alpha.screen_route) {
-            AlphaScreen(alphaViewModel)
+            AlphaScreen()
         }
         composable(BottomNavigationItem.Bravo.screen_route) {
             BravoScreen()
