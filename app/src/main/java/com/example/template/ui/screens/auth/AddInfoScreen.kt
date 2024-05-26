@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.template.utils.Constants
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -68,7 +69,7 @@ fun AddInfoScreen(navController: NavController, username: String) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Login", style = MaterialTheme.typography.headlineMedium)
+            Text(text = "Sign up", style = MaterialTheme.typography.headlineMedium)
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -105,11 +106,15 @@ fun AddInfoScreen(navController: NavController, username: String) {
             Button(
                 shape = MaterialTheme.shapes.medium,
                 onClick = {
-                    coroutineScope.launch {
-                        // viewModel.checkIfUserExists("username")
-                        viewModel.createAccount(username, password)
+                    viewModel.createAccount(username, password) { response ->
+                        coroutineScope.launch(Dispatchers.Main) {
+                            if (response.isSuccessful) {
+                                navController.navigate(String.format(Constants.Route.AUTH_CODE_VERIFICATION, username, password))
+                            } else {
+                                navController.popBackStack(Constants.Route.AUTH, true)
+                            }
+                        }
                     }
-                    // viewModel.onLoginClicked(context)
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {

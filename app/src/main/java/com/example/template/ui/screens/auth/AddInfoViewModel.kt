@@ -14,6 +14,7 @@ import com.amazonaws.regions.Regions
 import com.amazonaws.services.cognitoidentityprovider.AmazonCognitoIdentityProviderClient
 import com.amazonaws.services.cognitoidentityprovider.model.AdminGetUserRequest
 import com.amazonaws.services.cognitoidentityprovider.model.AdminGetUserResult
+import com.example.template.models.AWSMobileClientResponse
 import com.example.template.repositories.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -41,16 +42,16 @@ class AddInfoViewModel @Inject constructor(
         _password.value = newPassword
     }
 
-    fun createAccount(username: String, password: String) {
+    fun createAccount(username: String, password: String, onResult: (AWSMobileClientResponse<SignUpResult>) -> Unit) {
         val userAttributes = HashMap<String, String>()
         userAttributes["email"] = username
         AWSMobileClient.getInstance().signUp(username, password, userAttributes, null, object : Callback<SignUpResult> {
             override fun onResult(signUpResult: SignUpResult) {
-                Log.d(TAG, "createAccount: $signUpResult")
+                onResult(AWSMobileClientResponse(true, signUpResult))
             }
 
             override fun onError(e: Exception) {
-                Log.e(TAG, "createAccount: ", e)
+                onResult(AWSMobileClientResponse(true, null, e))
             }
         })
     }

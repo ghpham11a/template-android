@@ -36,7 +36,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.amazonaws.mobile.client.results.SignInState
+import com.example.template.ui.components.loadingbutton.LoadingButton
 import com.example.template.utils.Constants
+import com.example.template.utils.Constants.USER_NOT_CONFIRMED_INDICATOR
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -53,6 +56,8 @@ fun EnterPasswordScreen(navController: NavController, username: String) {
     val viewModel = hiltViewModel<EnterPasswordViewModel>()
 
     val password by viewModel.password.collectAsState()
+
+    val isLoading by viewModel.isLoading.collectAsState()
 
     Scaffold(
         topBar = {
@@ -91,23 +96,33 @@ fun EnterPasswordScreen(navController: NavController, username: String) {
                 ),
                 modifier = Modifier.fillMaxWidth()
             )
+
             Spacer(modifier = Modifier.height(16.dp))
-            Button(
+
+            LoadingButton(
                 onClick = {
-                    viewModel.signIn(username, password) {
+                    viewModel.signIn(username, password) { response ->
                         coroutineScope.launch(Dispatchers.Main) {
-                            if (it) {
-                                navController.popBackStack(Constants.Route.AUTH, true)
+                            if (response.isSuccessful) {
+                                if (response.result?.signInState == SignInState.DONE) {
+                                    navController.popBackStack(Constants.Route.AUTH, true)
+                                }
                             } else {
-                                navController.popBackStack(Constants.Route.AUTH, true)
+                                if (response.exception?.localizedMessage?.contains(USER_NOT_CONFIRMED_INDICATOR) == true) {
+                                    navController.navigate(String.format(Constants.Route.AUTH_CODE_VERIFICATION, username, password))
+                                } else {
+                                    navController.popBackStack(Constants.Route.AUTH, true)
+                                    navController.navigate(String.format(Constants.Route.SNAG_FORMAT, "An error occurred. Please try again."))
+                                }
                             }
                         }
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Sign in")
-            }
+                modifier = Modifier.fillMaxWidth(),
+                isLoading = isLoading,
+                buttonText = "Sign in"
+            )
+
         }
     }
 }

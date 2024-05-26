@@ -47,6 +47,7 @@ import com.example.template.ui.screens.auth.AuthScreen
 import com.example.template.ui.screens.auth.CodeVerificationScreen
 import com.example.template.ui.screens.auth.EnterPasswordScreen
 import com.example.template.ui.screens.auth.EnterPasswordViewModel
+import com.example.template.ui.screens.snag.SnagScreen
 import com.example.template.utils.Constants
 import com.example.template.utils.Constants.BOTTOM_NAVIGATION_ROUTES
 
@@ -154,7 +155,19 @@ fun NavigationGraph(
         }
         navigation(Constants.Route.AUTH_HUB, route = Constants.Route.AUTH) {
             composable(Constants.Route.AUTH_HUB) { AuthScreen(navController) }
-            composable(Constants.Route.AUTH_CODE_VERIFICATION) { CodeVerificationScreen(navController) }
+            composable(
+                String.format(Constants.Route.AUTH_CODE_VERIFICATION, "{username}", "{password}"),
+                arguments = listOf(
+                    navArgument("username") { type = NavType.StringType },
+                    navArgument("password") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                CodeVerificationScreen(
+                    navController,
+                    backStackEntry.arguments?.getString("username").toString(),
+                    backStackEntry.arguments?.getString("password").toString()
+                )
+            }
             composable(
                 String.format(Constants.Route.AUTH_ENTER_PASSWORD, "{username}"),
                 arguments = listOf(navArgument("username") { type = NavType.StringType })
@@ -171,6 +184,19 @@ fun NavigationGraph(
                 AddInfoScreen(
                     navController,
                     backStackEntry.arguments?.getString("username").toString()
+                )
+            }
+            composable(
+                Constants.Route.SNAG,
+                arguments = listOf(
+                    navArgument("message") {
+                        type = NavType.StringType
+                        defaultValue = ""}
+                )
+            ) { backStackEntry ->
+                SnagScreen(
+                    navController = navController,
+                    message = backStackEntry.arguments?.getString("message") ?: ""
                 )
             }
         }

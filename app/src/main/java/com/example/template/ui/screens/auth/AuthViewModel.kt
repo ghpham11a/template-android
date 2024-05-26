@@ -27,15 +27,22 @@ class AuthViewModel: ViewModel() {
     private val _password = MutableStateFlow("")
     val password: StateFlow<String> = _password
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
     fun onUsernameChange(newUsername: String) {
         _username.value = newUsername
     }
 
     suspend fun checkIfUserExists(username: String): Boolean {
 
-        val users = listOf<String>("gm.pham@gmail.com").toSet()
+        _isLoading.value = true
+
+        val users = listOf("gm.pham@gmail.com").toSet()
 
         delay(1000)
+
+        _isLoading.value = false
 
         return users.contains(username)
 

@@ -45,16 +45,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.template.utils.Constants
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CodeVerificationScreen(navController: NavController) {
+fun CodeVerificationScreen(navController: NavController, username: String, password: String) {
 
     val numberOfFields = 6
     val focusRequesters = remember { List(numberOfFields) { FocusRequester() } }
     val verificationCode = remember { mutableStateOf(List(numberOfFields) { "" }) }
+
+    val viewModel = hiltViewModel<CodeVerificationViewModel>()
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -124,10 +129,40 @@ fun CodeVerificationScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(onClick = {
-                // Handle verification code submission
-            }) {
-                Text("Submit")
+            Button(
+                onClick = {
+                    // Handle verification code submission
+                    verificationCode.value.joinToString("")
+                    val code = verificationCode.value.joinToString("")
+                    viewModel.confirmSignUp(username, password, code) { response ->
+                        coroutineScope.launch(Dispatchers.Main) {
+                            if (response.isSuccessful) {
+                                navController.popBackStack(Constants.Route.AUTH, true)
+                            }
+                        }
+                    }
+                }
+            ) {
+                Text("Verify")
+            }
+
+            Button(
+                onClick = {
+                    // Handle verification code submission
+                    verificationCode.value.joinToString("")
+                    val code = verificationCode.value.joinToString("")
+                    viewModel.resendConfirmationCode(username) { response ->
+                        coroutineScope.launch(Dispatchers.Main) {
+                            if (response.isSuccessful) {
+
+                            } else {
+
+                            }
+                        }
+                    }
+                }
+            ) {
+                Text("Resend COde")
             }
         }
     }
