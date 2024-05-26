@@ -97,17 +97,9 @@ fun EnterPasswordScreen(navController: NavController, username: String) {
                     viewModel.signIn(username, password) {
                         coroutineScope.launch(Dispatchers.Main) {
                             if (it) {
-                                val entry = navController.currentBackStack.value.first()
-                                Log.d(TAG, "bitch ${entry.destination} ${entry.id}")
-                                navController.popBackStack()
+                                navController.popBackStack(Constants.Route.AUTH, true)
                             } else {
-                                val entry = navController.currentBackStack.value.first()
-
-                                Log.d(TAG, "fucker ${entry.destination} hey bitch ${entry.id}")
-
-                                // navController.popBackStack(Constants.Route.BRAVO_TAB, true)
-                                navController.navigateUp()
-                                navController.navigateUp()
+                                navController.popBackStack(Constants.Route.AUTH, true)
                             }
                         }
                     }

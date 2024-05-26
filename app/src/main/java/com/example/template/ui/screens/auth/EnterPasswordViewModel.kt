@@ -36,10 +36,9 @@ class EnterPasswordViewModel @Inject constructor(
 
     fun signIn(username: String, password: String, onResult: (Boolean) -> Unit) {
 
-
         AWSMobileClient.getInstance().signIn(username, password, null, object : Callback<SignInResult> {
             override fun onResult(signInResult: SignInResult) {
-                Log.d(TAG, "signIn: $signInResult")
+                Log.d(TAG, "signIn: ${signInResult.codeDetails.attributeName} ${signInResult.codeDetails.attributeName}")
                 onResult(true)
             }
 

@@ -74,26 +74,6 @@ class MainActivity : ComponentActivity() {
                 Log.e(TAG, "Initialization error.", e)
             }
         })
-
-
-    }
-
-    private fun checkUserExists(username: String) {
-
-        var userPool = CognitoUserPool(this, AWSMobileClient.getInstance().configuration)
-
-
-        userPool.getUser(username).getDetailsInBackground(object : GetDetailsHandler {
-            override fun onSuccess(cognitoUserDetails: CognitoUserDetails) {
-                // User exists
-                Log.d("UserCheck", "User exists.")
-            }
-
-            override fun onFailure(exception: Exception) {
-                // User does not exist
-                Log.d("UserCheck", exception.localizedMessage.toString())
-            }
-        })
     }
 }
 
