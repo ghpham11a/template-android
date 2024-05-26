@@ -21,10 +21,19 @@ class BravoViewModel @Inject constructor(
     private val _data = MutableStateFlow<List<Todo>>(emptyList())
     val data: StateFlow<List<Todo>> = _data
 
-    val isLoggedIn: LiveData<Boolean> = MutableLiveData(userRepository.isLoggedIn())
+    private val _isLoggedIn = MutableStateFlow<Boolean>(false)
+    val isLoggedIn: MutableStateFlow<Boolean> = _isLoggedIn
 
     init {
-        fetchData()
+        userRepository.isLoggedIn()
+        viewModelScope.launch {
+            userRepository.isAuthenticated.collect { newValue ->
+                _isLoggedIn.value = newValue
+                if (newValue) {
+                    fetchData()
+                }
+            }
+        }
     }
 
     private fun fetchData() {

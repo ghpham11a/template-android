@@ -28,13 +28,14 @@ import com.example.template.utils.Constants
 fun BravoScreen(navController: NavController) {
 
     val viewModel = hiltViewModel<BravoViewModel>()
+    val isLoggedIn by viewModel.isLoggedIn.collectAsState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(colorResource(id = R.color.teal_700))
     ) {
-        if (viewModel.isLoggedIn.value == true) {
+        if (isLoggedIn) {
             val data by viewModel.data.collectAsState()
             Text(
                 text = "Bravo Screen",

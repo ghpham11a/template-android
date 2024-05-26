@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,7 +25,7 @@ import com.example.template.R
 fun AlphaScreen(navController: NavController) {
 
     val viewModel = hiltViewModel<AlphaViewModel>()
-    val text by viewModel.text.observeAsState()
+    val isLoggedIn by viewModel.isLoggedIn.collectAsState()
 
     Column(
         modifier = Modifier
@@ -32,20 +33,8 @@ fun AlphaScreen(navController: NavController) {
             .background(colorResource(id = R.color.teal_700))
             .wrapContentSize(Alignment.Center)
     ) {
-        Text(
-            text = "Alpha Screen $text",
-            fontWeight = FontWeight.Bold,
-            color = Color.White,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            textAlign = TextAlign.Center,
-            fontSize = 20.sp
-        )
 
-        Button(onClick = { viewModel.updateText(text + "t") }) {
-            Text("Update Text")
-        }
-
-        if (viewModel.isLoggedIn.value == true) {
+        if (isLoggedIn) {
             Text("User is logged in")
         } else {
             Text("User is not logged in")

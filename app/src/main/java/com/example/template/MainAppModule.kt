@@ -3,6 +3,7 @@ package com.example.template
 import android.content.Context
 import android.content.SharedPreferences
 import com.example.template.repositories.UserRepository
+import com.example.template.utils.Constants.SHARED_PREFERENCES_NAME
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,7 +18,7 @@ object MainAppModule {
     @Provides
     @Singleton
     fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
-        return context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
+        return context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
     }
 
     @Provides

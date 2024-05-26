@@ -3,6 +3,7 @@ package com.example.template.utils
 object Constants {
 
     const val SHARED_PREFERENCES_KEY_AUTH_TOKEN = "auth_token"
+    const val SHARED_PREFERENCES_NAME = "template_shared_preferences"
     val BOTTOM_NAVIGATION_ROUTES = listOf<String>(
         Route.ALPHA_TAB,
         Route.BRAVO_TAB,

@@ -33,6 +33,7 @@ import com.example.template.ui.theme.TemplateTheme
 import dagger.hilt.android.AndroidEntryPoint
 import com.amazonaws.mobile.client.AWSMobileClient
 import com.amazonaws.mobile.client.Callback
+import com.amazonaws.mobile.client.UserState
 import com.amazonaws.mobile.client.UserStateDetails
 import com.amazonaws.mobile.client.results.SignInResult
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserDetails
@@ -67,11 +68,18 @@ class MainActivity : ComponentActivity() {
 
         AWSMobileClient.getInstance().initialize(applicationContext, object : Callback<UserStateDetails> {
             override fun onResult(userStateDetails: UserStateDetails) {
-                Log.i(TAG, "onResult: " + userStateDetails.userState + " " + AWSMobileClient.getInstance().username)
+                val sharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, MODE_PRIVATE)
+                val isUserStateSignedIn = userStateDetails.userState == UserState.SIGNED_IN
+                val sharedPrefsAuthKeyExists = sharedPreferences.contains(Constants.SHARED_PREFERENCES_KEY_AUTH_TOKEN)
+                if (isUserStateSignedIn && !sharedPrefsAuthKeyExists) {
+                    sharedPreferences.edit().remove(Constants.SHARED_PREFERENCES_KEY_AUTH_TOKEN).apply()
+                }
+                if (!isUserStateSignedIn) {
+                    sharedPreferences.edit().remove(Constants.SHARED_PREFERENCES_KEY_AUTH_TOKEN).apply()
+                }
             }
-
             override fun onError(e: Exception) {
-                Log.e(TAG, "Initialization error.", e)
+
             }
         })
     }

@@ -35,15 +35,14 @@ class EnterPasswordViewModel @Inject constructor(
     }
 
     fun signIn(username: String, password: String, onResult: (Boolean) -> Unit) {
-
         AWSMobileClient.getInstance().signIn(username, password, null, object : Callback<SignInResult> {
             override fun onResult(signInResult: SignInResult) {
-                Log.d(TAG, "signIn: ${signInResult.codeDetails.attributeName} ${signInResult.codeDetails.attributeName}")
+                val tokens = AWSMobileClient.getInstance().tokens
+                userRepository.setLoggedIn(tokens.accessToken.toString())
                 onResult(true)
             }
 
             override fun onError(e: Exception) {
-                Log.e(TAG, "signIn: ", e)
                 onResult(false)
             }
         })
