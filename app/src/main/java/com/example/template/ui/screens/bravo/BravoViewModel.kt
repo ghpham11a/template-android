@@ -1,24 +1,34 @@
 package com.example.template.ui.screens.bravo
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.template.models.Todo
 import com.example.template.networking.JSONPlaceholder
+import com.example.template.repositories.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-// @HiltViewModel
-class BravoViewModel : ViewModel() {
+@HiltViewModel
+class BravoViewModel @Inject constructor(
+    private val userRepository: UserRepository
+): ViewModel() {
+
     private val _data = MutableStateFlow<List<Todo>>(emptyList())
     val data: StateFlow<List<Todo>> = _data
+
+    val isLoggedIn: LiveData<Boolean> = MutableLiveData(userRepository.isLoggedIn())
 
     init {
         fetchData()
     }
 
     private fun fetchData() {
+
         viewModelScope.launch {
             try {
                 val response = JSONPlaceholder.api.getTodo()
@@ -31,5 +41,9 @@ class BravoViewModel : ViewModel() {
                 // Handle exception
             }
         }
+    }
+
+    fun logIn() {
+
     }
 }

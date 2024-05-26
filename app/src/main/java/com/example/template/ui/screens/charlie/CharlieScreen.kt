@@ -13,10 +13,15 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.template.R
 
 @Composable
-fun CharlieScreen() {
+fun CharlieScreen(navController: NavController) {
+
+    val viewModel = hiltViewModel<CharlieViewModel>()
+
     Column(
         modifier = Modifier
             .fillMaxSize()

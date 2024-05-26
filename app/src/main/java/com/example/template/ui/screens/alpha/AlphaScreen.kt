@@ -17,10 +17,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.template.R
 
 @Composable
-fun AlphaScreen() {
+fun AlphaScreen(navController: NavController) {
 
     val viewModel = hiltViewModel<AlphaViewModel>()
     val text by viewModel.text.observeAsState()
@@ -39,8 +40,15 @@ fun AlphaScreen() {
             textAlign = TextAlign.Center,
             fontSize = 20.sp
         )
+
         Button(onClick = { viewModel.updateText(text + "t") }) {
             Text("Update Text")
+        }
+
+        if (viewModel.isLoggedIn.value == true) {
+            Text("User is logged in")
+        } else {
+            Text("User is not logged in")
         }
     }
 }
