@@ -10,6 +10,7 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -51,6 +52,8 @@ import com.example.template.ui.screens.snag.SnagScreen
 import com.example.template.utils.Constants
 import com.example.template.utils.Constants.BOTTOM_NAVIGATION_ROUTES
 
+typealias SheetContent = @Composable ColumnScope.() -> Unit
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
@@ -72,10 +75,8 @@ class MainActivity : ComponentActivity() {
                 val sharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, MODE_PRIVATE)
                 val isUserStateSignedIn = userStateDetails.userState == UserState.SIGNED_IN
                 val sharedPrefsAuthKeyExists = sharedPreferences.contains(Constants.SHARED_PREFERENCES_KEY_AUTH_TOKEN)
-                if (isUserStateSignedIn && !sharedPrefsAuthKeyExists) {
-                    sharedPreferences.edit().remove(Constants.SHARED_PREFERENCES_KEY_AUTH_TOKEN).apply()
-                }
-                if (!isUserStateSignedIn) {
+                if ((isUserStateSignedIn && !sharedPrefsAuthKeyExists) || !isUserStateSignedIn) {
+                    AWSMobileClient.getInstance().signOut()
                     sharedPreferences.edit().remove(Constants.SHARED_PREFERENCES_KEY_AUTH_TOKEN).apply()
                 }
             }

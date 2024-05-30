@@ -5,6 +5,9 @@ object Constants {
     const val SHARED_PREFERENCES_KEY_AUTH_TOKEN = "auth_token"
     const val SHARED_PREFERENCES_NAME = "template_shared_preferences"
     const val USER_NOT_CONFIRMED_INDICATOR = "not confirmed"
+    const val AWS_COGNITO_USER_DOES_EXIST_MESSAGE = "User exists"
+    const val AWS_COGNITO_USER_DOES_NOT_EXIST_MESSAGE = "User does not exist"
+
     val BOTTOM_NAVIGATION_ROUTES = listOf<String>(
         Route.ALPHA_TAB,
         Route.BRAVO_TAB,
