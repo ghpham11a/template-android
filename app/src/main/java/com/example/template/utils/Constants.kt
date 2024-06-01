@@ -2,6 +2,7 @@ package com.example.template.utils
 
 object Constants {
 
+    const val SHARED_PREFERENCES_KEY_USERNAME = "email"
     const val SHARED_PREFERENCES_KEY_AUTH_TOKEN = "auth_token"
     const val SHARED_PREFERENCES_NAME = "template_shared_preferences"
     const val USER_NOT_CONFIRMED_INDICATOR = "not confirmed"
