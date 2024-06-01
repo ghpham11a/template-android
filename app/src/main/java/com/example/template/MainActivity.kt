@@ -10,7 +10,6 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -23,7 +22,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.amazonaws.auth.CognitoCachingCredentialsProvider
 import com.example.template.ui.components.bottomnavigation.BottomNavigation
 import com.example.template.ui.components.bottomnavigation.BottomNavigationItem
 import com.example.template.ui.screens.alpha.AlphaScreen
@@ -36,23 +34,13 @@ import com.amazonaws.mobile.client.AWSMobileClient
 import com.amazonaws.mobile.client.Callback
 import com.amazonaws.mobile.client.UserState
 import com.amazonaws.mobile.client.UserStateDetails
-import com.amazonaws.mobile.client.results.SignInResult
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserDetails
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserPool
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.GetDetailsHandler
-import com.amazonaws.services.cognitoidentityprovider.AmazonCognitoIdentityProviderClient
-import com.amazonaws.services.cognitoidentityprovider.model.AdminGetUserRequest
-import com.amazonaws.services.cognitoidentityprovider.model.AdminGetUserResult
 import com.example.template.ui.screens.auth.AddInfoScreen
 import com.example.template.ui.screens.auth.AuthScreen
 import com.example.template.ui.screens.auth.CodeVerificationScreen
 import com.example.template.ui.screens.auth.EnterPasswordScreen
-import com.example.template.ui.screens.auth.EnterPasswordViewModel
 import com.example.template.ui.screens.snag.SnagScreen
 import com.example.template.utils.Constants
 import com.example.template.utils.Constants.BOTTOM_NAVIGATION_ROUTES
-
-typealias SheetContent = @Composable ColumnScope.() -> Unit
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -74,10 +62,13 @@ class MainActivity : ComponentActivity() {
             override fun onResult(userStateDetails: UserStateDetails) {
                 val sharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, MODE_PRIVATE)
                 val isUserStateSignedIn = userStateDetails.userState == UserState.SIGNED_IN
-                val sharedPrefsAuthKeyExists = sharedPreferences.contains(Constants.SHARED_PREFERENCES_KEY_AUTH_TOKEN)
+                val sharedPrefsAuthKeyExists = sharedPreferences.contains(Constants.SHARED_PREFERENCES_KEY_ID_TOKEN)
                 if ((isUserStateSignedIn && !sharedPrefsAuthKeyExists) || !isUserStateSignedIn) {
                     AWSMobileClient.getInstance().signOut()
-                    sharedPreferences.edit().remove(Constants.SHARED_PREFERENCES_KEY_AUTH_TOKEN).apply()
+                    sharedPreferences.edit().remove(Constants.SHARED_PREFERENCES_KEY_ID_TOKEN).apply()
+                    sharedPreferences.edit().remove(Constants.SHARED_PREFERENCES_KEY_ACCESS_TOKEN).apply()
+                    sharedPreferences.edit().remove(Constants.SHARED_PREFERENCES_KEY_USERNAME).apply()
+                    sharedPreferences.edit().remove(Constants.SHARED_PREFERENCES_KEY_EXPIRATION_DATE).apply()
                 }
             }
             override fun onError(e: Exception) {

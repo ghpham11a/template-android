@@ -74,7 +74,7 @@ fun DeltaScreen(navController: NavController) {
                     },
                     modifier = Modifier.fillMaxWidth(),
                     isLoading = disableIsLoading,
-                    buttonText = "Disable Account"
+                    buttonText = "Deactivate Account"
                 )
 
                 LoadingButton(

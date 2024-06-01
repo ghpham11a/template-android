@@ -2,9 +2,12 @@ package com.example.template.utils
 
 object Constants {
 
-    const val SHARED_PREFERENCES_KEY_USERNAME = "email"
-    const val SHARED_PREFERENCES_KEY_AUTH_TOKEN = "auth_token"
     const val SHARED_PREFERENCES_NAME = "template_shared_preferences"
+    const val SHARED_PREFERENCES_KEY_USERNAME = "username"
+    const val SHARED_PREFERENCES_KEY_ACCESS_TOKEN = "access_token"
+    const val SHARED_PREFERENCES_KEY_ID_TOKEN = "id_token"
+    const val SHARED_PREFERENCES_KEY_EXPIRATION_DATE = "expiration_date"
+    const val INTERNAL_DATE_PATTERN = "yyyy-MM-dd HH:mm:ss"
     const val USER_NOT_CONFIRMED_INDICATOR = "not confirmed"
     const val AWS_COGNITO_USER_DOES_EXIST_MESSAGE = "User exists"
     const val AWS_COGNITO_USER_DOES_NOT_EXIST_MESSAGE = "User does not exist"

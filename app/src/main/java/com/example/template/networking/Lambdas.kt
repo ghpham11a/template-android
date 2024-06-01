@@ -2,7 +2,6 @@ package com.example.template.networking
 
 import com.example.template.models.AdminUpdateUserBody
 import com.example.template.models.CheckIfUserExistsResponse
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -11,35 +10,56 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.HeaderMap
 import retrofit2.http.Headers
-import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Path
 import retrofit2.http.Query
 import java.time.LocalDateTime
 import java.time.ZoneId
 
 interface LambdaService {
-    @GET("admin/users")
+    @GET("admin/users/{username}")
     suspend fun adminGetUser(
-        @Query("username") username: String
+        @Path("username") username: String
     ): Response<CheckIfUserExistsResponse>
 
     @Headers("Content-Type: application/json")
-    @PUT("admin/users")
-    suspend fun adminUpdateUser(
+    @PUT("admin/users/{username}/enable")
+    suspend fun adminEnableUser(
         @HeaderMap headers: Map<String, String>,
+        @Path("username") username: String,
         @Body body: AdminUpdateUserBody
     ): Response<String>
 
-    @DELETE("admin/users")
+    @Headers("Content-Type: application/json")
+    @PUT("admin/users/{username}")
+    suspend fun adminUpdateUser(
+        @HeaderMap headers: Map<String, String>,
+        @Path("username") username: String,
+        @Body body: AdminUpdateUserBody
+    ): Response<String>
+
+    @DELETE("admin/users/{username}")
     suspend fun adminDeleteUser(
-        @Query("username") username: String
+        @HeaderMap headers: Map<String, String>,
+        @Path("username") username: String,
     ): Response<String>
 }
 
 // Create Retrofit instance
 object Lambdas {
 
-    fun getHeaders(token: String): Map<String, String> {
+    fun buildHeaders(): Map<String, String> {
+        val offset = LocalDateTime.now().atZone(ZoneId.systemDefault()).offset.toString()
+        return mapOf<String, String>(
+            "Content-Type" to "application/json",
+            "Accept-Encoding" to "gzip,deflate,br",
+            "Accept" to "*/*",
+            "Platform" to "fcm",
+            "Origin-Timezone" to offset
+        )
+    }
+
+    fun buildAuthorizedHeaders(token: String): Map<String, String> {
         val offset = LocalDateTime.now().atZone(ZoneId.systemDefault()).offset.toString()
         return mapOf<String, String>(
             "Content-Type" to "application/json",

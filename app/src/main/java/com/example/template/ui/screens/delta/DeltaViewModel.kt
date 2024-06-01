@@ -53,7 +53,8 @@ class DeltaViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response = Lambdas.api.adminUpdateUser(
-                    Lambdas.getHeaders(""),
+                    Lambdas.buildAuthorizedHeaders(userRepository.idToken ?: ""),
+                    userRepository.username ?: "",
                     AdminUpdateUserBody("disable", userRepository.username)
                 )
                 if (response.isSuccessful) {
@@ -87,7 +88,10 @@ class DeltaViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                val response = Lambdas.api.adminDeleteUser(username)
+                val response = Lambdas.api.adminDeleteUser(
+                    Lambdas.buildAuthorizedHeaders(userRepository.idToken ?: ""),
+                    username
+                )
                 if (response.isSuccessful) {
                     response.body()?.let {
                         if (it.contains("deleted successfully")) {

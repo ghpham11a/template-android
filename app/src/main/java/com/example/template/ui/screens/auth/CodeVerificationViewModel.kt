@@ -50,8 +50,7 @@ class CodeVerificationViewModel @Inject constructor(
             override fun onResult(signInResult: SignInResult) {
 
                 if (signInResult.signInState == SignInState.DONE) {
-                    val tokens = AWSMobileClient.getInstance().tokens
-                    userRepository.setLoggedIn(tokens.accessToken.toString(), username)
+                    userRepository.setLoggedIn(AWSMobileClient.getInstance().tokens, username)
                 }
 
                 onResult(AWSMobileClientResponse(true, signInResult))
