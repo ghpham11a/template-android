@@ -13,7 +13,6 @@ fun BottomNavigation(navController: NavController) {
     val items = listOf(
         BottomNavigationItem.Alpha,
         BottomNavigationItem.Bravo,
-        BottomNavigationItem.Charlie,
         BottomNavigationItem.Delta
     )
 

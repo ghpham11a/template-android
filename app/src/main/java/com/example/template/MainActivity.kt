@@ -2,7 +2,6 @@ package com.example.template
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.EnterTransition
@@ -10,7 +9,6 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,8 +23,7 @@ import androidx.navigation.navArgument
 import com.example.template.ui.components.bottomnavigation.BottomNavigation
 import com.example.template.ui.components.bottomnavigation.BottomNavigationItem
 import com.example.template.ui.screens.alpha.AlphaScreen
-import com.example.template.ui.screens.bravo.BravoScreen
-import com.example.template.ui.screens.charlie.CharlieScreen
+import com.example.template.ui.screens.featurelist.FeatureListScreen
 import com.example.template.ui.screens.delta.DeltaScreen
 import com.example.template.ui.theme.TemplateTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -79,7 +76,6 @@ class MainActivity : ComponentActivity() {
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
@@ -133,14 +129,11 @@ fun NavigationGraph(
         composable(BottomNavigationItem.Alpha.screen_route) {
             AlphaScreen(navController)
         }
-        navigation(Constants.Route.BRAVO_LIST, route = Constants.Route.BRAVO_TAB) {
-            composable(Constants.Route.BRAVO_LIST) { BravoScreen(navController) }
+        navigation(Constants.Route.FEATURES_LIST, route = Constants.Route.FEATURES_TAB) {
+            composable(Constants.Route.FEATURES_LIST) { FeatureListScreen(navController) }
         }
         composable(BottomNavigationItem.Bravo.screen_route) {
-            BravoScreen(navController)
-        }
-        composable(BottomNavigationItem.Charlie.screen_route) {
-            CharlieScreen(navController)
+            FeatureListScreen(navController)
         }
         composable(BottomNavigationItem.Delta.screen_route) {
             DeltaScreen(navController)

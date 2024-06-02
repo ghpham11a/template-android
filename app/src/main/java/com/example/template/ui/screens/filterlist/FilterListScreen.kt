@@ -1,4 +1,4 @@
-package com.example.template.ui.screens.bravo
+package com.example.template.ui.screens.filterlist
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -9,13 +9,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -23,8 +20,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -39,7 +34,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -54,9 +48,9 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun BravoScreen(navController: NavController) {
+fun FilterListScreen(navController: NavController) {
 
-    val viewModel = hiltViewModel<BravoViewModel>()
+    val viewModel = hiltViewModel<FilterListViewModel>()
     val isLoggedIn by viewModel.isLoggedIn.collectAsState()
 
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
@@ -91,11 +85,6 @@ fun BravoScreen(navController: NavController) {
     }
 
     Scaffold(
-//        scaffoldState = bottomSheetScaffoldState,
-//        sheetContent = {
-//            BravoFilter()
-//        },
-//        sheetPeekHeight = 0.dp,
         topBar = {
             Row(
                 modifier = Modifier.fillMaxWidth(),

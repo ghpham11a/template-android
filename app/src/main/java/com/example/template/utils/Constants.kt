@@ -13,18 +13,16 @@ object Constants {
     const val AWS_COGNITO_USER_DOES_NOT_EXIST_MESSAGE = "User does not exist"
 
     val BOTTOM_NAVIGATION_ROUTES = listOf<String>(
-        Route.ALPHA_TAB,
-        Route.BRAVO_TAB,
-        Route.CHARLIE_TAB,
-        Route.DELTA_TAB
+        Route.HOME_TAB,
+        Route.FEATURES_TAB,
+        Route.PROFILE_TAB
     )
     object Route {
-        const val ALPHA_TAB = "alpha_tab"
-        const val BRAVO_TAB = "bravo_tab"
-        const val BRAVO_LIST = "bravo_list"
+        const val HOME_TAB = "home_tab"
+        const val FEATURES_TAB = "features_tab"
+        const val FEATURES_LIST = "features_list"
         const val BRAVO_DETAILS = "bravo_details"
-        const val CHARLIE_TAB = "charlie_tab"
-        const val DELTA_TAB = "delta_tab"
+        const val PROFILE_TAB = "profile_tab"
 
         const val AUTH = "auth"
         const val AUTH_HUB = "auth/hub"

@@ -1,7 +1,5 @@
-package com.example.template.ui.screens.bravo
+package com.example.template.ui.screens.filterlist
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.template.models.Todo
@@ -14,7 +12,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class BravoViewModel @Inject constructor(
+class FilterListViewModel @Inject constructor(
     private val userRepository: UserRepository
 ): ViewModel() {
 

@@ -3,6 +3,7 @@ package com.example.template.ui.screens.alpha
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -28,10 +29,7 @@ fun AlphaScreen(navController: NavController) {
     val isLoggedIn by viewModel.isLoggedIn.collectAsState()
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(colorResource(id = R.color.teal_700))
-            .wrapContentSize(Alignment.Center)
+        modifier = Modifier.fillMaxWidth()
     ) {
 
         if (isLoggedIn) {
