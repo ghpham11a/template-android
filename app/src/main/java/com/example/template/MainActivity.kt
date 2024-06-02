@@ -24,7 +24,7 @@ import com.example.template.ui.components.bottomnavigation.BottomNavigation
 import com.example.template.ui.components.bottomnavigation.BottomNavigationItem
 import com.example.template.ui.screens.alpha.AlphaScreen
 import com.example.template.ui.screens.features.FeaturesScreen
-import com.example.template.ui.screens.delta.DeltaScreen
+import com.example.template.ui.screens.profile.DeltaScreen
 import com.example.template.ui.theme.TemplateTheme
 import dagger.hilt.android.AndroidEntryPoint
 import com.amazonaws.mobile.client.AWSMobileClient

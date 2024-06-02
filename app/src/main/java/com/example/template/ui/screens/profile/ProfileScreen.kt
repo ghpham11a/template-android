@@ -1,4 +1,4 @@
-package com.example.template.ui.screens.delta
+package com.example.template.ui.screens.profile
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -35,7 +35,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun DeltaScreen(navController: NavController) {
 
-    val viewModel = hiltViewModel<DeltaViewModel>()
+    val viewModel = hiltViewModel<ProfileViewModel>()
     val isLoggedIn by viewModel.isLoggedIn.collectAsState()
     val disableIsLoading by viewModel.disableIsLoading.collectAsState()
     val deleteIsLoading by viewModel.deleteIsLoading.collectAsState()

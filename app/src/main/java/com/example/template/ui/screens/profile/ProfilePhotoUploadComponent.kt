@@ -1,4 +1,4 @@
-package com.example.template.ui.screens.delta
+package com.example.template.ui.screens.profile
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult

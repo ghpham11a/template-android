@@ -1,4 +1,4 @@
-package com.example.template.ui.screens.delta
+package com.example.template.ui.screens.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,7 +16,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 @HiltViewModel
-class DeltaViewModel @Inject constructor(
+class ProfileViewModel @Inject constructor(
     private val userRepository: UserRepository
 ): ViewModel() {
 
