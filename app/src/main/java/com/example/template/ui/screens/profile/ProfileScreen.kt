@@ -1,39 +1,32 @@
 package com.example.template.ui.screens.profile
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import android.net.Uri
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.template.R
-import com.example.template.ui.components.loadingbutton.LoadingButton
+import com.example.template.ui.components.buttons.HorizontalIconButton
+import com.example.template.ui.components.buttons.LoadingButton
+import com.example.template.ui.components.images.UploadImage
 import com.example.template.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DeltaScreen(navController: NavController) {
+fun ProfileScreen(navController: NavController) {
 
     val viewModel = hiltViewModel<ProfileViewModel>()
     val isLoggedIn by viewModel.isLoggedIn.collectAsState()
@@ -41,64 +34,80 @@ fun DeltaScreen(navController: NavController) {
     val deleteIsLoading by viewModel.deleteIsLoading.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
-    Scaffold {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(colorResource(id = R.color.teal_700))
-                .wrapContentSize(Alignment.Center)
+    val list = listOf(1, 2, 3, 4, 5, 6, 7, 8)
+
+    if (!isLoggedIn) {
+        Button(
+            shape = MaterialTheme.shapes.medium,
+            onClick = {
+                navController.navigate(Constants.Route.AUTH)
+            },
         ) {
-            Text(
-                text = "Delta Screen",
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                textAlign = TextAlign.Center,
-                fontSize = 20.sp
-            )
+            Text(text = "Log in")
+        }
+    } else {
 
-            if (isLoggedIn) {
-
-                ProfilePhotoUploadComponent()
-
-                Button(
-                    onClick = { viewModel.logOut() },
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                ) {
-                    Text(text = "Logout")
-                }
-
-                LoadingButton(
-                    onClick = {
-                        coroutineScope.launch(Dispatchers.IO) {
-                            viewModel.disableUser()
+        LazyColumn(modifier = Modifier.fillMaxWidth()) {
+            items(list) { item ->
+                when (item) {
+                    1 -> {
+                        UploadImage(uri = Uri.parse("https://template-public-resources.s3.amazonaws.com/This+one.jpg"))
+                    }
+                    2 -> {
+                        Button(
+                            onClick = { viewModel.logOut() },
+                        ) {
+                            Text(text = "Logout")
                         }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    isLoading = disableIsLoading,
-                    buttonText = "Deactivate Account"
-                )
-
-                LoadingButton(
-                    onClick = {
-                        coroutineScope.launch(Dispatchers.IO) {
-                            viewModel.deleteUser()
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    isLoading = deleteIsLoading,
-                    buttonText = "Delete Account"
-                )
-
-            } else {
-                Button(
-                    shape = MaterialTheme.shapes.medium,
-                    onClick = {
-                        navController.navigate(Constants.Route.AUTH)
-                    },
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                ) {
-                    Text(text = "Log in")
+                    }
+                    3 -> {
+                        LoadingButton(
+                            onClick = {
+                                coroutineScope.launch(Dispatchers.IO) {
+                                    viewModel.disableUser()
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            isLoading = disableIsLoading,
+                            buttonText = "Deactivate Account"
+                        )
+                    }
+                    4 -> {
+                        LoadingButton(
+                            onClick = {
+                                coroutineScope.launch(Dispatchers.IO) {
+                                    viewModel.deleteUser()
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            isLoading = deleteIsLoading,
+                            buttonText = "Delete Account"
+                        )
+                    }
+                    6 -> {
+                        HorizontalIconButton(
+                            icon = Icons.Default.AddCircle,
+                            contentDescription = "Add",
+                            title = "Add Item",
+                            onClick = { /* Handle button click */ }
+                        )
+                    }
+                    7 -> {
+                        HorizontalIconButton(
+                            icon = Icons.Default.AddCircle,
+                            contentDescription = "Add",
+                            title = "Add Item",
+                            onClick = { /* Handle button click */ }
+                        )
+                    }
+                    8 -> {
+                        HorizontalIconButton(
+                            icon = Icons.Default.AddCircle,
+                            contentDescription = "Add",
+                            title = "Add Item",
+                            onClick = { /* Handle button click */ }
+                        )
+                    }
                 }
             }
         }

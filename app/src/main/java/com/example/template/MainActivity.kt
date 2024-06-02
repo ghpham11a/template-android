@@ -24,7 +24,7 @@ import com.example.template.ui.components.bottomnavigation.BottomNavigation
 import com.example.template.ui.components.bottomnavigation.BottomNavigationItem
 import com.example.template.ui.screens.alpha.AlphaScreen
 import com.example.template.ui.screens.features.FeaturesScreen
-import com.example.template.ui.screens.profile.DeltaScreen
+import com.example.template.ui.screens.profile.ProfileScreen
 import com.example.template.ui.theme.TemplateTheme
 import dagger.hilt.android.AndroidEntryPoint
 import com.amazonaws.mobile.client.AWSMobileClient
@@ -136,7 +136,7 @@ fun NavigationGraph(
             FeaturesScreen(navController)
         }
         composable(BottomNavigationItem.Delta.screen_route) {
-            DeltaScreen(navController)
+            ProfileScreen(navController)
         }
         navigation(Constants.Route.AUTH_HUB, route = Constants.Route.AUTH) {
             composable(Constants.Route.AUTH_HUB) { AuthScreen(navController) }

@@ -1,9 +1,8 @@
-package com.example.template.ui.screens.profile
+package com.example.template.ui.components.images
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,15 +26,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import coil.annotation.ExperimentalCoilApi
-import coil.compose.rememberImagePainter
 
-@OptIn(ExperimentalCoilApi::class)
 @Composable
-fun ProfilePhotoUploadComponent() {
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
+fun UploadImage(uri: Uri?) {
+    var imageUri by remember { mutableStateOf<Uri?>(uri) }
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -48,13 +43,10 @@ fun ProfilePhotoUploadComponent() {
         verticalArrangement = Arrangement.Center
     ) {
         if (imageUri != null) {
-            Image(
-                painter = rememberImagePainter(data = imageUri),
-                contentDescription = "Selected Image",
-                modifier = Modifier
-                    .size(128.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
+            GlideImage(
+                model = imageUri.toString(),
+                contentDescription = "Sample Image",
+                modifier = Modifier.size(200.dp)
             )
         } else {
             Box(
