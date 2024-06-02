@@ -1,4 +1,4 @@
-package com.example.template.ui.screens.featurelist
+package com.example.template.ui.screens.features
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
@@ -21,10 +21,10 @@ import androidx.navigation.NavController
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun FeatureListScreen(navController: NavController) {
+fun FeaturesScreen(navController: NavController) {
 
     var tabIndex by remember { mutableStateOf(0) }
-    val viewModel = hiltViewModel<FeatureListViewModel>()
+    val viewModel = hiltViewModel<FeaturesViewModel>()
     val tabs = listOf("New", "Old")
 
     Column(modifier = Modifier.fillMaxWidth()) {

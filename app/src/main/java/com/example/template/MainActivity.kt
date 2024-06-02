@@ -23,7 +23,7 @@ import androidx.navigation.navArgument
 import com.example.template.ui.components.bottomnavigation.BottomNavigation
 import com.example.template.ui.components.bottomnavigation.BottomNavigationItem
 import com.example.template.ui.screens.alpha.AlphaScreen
-import com.example.template.ui.screens.featurelist.FeatureListScreen
+import com.example.template.ui.screens.features.FeaturesScreen
 import com.example.template.ui.screens.delta.DeltaScreen
 import com.example.template.ui.theme.TemplateTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -130,10 +130,10 @@ fun NavigationGraph(
             AlphaScreen(navController)
         }
         navigation(Constants.Route.FEATURES_LIST, route = Constants.Route.FEATURES_TAB) {
-            composable(Constants.Route.FEATURES_LIST) { FeatureListScreen(navController) }
+            composable(Constants.Route.FEATURES_LIST) { FeaturesScreen(navController) }
         }
         composable(BottomNavigationItem.Bravo.screen_route) {
-            FeatureListScreen(navController)
+            FeaturesScreen(navController)
         }
         composable(BottomNavigationItem.Delta.screen_route) {
             DeltaScreen(navController)

@@ -88,6 +88,8 @@ dependencies {
     implementation("com.amazonaws:aws-android-sdk-cognito:2.20.1")
     implementation("com.amazonaws:aws-android-sdk-mobile-client:2.75.1")
     implementation("com.amazonaws:aws-android-sdk-cognitoidentityprovider:2.75.1")
+
+    implementation("com.google.accompanist:accompanist-coil:0.14.0")
 }
 
 kapt {

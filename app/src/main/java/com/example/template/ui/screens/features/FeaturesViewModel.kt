@@ -1,4 +1,4 @@
-package com.example.template.ui.screens.featurelist
+package com.example.template.ui.screens.features
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class FeatureListViewModel @Inject constructor(
+class FeaturesViewModel @Inject constructor(
     private val userRepository: UserRepository
 ): ViewModel() {
 

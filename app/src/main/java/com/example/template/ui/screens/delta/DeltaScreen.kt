@@ -59,6 +59,8 @@ fun DeltaScreen(navController: NavController) {
 
             if (isLoggedIn) {
 
+                ProfilePhotoUploadComponent()
+
                 Button(
                     onClick = { viewModel.logOut() },
                     modifier = Modifier.align(Alignment.CenterHorizontally)

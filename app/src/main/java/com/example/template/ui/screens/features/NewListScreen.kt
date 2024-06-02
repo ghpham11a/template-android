@@ -1,4 +1,4 @@
-package com.example.template.ui.screens.featurelist
+package com.example.template.ui.screens.features
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,9 +11,9 @@ import androidx.navigation.NavController
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun OldListScreen(navController: NavController) {
+fun NewListScreen(navController: NavController) {
 
-    val list = listOf("Old Item 1", "Old Item 2", "Old Item 3")
+    val list = listOf("New Item 1", "New Item 2", "New Item 3")
 
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
         items(list) { item ->
