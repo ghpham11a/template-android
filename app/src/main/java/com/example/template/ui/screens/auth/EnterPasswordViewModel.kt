@@ -75,7 +75,7 @@ class EnterPasswordViewModel @Inject constructor(
             override fun onResult(signInResult: SignInResult) {
                 _isLoading.value = false
                 if (signInResult.signInState == SignInState.DONE) {
-                    userRepository.setLoggedIn(AWSMobileClient.getInstance().tokens, username)
+                    userRepository.setLoggedIn(AWSMobileClient.getInstance().tokens, username, AWSMobileClient.getInstance().userSub)
                 }
                 onResult(AWSMobileClientResponse(true, signInResult))
             }

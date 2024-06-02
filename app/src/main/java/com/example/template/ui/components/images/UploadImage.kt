@@ -30,11 +30,14 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun UploadImage(uri: Uri?) {
+
     var imageUri by remember { mutableStateOf<Uri?>(uri) }
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        imageUri = uri
+    ) { newUri: Uri? ->
+        newUri?.let {
+            imageUri = it
+        }
     }
 
     Column(
@@ -63,11 +66,8 @@ fun UploadImage(uri: Uri?) {
                 )
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         Button(onClick = { imagePickerLauncher.launch("image/*") }) {
-            Text(text = "Upload Photo")
+            Text(text = "Edit")
         }
     }
 }

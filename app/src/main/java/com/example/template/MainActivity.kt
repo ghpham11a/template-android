@@ -35,6 +35,8 @@ import com.example.template.ui.screens.auth.AddInfoScreen
 import com.example.template.ui.screens.auth.AuthScreen
 import com.example.template.ui.screens.auth.CodeVerificationScreen
 import com.example.template.ui.screens.auth.EnterPasswordScreen
+import com.example.template.ui.screens.editprofile.EditProfileScreen
+import com.example.template.ui.screens.publicprofile.PublicProfileScreen
 import com.example.template.ui.screens.snag.SnagScreen
 import com.example.template.utils.Constants
 import com.example.template.utils.Constants.BOTTOM_NAVIGATION_ROUTES
@@ -66,6 +68,7 @@ class MainActivity : ComponentActivity() {
                     sharedPreferences.edit().remove(Constants.SHARED_PREFERENCES_KEY_ACCESS_TOKEN).apply()
                     sharedPreferences.edit().remove(Constants.SHARED_PREFERENCES_KEY_USERNAME).apply()
                     sharedPreferences.edit().remove(Constants.SHARED_PREFERENCES_KEY_EXPIRATION_DATE).apply()
+                    sharedPreferences.edit().remove(Constants.SHARED_PREFERENCES_KEY_SUB).apply()
                 }
             }
             override fun onError(e: Exception) {
@@ -135,8 +138,18 @@ fun NavigationGraph(
         composable(BottomNavigationItem.Bravo.screen_route) {
             FeaturesScreen(navController)
         }
-        composable(BottomNavigationItem.Delta.screen_route) {
-            ProfileScreen(navController)
+        navigation(Constants.Route.PROFILE_HUB, route = Constants.Route.PROFILE_TAB) {
+            composable(Constants.Route.PROFILE_HUB) { ProfileScreen(navController) }
+            composable(
+                String.format(Constants.Route.PUBLIC_PROFILE, "{username}"),
+                arguments = listOf(navArgument("username") { type = NavType.StringType })
+            ) { backStackEntry ->
+                PublicProfileScreen(
+                    navController,
+                    backStackEntry.arguments?.getString("username").toString()
+                )
+            }
+            composable(Constants.Route.EDIT_PROFILE) { EditProfileScreen(navController) }
         }
         navigation(Constants.Route.AUTH_HUB, route = Constants.Route.AUTH) {
             composable(Constants.Route.AUTH_HUB) { AuthScreen(navController) }

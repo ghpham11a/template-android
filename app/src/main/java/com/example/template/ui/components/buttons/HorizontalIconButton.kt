@@ -27,12 +27,13 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun HorizontalIconButton(
-    icon: ImageVector,
+    icon: @Composable () -> Unit,
     contentDescription: String,
     title: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     buttonModifier: Modifier = Modifier,
+    subTitle: String = "",
 ) {
     Column(
         modifier = modifier
@@ -56,14 +57,14 @@ fun HorizontalIconButton(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start
                 ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = contentDescription,
-                        modifier = Modifier.size(24.dp),
-                        tint = Color.Black
-                    )
+                    icon()
                     Spacer(modifier = Modifier.width(32.dp))
-                    Text(text = title, color = Color.Black)
+                    Column {
+                        Text(text = title, color = Color.Black)
+                        if (subTitle.isNotEmpty()) {
+                            Text(text = subTitle, color = Color.Gray)
+                        }
+                    }
                 }
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,

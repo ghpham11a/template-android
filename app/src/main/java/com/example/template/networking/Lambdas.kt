@@ -2,6 +2,7 @@ package com.example.template.networking
 
 import com.example.template.models.AdminUpdateUserBody
 import com.example.template.models.CheckIfUserExistsResponse
+import com.example.template.models.UpdateUserBody
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -10,9 +11,9 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.HeaderMap
 import retrofit2.http.Headers
+import retrofit2.http.PATCH
 import retrofit2.http.PUT
 import retrofit2.http.Path
-import retrofit2.http.Query
 import java.time.LocalDateTime
 import java.time.ZoneId
 
@@ -42,6 +43,13 @@ interface LambdaService {
     suspend fun adminDeleteUser(
         @HeaderMap headers: Map<String, String>,
         @Path("username") username: String,
+    ): Response<String>
+
+    @PATCH("users/{userSub}")
+    suspend fun updateUser(
+        @HeaderMap headers: Map<String, String>,
+        @Path("userSub") userSub: String,
+        @Body body: UpdateUserBody
     ): Response<String>
 }
 
