@@ -3,6 +3,7 @@ package com.example.template.ui.screens.auth
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -86,7 +87,7 @@ fun AuthScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             LoadingButton(
                 onClick = {
@@ -107,9 +108,17 @@ fun AuthScreen(navController: NavController) {
                 buttonText = "Continue"
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            HorizontalDivider(thickness = 1.dp, color = Color.Gray)
+            Text(text = "Forgot your password?")
+
+            TextButton(
+                onClick = {
+                    navController.navigate(Constants.Route.RESET_PASSWORD)
+                },
+            ) {
+                Text(text = "Reset it")
+            }
         }
     }
 }

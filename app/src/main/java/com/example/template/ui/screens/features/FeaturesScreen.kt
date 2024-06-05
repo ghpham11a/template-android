@@ -3,6 +3,7 @@ package com.example.template.ui.screens.features
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -34,7 +35,7 @@ fun FeaturesScreen(navController: NavController) {
     val tabs = listOf("New", "Old")
     val isLoggedIn by viewModel.isLoggedIn.collectAsState()
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = Modifier.fillMaxSize()) {
 
         Column(modifier = Modifier
             .fillMaxWidth()

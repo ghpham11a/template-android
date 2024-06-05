@@ -22,7 +22,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.template.ui.components.bottomnavigation.BottomNavigation
 import com.example.template.ui.components.bottomnavigation.BottomNavigationItem
-import com.example.template.ui.screens.alpha.AlphaScreen
+import com.example.template.ui.screens.home.HomeScreen
 import com.example.template.ui.screens.features.FeaturesScreen
 import com.example.template.ui.screens.profile.ProfileScreen
 import com.example.template.ui.theme.TemplateTheme
@@ -35,7 +35,11 @@ import com.example.template.ui.screens.auth.AddInfoScreen
 import com.example.template.ui.screens.auth.AuthScreen
 import com.example.template.ui.screens.auth.CodeVerificationScreen
 import com.example.template.ui.screens.auth.EnterPasswordScreen
+import com.example.template.ui.screens.auth.NewPasswordScreen
+import com.example.template.ui.screens.auth.ResetPasswordScreen
 import com.example.template.ui.screens.editprofile.EditProfileScreen
+import com.example.template.ui.screens.loginandsecurity.LoginAndSecurityScreen
+import com.example.template.ui.screens.passwordresetsucess.PasswordResetSuccess
 import com.example.template.ui.screens.publicprofile.PublicProfileScreen
 import com.example.template.ui.screens.snag.SnagScreen
 import com.example.template.utils.Constants
@@ -130,14 +134,14 @@ fun NavigationGraph(
         }
     ) {
         composable(BottomNavigationItem.Alpha.screen_route) {
-            AlphaScreen(navController)
+            HomeScreen(navController)
         }
         navigation(Constants.Route.FEATURES_LIST, route = Constants.Route.FEATURES_TAB) {
             composable(Constants.Route.FEATURES_LIST) { FeaturesScreen(navController) }
         }
-        composable(BottomNavigationItem.Bravo.screen_route) {
-            FeaturesScreen(navController)
-        }
+//        composable(BottomNavigationItem.Bravo.screen_route) {
+//            FeaturesScreen(navController)
+//        }
         navigation(Constants.Route.PROFILE_HUB, route = Constants.Route.PROFILE_TAB) {
             composable(Constants.Route.PROFILE_HUB) { ProfileScreen(navController) }
             composable(
@@ -150,20 +154,37 @@ fun NavigationGraph(
                 )
             }
             composable(Constants.Route.EDIT_PROFILE) { EditProfileScreen(navController) }
+            composable(Constants.Route.LOGIN_AND_SECURITY) { LoginAndSecurityScreen(navController) }
         }
         navigation(Constants.Route.AUTH_HUB, route = Constants.Route.AUTH) {
             composable(Constants.Route.AUTH_HUB) { AuthScreen(navController) }
+            composable(Constants.Route.RESET_PASSWORD) { ResetPasswordScreen(navController) }
             composable(
-                String.format(Constants.Route.AUTH_CODE_VERIFICATION, "{username}", "{password}"),
+                String.format(Constants.Route.CODE_VERIFICATION,"{verificationType}", "{username}", "{password}"),
                 arguments = listOf(
+                    navArgument("verificationType") { type = NavType.StringType },
                     navArgument("username") { type = NavType.StringType },
                     navArgument("password") { type = NavType.StringType }
                 )
             ) { backStackEntry ->
                 CodeVerificationScreen(
                     navController,
+                    backStackEntry.arguments?.getString("verificationType").toString(),
                     backStackEntry.arguments?.getString("username").toString(),
                     backStackEntry.arguments?.getString("password").toString()
+                )
+            }
+            composable(
+                String.format(Constants.Route.NEW_PASSWORD,"{username}", "{code}"),
+                arguments = listOf(
+                    navArgument("username") { type = NavType.StringType },
+                    navArgument("code") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                NewPasswordScreen(
+                    navController,
+                    backStackEntry.arguments?.getString("username").toString(),
+                    backStackEntry.arguments?.getString("code").toString()
                 )
             }
             composable(
@@ -195,6 +216,11 @@ fun NavigationGraph(
                 SnagScreen(
                     navController = navController,
                     message = backStackEntry.arguments?.getString("message") ?: ""
+                )
+            }
+            composable(Constants.Route.RESET_PASSWORD_SUCCESS) {
+                PasswordResetSuccess(
+                    navController = navController
                 )
             }
         }

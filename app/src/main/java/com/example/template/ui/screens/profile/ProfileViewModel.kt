@@ -1,26 +1,21 @@
 package com.example.template.ui.screens.profile
 
-import android.graphics.Bitmap
-import android.util.Base64
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.amazonaws.mobile.client.AWSMobileClient
 import com.example.template.models.AdminUpdateUserBody
-import com.example.template.models.UpdateImage
-import com.example.template.models.UpdateUserBody
 import com.example.template.networking.Lambdas
 import com.example.template.repositories.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withContext
-import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+
+
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
@@ -29,16 +24,22 @@ class ProfileViewModel @Inject constructor(
 
     companion object {
         const val TAG = "DeltaViewModel"
+
+        object Cells {
+            const val GUEST_BANNER = "GUEST_BANNER"
+            const val LOG_IN = "LOGIN"
+
+            const val VIEW_PROFILE = "VIEW_PROFILE"
+            const val SETTINGS_HEADING = "SETTINGS_HEADING"
+            const val PERSONAL_INFORMATION = "PERSONAL_INFORMATION"
+            const val LOGIN_AND_SECURITY = "LOGIN_AND_SECURITY"
+            const val PAYMENTS_AND_PAYOUTS = "PAYMENTS_AND_PAYOUTS"
+            const val LOG_OUT = "LOG_OUT"
+        }
     }
 
     private val _isLoggedIn = MutableStateFlow(userRepository.isLoggedIn())
     val isLoggedIn: StateFlow<Boolean> = _isLoggedIn
-
-    private val _disableIsLoading = MutableStateFlow(false)
-    val disableIsLoading: StateFlow<Boolean> = _disableIsLoading
-
-    private val _deleteIsLoading = MutableStateFlow(false)
-    val deleteIsLoading: StateFlow<Boolean> = _deleteIsLoading
 
     private val _userSub = MutableStateFlow("")
     val userSub: StateFlow<String> = _userSub
@@ -47,86 +48,40 @@ class ProfileViewModel @Inject constructor(
 
     var username = ""
 
+    private val _cells = MutableStateFlow(emptyList<String>())
+    val cells: StateFlow<List<String>> = _cells
+
 
     init {
         userRepository.isLoggedIn()
         viewModelScope.launch {
             userRepository.isAuthenticated.collect { newValue ->
                 _isLoggedIn.value = newValue
+
+                _userSub.value = userRepository.userSub ?: ""
+                username = userRepository.username ?: ""
+
+                if (newValue) {
+                    _cells.value = listOf(
+                        Cells.VIEW_PROFILE,
+                        Cells.SETTINGS_HEADING,
+                        Cells.PERSONAL_INFORMATION,
+                        Cells.LOGIN_AND_SECURITY,
+                        Cells.PAYMENTS_AND_PAYOUTS,
+                        Cells.LOG_OUT
+                    )
+                } else {
+                    _cells.value = listOf(
+                        Cells.GUEST_BANNER,
+                        Cells.LOG_IN
+                    )
+                }
             }
         }
-        username = userRepository.username ?: ""
-        _userSub.value = userRepository.userSub ?: ""
     }
 
     fun logOut() {
         AWSMobileClient.getInstance().signOut()
         userRepository.logOut()
-    }
-
-    suspend fun disableUser(): Boolean = suspendCancellableCoroutine { continuation ->
-        _disableIsLoading.value = true
-
-        viewModelScope.launch {
-            try {
-                val response = Lambdas.api.adminUpdateUser(
-                    Lambdas.buildAuthorizedHeaders(userRepository.idToken ?: ""),
-                    userRepository.username ?: "",
-                    AdminUpdateUserBody("disable", userRepository.username)
-                )
-                if (response.isSuccessful) {
-                    response.body()?.let {
-                        if (it.contains("disabled successfully")) {
-                            continuation.resume(true)
-                            userRepository.logOut()
-                        } else {
-                            continuation.resume(false)
-                        }
-                    }
-                } else {
-                    continuation.resume(false)
-                }
-            } catch (e: Exception) {
-                // Handle exception
-                continuation.resumeWithException(e)
-            } finally {
-                _disableIsLoading.value = false
-            }
-        }
-    }
-
-    suspend fun deleteUser(): Boolean = suspendCancellableCoroutine { continuation ->
-        _deleteIsLoading.value = true
-
-        val username = userRepository.username ?: run {
-            continuation.resume(false)
-            return@suspendCancellableCoroutine
-        }
-
-        viewModelScope.launch {
-            try {
-                val response = Lambdas.api.adminDeleteUser(
-                    Lambdas.buildAuthorizedHeaders(userRepository.idToken ?: ""),
-                    username
-                )
-                if (response.isSuccessful) {
-                    response.body()?.let {
-                        if (it.contains("deleted successfully")) {
-                            userRepository.logOut()
-                            continuation.resume(true)
-                        } else {
-                            continuation.resume(false)
-                        }
-                    }
-                } else {
-                    continuation.resume(false)
-                }
-            } catch (e: Exception) {
-                // Handle exception
-                continuation.resumeWithException(e)
-            } finally {
-                _deleteIsLoading.value = false
-            }
-        }
     }
 }

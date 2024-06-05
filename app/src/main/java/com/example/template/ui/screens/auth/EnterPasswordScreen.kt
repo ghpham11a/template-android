@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.Alignment
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -59,7 +60,7 @@ fun EnterPasswordScreen(navController: NavController, username: String) {
                     navController.navigateUp()
                 },
             ) {
-                Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
             }
         }
     ) {
@@ -102,7 +103,7 @@ fun EnterPasswordScreen(navController: NavController, username: String) {
                                 }
                             } else {
                                 if (response.exception?.localizedMessage?.contains(USER_NOT_CONFIRMED_INDICATOR) == true) {
-                                    navController.navigate(String.format(Constants.Route.AUTH_CODE_VERIFICATION, username, password))
+                                    navController.navigate(String.format(Constants.Route.CODE_VERIFICATION, username, password))
                                 } else {
                                     navController.popBackStack(Constants.Route.AUTH, true)
                                     navController.navigate(String.format(Constants.Route.SNAG_FORMAT, "An error occurred. Please try again."))

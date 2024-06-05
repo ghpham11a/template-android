@@ -1,8 +1,10 @@
 package com.example.template.ui.screens.auth
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,11 +12,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.ui.Alignment
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -27,25 +29,27 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.template.ui.components.buttons.LoadingButton
 import com.example.template.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddInfoScreen(navController: NavController, username: String) {
+fun ResetPasswordScreen(navController: NavController) {
 
-    val viewModel = hiltViewModel<AddInfoViewModel>()
+    val TAG = "ResetPasswordScreen"
 
-    val password by viewModel.password.collectAsState()
-    val context = LocalContext.current
+    val viewModel = hiltViewModel<ResetPasswordViewModel>()
+
+    val username by viewModel.username.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -56,7 +60,7 @@ fun AddInfoScreen(navController: NavController, username: String) {
                     navController.navigateUp()
                 },
             ) {
-                Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
             }
         }
     ) {
@@ -67,7 +71,7 @@ fun AddInfoScreen(navController: NavController, username: String) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Sign up", style = MaterialTheme.typography.headlineMedium)
+            Text(text = "Reset Password", style = MaterialTheme.typography.headlineMedium)
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -82,42 +86,25 @@ fun AddInfoScreen(navController: NavController, username: String) {
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Divider(color = Color.Gray, thickness = 1.dp)
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            OutlinedTextField(
-                value = password,
-                onValueChange = { viewModel.onPasswordChange(it) },
-                label = { Text("Password") },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Done
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
-
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(
-                shape = MaterialTheme.shapes.medium,
+            LoadingButton(
                 onClick = {
-                    viewModel.createAccount(username, password) { response ->
+                    viewModel.resetPassword(username) { response ->
                         coroutineScope.launch(Dispatchers.Main) {
                             if (response.isSuccessful) {
-                                navController.navigate(String.format(Constants.Route.CODE_VERIFICATION, "SIGN_UP", username, password))
-                            } else {
-                                navController.popBackStack(Constants.Route.AUTH, true)
+                                coroutineScope.launch(Dispatchers.Main) {
+                                    navController.navigate(String.format(Constants.Route.CODE_VERIFICATION, "RESET_PASSWORD", username, "IGNORE"))
+                                }
                             }
                         }
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Sign up")
-            }
+                modifier = Modifier.fillMaxWidth(),
+                isLoading = isLoading,
+                buttonText = "Submit"
+            )
+
         }
     }
 }

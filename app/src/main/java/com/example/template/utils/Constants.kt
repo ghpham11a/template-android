@@ -16,12 +16,15 @@ object Constants {
 
     val BOTTOM_NAVIGATION_ROUTES = listOf<String>(
         Route.HOME_TAB,
+        Route.HOME_HUB,
         Route.FEATURES_TAB,
+        Route.FEATURES_LIST,
         Route.PROFILE_TAB,
         Route.PROFILE_HUB
     )
     object Route {
         const val HOME_TAB = "home_tab"
+        const val HOME_HUB = "home_tab/hub"
         const val FEATURES_TAB = "features_tab"
         const val FEATURES_LIST = "features_list"
         const val BRAVO_DETAILS = "bravo_details"
@@ -30,10 +33,16 @@ object Constants {
         const val PROFILE_HUB = "profile_tab/hub"
         const val PUBLIC_PROFILE = "profile_tab/public_profile/%s"
         const val EDIT_PROFILE = "profile_tab/edit_profile"
+        const val LOGIN_AND_SECURITY = "profile_tab/login_and_security"
+        const val PAYMENTS_AND_PAYOUTS = "profile_tab/payments_and_payouts"
+
+        const val RESET_PASSWORD = "auth/hub/reset_password"
+        const val RESET_PASSWORD_SUCCESS = "reset_password_success"
 
         const val AUTH = "auth"
         const val AUTH_HUB = "auth/hub"
-        const val AUTH_CODE_VERIFICATION = "auth/code_verification/%s/%s"
+        const val NEW_PASSWORD = "auth/new_password/%s/%s"
+        const val CODE_VERIFICATION = "auth/code_verification/%s/%s/%s"
         const val AUTH_ENTER_PASSWORD = "auth/enter_password/%s"
         const val AUTH_ADD_INFO = "auth/add_info/%s"
 

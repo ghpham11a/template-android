@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -50,9 +51,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CodeVerificationScreen(navController: NavController, username: String, password: String) {
+fun CodeVerificationScreen(
+    navController: NavController,
+    verificationType: String,
+    username: String,
+    password: String
+) {
 
     val numberOfFields = 6
     val focusRequesters = remember { List(numberOfFields) { FocusRequester() } }
@@ -68,9 +73,10 @@ fun CodeVerificationScreen(navController: NavController, username: String, passw
                     navController.navigateUp()
                 },
             ) {
-                Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
             }
-        }
+        },
+        modifier = Modifier.fillMaxSize()
     ) {
         Column(
             modifier = Modifier
@@ -79,6 +85,9 @@ fun CodeVerificationScreen(navController: NavController, username: String, passw
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
+            Text("Enter the verification code sent to your email ${username}", style = MaterialTheme.typography.headlineMedium)
+
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 for (i in 0 until numberOfFields) {
                     OutlinedTextField(
@@ -134,12 +143,19 @@ fun CodeVerificationScreen(navController: NavController, username: String, passw
                     // Handle verification code submission
                     verificationCode.value.joinToString("")
                     val code = verificationCode.value.joinToString("")
-                    viewModel.confirmSignUp(username, password, code) { response ->
-                        coroutineScope.launch(Dispatchers.Main) {
-                            if (response.isSuccessful) {
-                                navController.popBackStack(Constants.Route.AUTH, true)
+
+                    if (verificationType == "SIGN_UP") {
+                        viewModel.confirmSignUp(username, password, code) { response ->
+                            coroutineScope.launch(Dispatchers.Main) {
+                                if (response.isSuccessful) {
+                                    navController.popBackStack(Constants.Route.AUTH, true)
+                                }
                             }
                         }
+                    }
+
+                    if (verificationType == "RESET_PASSWORD") {
+                        navController.navigate(String.format(Constants.Route.NEW_PASSWORD, username, code))
                     }
                 }
             ) {
