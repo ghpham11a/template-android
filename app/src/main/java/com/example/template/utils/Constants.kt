@@ -30,6 +30,9 @@ object Constants {
         const val BRAVO_DETAILS = "bravo_details"
         const val PROFILE_TAB = "profile_tab"
 
+        const val STEPS_GUIDE = "steps_guide"
+
+
         const val PROFILE_HUB = "profile_tab/hub"
         const val PUBLIC_PROFILE = "profile_tab/public_profile/%s"
         const val EDIT_PROFILE = "profile_tab/edit_profile"

@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.template.utils.Constants
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -23,7 +24,9 @@ fun NewListScreen(navController: NavController, viewModel: FeaturesViewModel) {
 
     LazyColumn(modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp)) {
         items(list) { item ->
-            FeatureCard(title = item.title, description = item.description)
+            FeatureCard(title = item.title, description = item.description, onClick = {
+                navController.navigate(Constants.Route.STEPS_GUIDE)
+            })
             if (item != list.last()) {
                 HorizontalDivider()
             }

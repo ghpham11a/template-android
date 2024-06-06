@@ -42,6 +42,7 @@ import com.example.template.ui.screens.loginandsecurity.LoginAndSecurityScreen
 import com.example.template.ui.screens.passwordresetsucess.PasswordResetSuccess
 import com.example.template.ui.screens.publicprofile.PublicProfileScreen
 import com.example.template.ui.screens.snag.SnagScreen
+import com.example.template.ui.screens.stepsguide.StepsGuideScreen
 import com.example.template.utils.Constants
 import com.example.template.utils.Constants.BOTTOM_NAVIGATION_ROUTES
 
@@ -133,96 +134,86 @@ fun NavigationGraph(
             }
         }
     ) {
-        composable(BottomNavigationItem.Alpha.screen_route) {
-            HomeScreen(navController)
+        composable(Constants.Route.HOME_TAB) { HomeScreen(navController) }
+        composable(Constants.Route.FEATURES_TAB) { FeaturesScreen(navController) }
+        composable(Constants.Route.PROFILE_TAB) { ProfileScreen(navController) }
+        composable(Constants.Route.LOGIN_AND_SECURITY) { LoginAndSecurityScreen(navController) }
+        composable(
+            String.format(Constants.Route.PUBLIC_PROFILE, "{username}"),
+            arguments = listOf(navArgument("username") { type = NavType.StringType })
+        ) { backStackEntry ->
+            PublicProfileScreen(
+                navController,
+                backStackEntry.arguments?.getString("username").toString()
+            )
         }
-        navigation(Constants.Route.FEATURES_LIST, route = Constants.Route.FEATURES_TAB) {
-            composable(Constants.Route.FEATURES_LIST) { FeaturesScreen(navController) }
+        composable(Constants.Route.STEPS_GUIDE) { StepsGuideScreen(navController) }
+        composable(Constants.Route.EDIT_PROFILE) { EditProfileScreen(navController) }
+        composable(Constants.Route.AUTH) { AuthScreen(navController) }
+        composable(Constants.Route.RESET_PASSWORD) { ResetPasswordScreen(navController) }
+        composable(
+            String.format(Constants.Route.CODE_VERIFICATION,"{verificationType}", "{username}", "{password}"),
+            arguments = listOf(
+                navArgument("verificationType") { type = NavType.StringType },
+                navArgument("username") { type = NavType.StringType },
+                navArgument("password") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            CodeVerificationScreen(
+                navController,
+                backStackEntry.arguments?.getString("verificationType").toString(),
+                backStackEntry.arguments?.getString("username").toString(),
+                backStackEntry.arguments?.getString("password").toString()
+            )
         }
-//        composable(BottomNavigationItem.Bravo.screen_route) {
-//            FeaturesScreen(navController)
-//        }
-        navigation(Constants.Route.PROFILE_HUB, route = Constants.Route.PROFILE_TAB) {
-            composable(Constants.Route.PROFILE_HUB) { ProfileScreen(navController) }
-            composable(
-                String.format(Constants.Route.PUBLIC_PROFILE, "{username}"),
-                arguments = listOf(navArgument("username") { type = NavType.StringType })
-            ) { backStackEntry ->
-                PublicProfileScreen(
-                    navController,
-                    backStackEntry.arguments?.getString("username").toString()
-                )
-            }
-            composable(Constants.Route.EDIT_PROFILE) { EditProfileScreen(navController) }
-            composable(Constants.Route.LOGIN_AND_SECURITY) { LoginAndSecurityScreen(navController) }
+        composable(
+            String.format(Constants.Route.NEW_PASSWORD,"{username}", "{code}"),
+            arguments = listOf(
+                navArgument("username") { type = NavType.StringType },
+                navArgument("code") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            NewPasswordScreen(
+                navController,
+                backStackEntry.arguments?.getString("username").toString(),
+                backStackEntry.arguments?.getString("code").toString()
+            )
         }
-        navigation(Constants.Route.AUTH_HUB, route = Constants.Route.AUTH) {
-            composable(Constants.Route.AUTH_HUB) { AuthScreen(navController) }
-            composable(Constants.Route.RESET_PASSWORD) { ResetPasswordScreen(navController) }
-            composable(
-                String.format(Constants.Route.CODE_VERIFICATION,"{verificationType}", "{username}", "{password}"),
-                arguments = listOf(
-                    navArgument("verificationType") { type = NavType.StringType },
-                    navArgument("username") { type = NavType.StringType },
-                    navArgument("password") { type = NavType.StringType }
-                )
-            ) { backStackEntry ->
-                CodeVerificationScreen(
-                    navController,
-                    backStackEntry.arguments?.getString("verificationType").toString(),
-                    backStackEntry.arguments?.getString("username").toString(),
-                    backStackEntry.arguments?.getString("password").toString()
-                )
-            }
-            composable(
-                String.format(Constants.Route.NEW_PASSWORD,"{username}", "{code}"),
-                arguments = listOf(
-                    navArgument("username") { type = NavType.StringType },
-                    navArgument("code") { type = NavType.StringType }
-                )
-            ) { backStackEntry ->
-                NewPasswordScreen(
-                    navController,
-                    backStackEntry.arguments?.getString("username").toString(),
-                    backStackEntry.arguments?.getString("code").toString()
-                )
-            }
-            composable(
-                String.format(Constants.Route.AUTH_ENTER_PASSWORD, "{username}"),
-                arguments = listOf(navArgument("username") { type = NavType.StringType })
-            ) { backStackEntry ->
-                EnterPasswordScreen(
-                    navController,
-                    backStackEntry.arguments?.getString("username").toString()
-                )
-            }
-            composable(
-                String.format(Constants.Route.AUTH_ADD_INFO, "{username}"),
-                arguments = listOf(navArgument("username") { type = NavType.StringType })
-            ) { backStackEntry ->
-                AddInfoScreen(
-                    navController,
-                    backStackEntry.arguments?.getString("username").toString()
-                )
-            }
-            composable(
-                Constants.Route.SNAG,
-                arguments = listOf(
-                    navArgument("message") {
-                        type = NavType.StringType
-                        defaultValue = ""}
-                )
-            ) { backStackEntry ->
-                SnagScreen(
-                    navController = navController,
-                    message = backStackEntry.arguments?.getString("message") ?: ""
-                )
-            }
-            composable(Constants.Route.RESET_PASSWORD_SUCCESS) {
-                PasswordResetSuccess(
-                    navController = navController
-                )
-            }
+        composable(
+            String.format(Constants.Route.AUTH_ENTER_PASSWORD, "{username}"),
+            arguments = listOf(navArgument("username") { type = NavType.StringType })
+        ) { backStackEntry ->
+            EnterPasswordScreen(
+                navController,
+                backStackEntry.arguments?.getString("username").toString()
+            )
+        }
+        composable(
+            String.format(Constants.Route.AUTH_ADD_INFO, "{username}"),
+            arguments = listOf(navArgument("username") { type = NavType.StringType })
+        ) { backStackEntry ->
+            AddInfoScreen(
+                navController,
+                backStackEntry.arguments?.getString("username").toString()
+            )
+        }
+        composable(
+            Constants.Route.SNAG,
+            arguments = listOf(
+                navArgument("message") {
+                    type = NavType.StringType
+                    defaultValue = ""}
+            )
+        ) { backStackEntry ->
+            SnagScreen(
+                navController = navController,
+                message = backStackEntry.arguments?.getString("message") ?: ""
+            )
+        }
+        composable(Constants.Route.RESET_PASSWORD_SUCCESS) {
+            PasswordResetSuccess(
+                navController = navController
+            )
         }
     }
 }
