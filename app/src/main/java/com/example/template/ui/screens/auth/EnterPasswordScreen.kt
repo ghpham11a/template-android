@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.amazonaws.mobile.client.results.SignInState
+import com.example.template.Screen
 import com.example.template.ui.components.buttons.LoadingButton
 import com.example.template.utils.Constants
 import com.example.template.utils.Constants.USER_NOT_CONFIRMED_INDICATOR
@@ -99,14 +100,14 @@ fun EnterPasswordScreen(navController: NavController, username: String) {
                         coroutineScope.launch(Dispatchers.Main) {
                             if (response.isSuccessful) {
                                 if (response.result?.signInState == SignInState.DONE) {
-                                    navController.popBackStack(Constants.Route.AUTH, true)
+                                    navController.popBackStack(Screen.AuthHub.route, true)
                                 }
                             } else {
                                 if (response.exception?.localizedMessage?.contains(USER_NOT_CONFIRMED_INDICATOR) == true) {
-                                    navController.navigate(String.format(Constants.Route.CODE_VERIFICATION, username, password))
+                                    navController.navigate(Screen.CodeVerification.build("SIGN_IN", username, password))
                                 } else {
-                                    navController.popBackStack(Constants.Route.AUTH, true)
-                                    navController.navigate(String.format(Constants.Route.SNAG_FORMAT, "An error occurred. Please try again."))
+                                    navController.popBackStack(Screen.AuthHub.route, true)
+                                    navController.navigate(Screen.Snag.route)
                                 }
                             }
                         }

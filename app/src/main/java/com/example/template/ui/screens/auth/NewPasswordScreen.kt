@@ -34,6 +34,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.template.Screen
 import com.example.template.ui.components.buttons.LoadingButton
 import com.example.template.utils.Constants
 import kotlinx.coroutines.Dispatchers
@@ -103,8 +104,8 @@ fun NewPasswordScreen(navController: NavController, username: String, code: Stri
                         coroutineScope.launch(Dispatchers.Main) {
                             if (response.isSuccessful) {
                                 coroutineScope.launch(Dispatchers.Main) {
-                                    navController.popBackStack(Constants.Route.AUTH, true)
-                                    navController.navigate(Constants.Route.RESET_PASSWORD_SUCCESS)
+                                    navController.popBackStack(Screen.AuthHub.route, true)
+                                    navController.navigate(Screen.ResetPasswordSuccess.route)
                                 }
                             }
                         }

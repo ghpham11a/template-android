@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.template.R
+import com.example.template.Screen
 import com.example.template.utils.Constants
 import kotlinx.coroutines.launch
 
@@ -133,7 +134,7 @@ fun FilterListScreen(navController: NavController) {
                 Button(
                     shape = MaterialTheme.shapes.medium,
                     onClick = {
-                        navController.navigate(Constants.Route.AUTH)
+                        navController.navigate(Screen.AuthHub.route)
                     },
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 ) {

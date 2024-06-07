@@ -33,6 +33,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.template.Screen
 import com.example.template.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -107,9 +108,9 @@ fun AddInfoScreen(navController: NavController, username: String) {
                     viewModel.createAccount(username, password) { response ->
                         coroutineScope.launch(Dispatchers.Main) {
                             if (response.isSuccessful) {
-                                navController.navigate(String.format(Constants.Route.CODE_VERIFICATION, "SIGN_UP", username, password))
+                                navController.navigate(Screen.CodeVerification.build("SIGN_UP", username, password))
                             } else {
-                                navController.popBackStack(Constants.Route.AUTH, true)
+                                navController.popBackStack(Screen.AuthHub.route, true)
                             }
                         }
                     }

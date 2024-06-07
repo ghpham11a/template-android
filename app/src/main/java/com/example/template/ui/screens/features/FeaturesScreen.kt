@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.template.Screen
 import com.example.template.utils.Constants
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -55,7 +56,7 @@ fun FeaturesScreen(navController: NavController) {
             Button(
                 shape = MaterialTheme.shapes.medium,
                 onClick = {
-                    navController.navigate(Constants.Route.AUTH)
+                    navController.navigate(Screen.AuthHub.route)
                 },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {

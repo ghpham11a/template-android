@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.template.Screen
 import com.example.template.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -148,14 +149,14 @@ fun CodeVerificationScreen(
                         viewModel.confirmSignUp(username, password, code) { response ->
                             coroutineScope.launch(Dispatchers.Main) {
                                 if (response.isSuccessful) {
-                                    navController.popBackStack(Constants.Route.AUTH, true)
+                                    navController.popBackStack(Screen.AuthHub.route, true)
                                 }
                             }
                         }
                     }
 
                     if (verificationType == "RESET_PASSWORD") {
-                        navController.navigate(String.format(Constants.Route.NEW_PASSWORD, username, code))
+                        navController.navigate(Screen.NewPassword.build(username, code))
                     }
                 }
             ) {

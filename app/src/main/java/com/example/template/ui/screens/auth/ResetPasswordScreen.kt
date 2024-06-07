@@ -34,6 +34,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.template.Screen
 import com.example.template.ui.components.buttons.LoadingButton
 import com.example.template.utils.Constants
 import kotlinx.coroutines.Dispatchers
@@ -94,7 +95,7 @@ fun ResetPasswordScreen(navController: NavController) {
                         coroutineScope.launch(Dispatchers.Main) {
                             if (response.isSuccessful) {
                                 coroutineScope.launch(Dispatchers.Main) {
-                                    navController.navigate(String.format(Constants.Route.CODE_VERIFICATION, "RESET_PASSWORD", username, "IGNORE"))
+                                    navController.navigate(Screen.CodeVerification.build("RESET_PASSWORD", username, "IGNORE"))
                                 }
                             }
                         }

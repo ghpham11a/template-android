@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.template.Screen
 import com.example.template.ui.components.buttons.HorizontalIconButton
 import com.example.template.ui.components.buttons.LoadingButton
 import com.example.template.ui.components.buttons.TextButton
@@ -67,7 +68,7 @@ fun ProfileScreen(navController: NavController) {
                     Button(
                         shape = MaterialTheme.shapes.medium,
                         onClick = {
-                            navController.navigate(Constants.Route.AUTH)
+                            navController.navigate(Screen.AuthHub.route)
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -106,7 +107,7 @@ fun ProfileScreen(navController: NavController) {
                         contentDescription = "Current User",
                         title = "Anthony",
                         onClick = {
-                            navController.navigate(String.format(Constants.Route.PUBLIC_PROFILE,viewModel.username))
+                            navController.navigate(Screen.PublicProfile.build(viewModel.username))
                         },
                         subTitle = "View Profile"
                     )
@@ -152,7 +153,7 @@ fun ProfileScreen(navController: NavController) {
                         contentDescription = "Add",
                         title = "Login & Security",
                         onClick = {
-                            navController.navigate(Constants.Route.LOGIN_AND_SECURITY)
+                            navController.navigate(Screen.LoginAndSecurity.route)
                         }
                     )
                 }

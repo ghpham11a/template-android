@@ -32,6 +32,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.template.Screen
 import com.example.template.ui.components.buttons.LoadingButton
 import com.example.template.utils.Constants
 import kotlinx.coroutines.Dispatchers
@@ -94,11 +95,11 @@ fun AuthScreen(navController: NavController) {
                     coroutineScope.launch(Dispatchers.IO) {
                         if (viewModel.checkIfUserExists(username)) {
                             withContext(Dispatchers.Main) {
-                                navController.navigate(String.format(Constants.Route.AUTH_ENTER_PASSWORD, username))
+                                navController.navigate(Screen.EnterPassword.build(username))
                             }
                         } else {
                             withContext(Dispatchers.Main) {
-                                navController.navigate(String.format(Constants.Route.AUTH_ADD_INFO, username))
+                                navController.navigate(Screen.AddNewUserInfo.build(username))
                             }
                         }
                     }
@@ -114,7 +115,7 @@ fun AuthScreen(navController: NavController) {
 
             TextButton(
                 onClick = {
-                    navController.navigate(Constants.Route.RESET_PASSWORD)
+                    navController.navigate(Screen.ResetPassword.route)
                 },
             ) {
                 Text(text = "Reset it")

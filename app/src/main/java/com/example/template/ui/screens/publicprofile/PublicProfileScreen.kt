@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.template.Screen
 import com.example.template.ui.components.buttons.HorizontalIconButton
 import com.example.template.ui.components.buttons.LoadingButton
 import com.example.template.ui.components.images.UploadImage
@@ -61,7 +62,7 @@ fun PublicProfileScreen(navController: NavController, username: String) {
                     Button(
                         shape = MaterialTheme.shapes.medium,
                         onClick = {
-                            navController.navigate(Constants.Route.EDIT_PROFILE)
+                            navController.navigate(Screen.EditProfile.route)
                         },
                     ) {
                         Text(text = "Edit")

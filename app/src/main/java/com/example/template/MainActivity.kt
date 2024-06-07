@@ -17,7 +17,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.template.ui.components.bottomnavigation.BottomNavigation
@@ -112,7 +111,7 @@ fun NavigationGraph(
 ) {
     NavHost(
         navController,
-        startDestination = BottomNavigationItem.Alpha.screen_route,
+        startDestination = BottomNavigationItem.Alpha.screenRoute,
         enterTransition = {
             if (BOTTOM_NAVIGATION_ROUTES.contains(currentRoute)) {
                 EnterTransition.None
@@ -134,12 +133,12 @@ fun NavigationGraph(
             }
         }
     ) {
-        composable(Constants.Route.HOME_TAB) { HomeScreen(navController) }
-        composable(Constants.Route.FEATURES_TAB) { FeaturesScreen(navController) }
-        composable(Constants.Route.PROFILE_TAB) { ProfileScreen(navController) }
-        composable(Constants.Route.LOGIN_AND_SECURITY) { LoginAndSecurityScreen(navController) }
+        composable(Screen.Home.route) { HomeScreen(navController) }
+        composable(Screen.Features.route) { FeaturesScreen(navController) }
+        composable(Screen.Profile.route) { ProfileScreen(navController) }
+        composable(Screen.LoginAndSecurity.route) { LoginAndSecurityScreen(navController) }
         composable(
-            String.format(Constants.Route.PUBLIC_PROFILE, "{username}"),
+            Screen.PublicProfile.route,
             arguments = listOf(navArgument("username") { type = NavType.StringType })
         ) { backStackEntry ->
             PublicProfileScreen(
@@ -147,12 +146,12 @@ fun NavigationGraph(
                 backStackEntry.arguments?.getString("username").toString()
             )
         }
-        composable(Constants.Route.STEPS_GUIDE) { StepsGuideScreen(navController) }
-        composable(Constants.Route.EDIT_PROFILE) { EditProfileScreen(navController) }
-        composable(Constants.Route.AUTH) { AuthScreen(navController) }
-        composable(Constants.Route.RESET_PASSWORD) { ResetPasswordScreen(navController) }
+        composable(Screen.StepsGuide.route) { StepsGuideScreen(navController) }
+        composable(Screen.EditProfile.route) { EditProfileScreen(navController) }
+        composable(Screen.AuthHub.route) { AuthScreen(navController) }
+        composable(Screen.ResetPassword.route) { ResetPasswordScreen(navController) }
         composable(
-            String.format(Constants.Route.CODE_VERIFICATION,"{verificationType}", "{username}", "{password}"),
+            Screen.CodeVerification.route,
             arguments = listOf(
                 navArgument("verificationType") { type = NavType.StringType },
                 navArgument("username") { type = NavType.StringType },
@@ -167,7 +166,7 @@ fun NavigationGraph(
             )
         }
         composable(
-            String.format(Constants.Route.NEW_PASSWORD,"{username}", "{code}"),
+            Screen.NewPassword.route,
             arguments = listOf(
                 navArgument("username") { type = NavType.StringType },
                 navArgument("code") { type = NavType.StringType }
@@ -180,7 +179,7 @@ fun NavigationGraph(
             )
         }
         composable(
-            String.format(Constants.Route.AUTH_ENTER_PASSWORD, "{username}"),
+            Screen.EnterPassword.route,
             arguments = listOf(navArgument("username") { type = NavType.StringType })
         ) { backStackEntry ->
             EnterPasswordScreen(
@@ -189,7 +188,7 @@ fun NavigationGraph(
             )
         }
         composable(
-            String.format(Constants.Route.AUTH_ADD_INFO, "{username}"),
+            Screen.AddNewUserInfo.route,
             arguments = listOf(navArgument("username") { type = NavType.StringType })
         ) { backStackEntry ->
             AddInfoScreen(
@@ -198,7 +197,7 @@ fun NavigationGraph(
             )
         }
         composable(
-            Constants.Route.SNAG,
+            Screen.Snag.route,
             arguments = listOf(
                 navArgument("message") {
                     type = NavType.StringType
@@ -210,7 +209,7 @@ fun NavigationGraph(
                 message = backStackEntry.arguments?.getString("message") ?: ""
             )
         }
-        composable(Constants.Route.RESET_PASSWORD_SUCCESS) {
+        composable(Screen.ResetPasswordSuccess.route) {
             PasswordResetSuccess(
                 navController = navController
             )
