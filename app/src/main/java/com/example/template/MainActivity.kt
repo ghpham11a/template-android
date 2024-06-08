@@ -31,7 +31,7 @@ import com.amazonaws.mobile.client.Callback
 import com.amazonaws.mobile.client.UserState
 import com.amazonaws.mobile.client.UserStateDetails
 import com.example.template.ui.screens.auth.AddInfoScreen
-import com.example.template.ui.screens.auth.AuthScreen
+import com.example.template.ui.screens.auth.AuthHubScreen
 import com.example.template.ui.screens.auth.CodeVerificationScreen
 import com.example.template.ui.screens.auth.EnterPasswordScreen
 import com.example.template.ui.screens.auth.NewPasswordScreen
@@ -148,7 +148,7 @@ fun NavigationGraph(
         }
         composable(Screen.StepsGuide.route) { StepsGuideScreen(navController) }
         composable(Screen.EditProfile.route) { EditProfileScreen(navController) }
-        composable(Screen.AuthHub.route) { AuthScreen(navController) }
+        composable(Screen.AuthHub.route) { AuthHubScreen(navController) }
         composable(Screen.ResetPassword.route) { ResetPasswordScreen(navController) }
         composable(
             Screen.CodeVerification.route,

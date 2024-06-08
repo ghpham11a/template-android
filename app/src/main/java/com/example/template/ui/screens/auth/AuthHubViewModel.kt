@@ -2,10 +2,6 @@ package com.example.template.ui.screens.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.amazonaws.mobile.client.AWSMobileClient
-import com.amazonaws.mobile.client.Callback
-import com.amazonaws.mobile.client.results.ForgotPasswordResult
-import com.example.template.models.AWSMobileClientResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import com.example.template.networking.Lambdas
@@ -15,7 +11,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-class AuthViewModel: ViewModel() {
+class AuthHubViewModel: ViewModel() {
 
     companion object {
         const val TAG = "AuthViewModel"
@@ -24,11 +20,17 @@ class AuthViewModel: ViewModel() {
     private val _username = MutableStateFlow("")
     val username: StateFlow<String> = _username
 
-    private val _password = MutableStateFlow("")
-    val password: StateFlow<String> = _password
+    private val _selectedCountryCode = MutableStateFlow("")
+    val selectedCountryCode: StateFlow<String> = _selectedCountryCode
+
+    private val _phoneNumber = MutableStateFlow("")
+    val phoneNumber: StateFlow<String> = _phoneNumber
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
+
+    private val _isPhoneNumberMode = MutableStateFlow(false)
+    val isPhoneNumberMode: StateFlow<Boolean> = _isPhoneNumberMode
 
     fun onUsernameChange(newUsername: String) {
         _username.value = newUsername
@@ -58,5 +60,17 @@ class AuthViewModel: ViewModel() {
                 _isLoading.value = false
             }
         }
+    }
+
+    fun onPhoneNumberModeChange(mode: Boolean) {
+        _isPhoneNumberMode.value = mode
+    }
+
+    fun onCountryCodeChange(code: String) {
+        _selectedCountryCode.value = code
+    }
+
+    fun onPhoneNumberChange(number: String) {
+        _phoneNumber.value = number
     }
 }
