@@ -19,6 +19,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.ui.Alignment
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -54,6 +55,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun StepsGuideScreen(navController: NavController) {
 
+    var stepCount by remember { mutableStateOf("") }
+
     Scaffold(
         topBar = {
             TextButton(
@@ -73,6 +76,36 @@ fun StepsGuideScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = "Steps Guide")
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = stepCount,
+                onValueChange = { stepCount = it },
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text("Number of steps") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(onClick = {
+
+            }, modifier = Modifier.fillMaxWidth()) {
+                Text(text = "Launch in screen")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            HorizontalDivider()
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(onClick = {
+
+            }, modifier = Modifier.fillMaxWidth()) {
+                Text(text = "Launch in bottom sheet")
+            }
         }
     }
 }
