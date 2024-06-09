@@ -2,6 +2,7 @@ package com.example.template.ui.screens.features
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.template.Screen
 import com.example.template.models.Feature
 import com.example.template.models.Todo
 import com.example.template.networking.JSONPlaceholder
@@ -38,15 +39,12 @@ class FeaturesViewModel @Inject constructor(
             }
         }
         _newItems.value = listOf(
-            Feature("New Item 1", "New Item 1 Description"),
-            Feature("New Item 2", "New Item 2 Description"),
-            Feature("New Item 3", "New Item 3 Description")
+            Feature("Thing Builder", "This is a flow that guides you through several steps one at a time", Screen.Thing.route),
+            Feature("Filter List", "List of a lot of items that can be filtered", Screen.FilterList.route),
         )
 
         _oldItems.value = listOf(
-            Feature("Old Item 1", "Old Item 1 Description"),
-            Feature("Old Item 2", "Old Item 2 Description"),
-            Feature("Old Item 3", "Old Item 3 Description")
+
         )
     }
 

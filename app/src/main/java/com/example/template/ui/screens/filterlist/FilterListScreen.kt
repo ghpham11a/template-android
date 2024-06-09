@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -21,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -54,7 +56,6 @@ fun FilterListScreen(navController: NavController) {
     val viewModel = hiltViewModel<FilterListViewModel>()
     val isLoggedIn by viewModel.isLoggedIn.collectAsState()
 
-    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
     val coroutineScope = rememberCoroutineScope()
 
     val sheetState = rememberModalBottomSheetState(
@@ -88,14 +89,20 @@ fun FilterListScreen(navController: NavController) {
     Scaffold(
         topBar = {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+                modifier = Modifier.fillMaxWidth().background(Color.White),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
+                TextButton(
+                    onClick = {
+                        navController.navigateUp()
+                    },
+                ) {
+                    Icon(Icons.Filled.Close, contentDescription = "Close")
+                }
                 IconButton(
                     onClick = {
                         coroutineScope.launch {
                             showBottomSheet = true
-                            // bottomSheetScaffoldState.bottomSheetState.expand()
                         }
                     },
                     modifier = Modifier.align(Alignment.CenterVertically)
@@ -114,18 +121,10 @@ fun FilterListScreen(navController: NavController) {
                 .background(colorResource(id = R.color.teal_700))
         ) {
             if (isLoggedIn) {
+
                 val data by viewModel.data.collectAsState()
-                Text(
-                    text = "Bravo Screen",
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    textAlign = TextAlign.Center,
-                    fontSize = 20.sp
-                )
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ) {
+
+                LazyColumn {
                     items(data) {
                         Text(text = it.title)
                     }

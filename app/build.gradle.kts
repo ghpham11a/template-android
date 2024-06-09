@@ -90,6 +90,8 @@ dependencies {
     implementation("com.amazonaws:aws-android-sdk-cognitoidentityprovider:2.75.1")
 
     implementation("com.github.bumptech.glide:glide:4.16.0")
+
+    implementation("androidx.compose.foundation:foundation:1.6.7")
 }
 
 kapt {

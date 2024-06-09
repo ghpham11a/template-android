@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +37,8 @@ fun FeaturesScreen(navController: NavController) {
     val viewModel = hiltViewModel<FeaturesViewModel>()
     val tabs = listOf("New", "Old")
     val isLoggedIn by viewModel.isLoggedIn.collectAsState()
+    val newItems by viewModel.newItems.collectAsState()
+    val oldItems by viewModel.oldItems.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
 
@@ -81,8 +85,30 @@ fun FeaturesScreen(navController: NavController) {
             )
 
             when (tabIndex) {
-                0 -> NewListScreen(navController, viewModel)
-                1 -> OldListScreen(navController, viewModel)
+                0 -> {
+                    LazyColumn(modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp)) {
+                        items(newItems) { item ->
+                            FeatureCard(title = item.title, description = item.description, onClick = {
+                                navController.navigate(item.route)
+                            })
+                            if (item != newItems.last()) {
+                                HorizontalDivider()
+                            }
+                        }
+                    }
+                }
+                1 -> {
+                    LazyColumn(modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp)) {
+                        items(oldItems) { item ->
+                            FeatureCard(title = item.title, description = item.description, onClick = {
+                                navController.navigate(item.route)
+                            })
+                            if (item != oldItems.last()) {
+                                HorizontalDivider()
+                            }
+                        }
+                    }
+                }
             }
         }
     }

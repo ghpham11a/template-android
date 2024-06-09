@@ -9,7 +9,11 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
@@ -37,11 +41,13 @@ import com.example.template.ui.screens.auth.EnterPasswordScreen
 import com.example.template.ui.screens.auth.NewPasswordScreen
 import com.example.template.ui.screens.auth.ResetPasswordScreen
 import com.example.template.ui.screens.editprofile.EditProfileScreen
+import com.example.template.ui.screens.filterlist.FilterListScreen
 import com.example.template.ui.screens.loginandsecurity.LoginAndSecurityScreen
 import com.example.template.ui.screens.passwordresetsucess.PasswordResetSuccess
 import com.example.template.ui.screens.publicprofile.PublicProfileScreen
 import com.example.template.ui.screens.snag.SnagScreen
-import com.example.template.ui.screens.stepsguide.StepsGuideScreen
+import com.example.template.ui.screens.thing.ThingScreen
+import com.example.template.ui.screens.thing.ThingBuilderScreen
 import com.example.template.utils.Constants
 import com.example.template.utils.Constants.BOTTOM_NAVIGATION_ROUTES
 
@@ -146,7 +152,7 @@ fun NavigationGraph(
                 backStackEntry.arguments?.getString("username").toString()
             )
         }
-        composable(Screen.StepsGuide.route) { StepsGuideScreen(navController) }
+        composable(Screen.Thing.route) { ThingScreen(navController) }
         composable(Screen.EditProfile.route) { EditProfileScreen(navController) }
         composable(Screen.AuthHub.route) { AuthHubScreen(navController) }
         composable(Screen.ResetPassword.route) { ResetPasswordScreen(navController) }
@@ -213,6 +219,31 @@ fun NavigationGraph(
             PasswordResetSuccess(
                 navController = navController
             )
+        }
+        composable(
+            Screen.ThingBuilder.route,
+            arguments = listOf(
+                navArgument("mode") { type = NavType.StringType },
+                navArgument("steps") { defaultValue = "" }
+            )
+        ) { backStackEntry ->
+            ThingBuilderScreen(
+                navController,
+                backStackEntry.arguments?.getString("mode") ?: "SHEET",
+                backStackEntry.arguments?.getString("steps") ?: "",
+                closeButton = {
+                    TextButton(
+                        onClick = {
+                            navController.navigateUp()
+                        },
+                    ) {
+                        Icon(Icons.Filled.Close, contentDescription = "Close")
+                    }
+                }
+            )
+        }
+        composable(Screen.FilterList.route) {
+            FilterListScreen(navController)
         }
     }
 }
