@@ -137,7 +137,9 @@ fun ProfileScreen(navController: NavController) {
                         },
                         contentDescription = "Add",
                         title = "Personal Information",
-                        onClick = { /* Handle button click */ }
+                        onClick = {
+                            navController.navigate(Screen.PersonalInfo.route)
+                        }
                     )
                 }
                 ProfileViewModel.Companion.Cells.LOGIN_AND_SECURITY -> {

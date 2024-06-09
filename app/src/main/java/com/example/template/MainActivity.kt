@@ -44,6 +44,7 @@ import com.example.template.ui.screens.editprofile.EditProfileScreen
 import com.example.template.ui.screens.filterlist.FilterListScreen
 import com.example.template.ui.screens.loginandsecurity.LoginAndSecurityScreen
 import com.example.template.ui.screens.passwordresetsucess.PasswordResetSuccess
+import com.example.template.ui.screens.personalinfo.PersonalInfoScreen
 import com.example.template.ui.screens.publicprofile.PublicProfileScreen
 import com.example.template.ui.screens.snag.SnagScreen
 import com.example.template.ui.screens.thing.ThingScreen
@@ -61,8 +62,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+
         setContent {
-            TemplateTheme {
+            TemplateTheme(darkTheme = false) {
                 MainScreen()
             }
         }
@@ -244,6 +247,9 @@ fun NavigationGraph(
         }
         composable(Screen.FilterList.route) {
             FilterListScreen(navController)
+        }
+        composable(Screen.PersonalInfo.route) {
+            PersonalInfoScreen(navController)
         }
     }
 }

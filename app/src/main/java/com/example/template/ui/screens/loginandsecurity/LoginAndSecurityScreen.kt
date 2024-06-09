@@ -10,13 +10,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -32,7 +29,6 @@ import androidx.navigation.NavController
 import com.example.template.ui.components.buttons.LoadingButton
 import com.example.template.ui.components.buttons.TextButton
 import com.example.template.ui.components.inputs.ExpandableSection
-import com.example.template.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -44,6 +40,7 @@ fun LoginAndSecurityScreen(navController: NavController) {
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
     val isLoading by viewModel.isLoading.collectAsState()
+    var isPasswordExpanded by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -68,19 +65,21 @@ fun LoginAndSecurityScreen(navController: NavController) {
 
             ExpandableSection(
                 title = "Section 2",
+                isExpanded = isPasswordExpanded,
+                onExpandedChange = { isPasswordExpanded = it },
                 closedContent = {
                     Text("Header content of section 2.")
                 },
                 openedContent = {
-                    var currentPassowrd by remember { mutableStateOf(TextFieldValue()) }
+                    var currentPassword by remember { mutableStateOf(TextFieldValue()) }
                     var newPassword by remember { mutableStateOf(TextFieldValue()) }
                     var confirmPassword by remember { mutableStateOf(TextFieldValue()) }
                     Column {
                         Text("Body content of section 2.")
                         Spacer(modifier = Modifier.height(8.dp))
                         OutlinedTextField(
-                            value = currentPassowrd,
-                            onValueChange = { currentPassowrd = it },
+                            value = currentPassword,
+                            onValueChange = { currentPassword = it },
                             label = { Text("Current password") },
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -101,10 +100,10 @@ fun LoginAndSecurityScreen(navController: NavController) {
                         Spacer(modifier = Modifier.height(16.dp))
                         LoadingButton(
                             onClick = {
-                                viewModel.changePassword(currentPassowrd.text, newPassword.text) { response ->
+                                viewModel.changePassword(currentPassword.text, newPassword.text) { response ->
                                     coroutineScope.launch(Dispatchers.Main) {
                                         if (response.isSuccessful) {
-                                            navController.navigateUp()
+                                            isPasswordExpanded = false
                                         }
                                     }
                                 }

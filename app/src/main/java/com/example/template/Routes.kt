@@ -32,5 +32,5 @@ sealed class Screen(val route: String) {
         fun build(username: String) = "add-new-user-info/$username"
     }
     object Snag : Screen("snag")
-
+    object PersonalInfo : Screen("personal-info")
 }

@@ -35,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.template.utils.Constants
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -49,6 +50,8 @@ fun ThingBuilderScreen(
 
     val pagerState = rememberPagerState(pageCount = { steps.split(",").count() })
     val coroutineScope = rememberCoroutineScope()
+
+    val stepsMap = steps.split(",").withIndex().associate { it.index to it.value }
 
     Scaffold(
         topBar = {
@@ -74,11 +77,13 @@ fun ThingBuilderScreen(
                 modifier = Modifier.weight(1f),
                 userScrollEnabled = false
             ) { page ->
-                when (page) {
-                    0 -> StepView(stepNumber = 1, stepDescription = "Step 1: Introduction")
-                    1 -> StepView(stepNumber = 2, stepDescription = "Step 2: Details")
-                    2 -> StepView(stepNumber = 3, stepDescription = "Step 3: Confirmation")
-                    3 -> StepView(stepNumber = 4, stepDescription = "Step 4: Confirmation")
+                when (stepsMap[page]) {
+                    Constants.ThingScreen.THING_TYPE -> {
+                        ThingTypeScreen(stepNumber = page + 1, stepDescription = "Thing Type")
+                    }
+                    Constants.ThingScreen.THING_DESCRIPTION -> {
+                        ThingDescriptionScreen(stepNumber = page + 1, stepDescription = "Thing Description")
+                    }
                 }
             }
 

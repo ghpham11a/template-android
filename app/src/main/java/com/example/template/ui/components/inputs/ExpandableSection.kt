@@ -19,10 +19,14 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun ExpandableSection(
     title: String,
+    isExpanded: Boolean,
+    isEnabled: Boolean = true,
+    onExpandedChange: (Boolean) -> Unit,
     closedContent: @Composable () -> Unit,
     openedContent: @Composable () -> Unit
 ) {
-    var isExpanded by remember { mutableStateOf(false) }
+    val textColor = if (isEnabled) Color.Black else Color.Gray
+
     Column(
         modifier = Modifier
             .animateContentSize(animationSpec = tween(300))
@@ -34,9 +38,9 @@ fun ExpandableSection(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = title, fontSize = 20.sp)
-            Button(onClick = { isExpanded = !isExpanded }) {
-                Text(if (isExpanded) "Close" else "Open")
+            Text(text = title, fontSize = 20.sp, color = textColor)
+            Button(onClick = { if (isEnabled) onExpandedChange(!isExpanded) }) {
+                Text(if (isExpanded) "Close" else "Open", color = textColor)
             }
         }
         Row(modifier = Modifier
@@ -44,9 +48,13 @@ fun ExpandableSection(
             .padding(bottom = 8.dp)
         ) {
             if (!isExpanded) {
-                closedContent()
+                CompositionLocalProvider(LocalContentColor provides textColor) {
+                    closedContent()
+                }
             } else {
-                openedContent()
+                CompositionLocalProvider(LocalContentColor provides textColor) {
+                    openedContent()
+                }
             }
         }
 
