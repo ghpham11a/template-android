@@ -1,28 +1,18 @@
 package com.example.template.ui.screens.loginandsecurity
 
-import android.graphics.Bitmap
-import android.util.Base64
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.amazonaws.mobile.client.AWSMobileClient
 import com.amazonaws.mobile.client.Callback
-import com.amazonaws.mobile.client.results.SignInResult
-import com.amazonaws.mobile.client.results.SignInState
-import com.amazonaws.services.cognitoidentityprovider.model.NotAuthorizedException
 import com.example.template.models.AWSMobileClientResponse
 import com.example.template.models.AdminUpdateUserBody
-import com.example.template.models.UpdateImage
-import com.example.template.models.UpdateUserBody
-import com.example.template.networking.Lambdas
+import com.example.template.networking.APIGateway
 import com.example.template.repositories.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withContext
-import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -84,16 +74,16 @@ class LoginAndSecurityViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                val response = Lambdas.api.adminUpdateUser(
-                    Lambdas.buildAuthorizedHeaders(userRepository.idToken ?: ""),
+                val response = APIGateway.api.adminDisableUser(
+                    APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
                     userRepository.username ?: "",
                     AdminUpdateUserBody("disable", userRepository.username)
                 )
                 if (response.isSuccessful) {
                     response.body()?.let {
                         if (it.contains("disabled successfully")) {
-                            continuation.resume(true)
                             userRepository.logOut()
+                            continuation.resume(true)
                         } else {
                             continuation.resume(false)
                         }
@@ -120,8 +110,8 @@ class LoginAndSecurityViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                val response = Lambdas.api.adminDeleteUser(
-                    Lambdas.buildAuthorizedHeaders(userRepository.idToken ?: ""),
+                val response = APIGateway.api.adminDeleteUser(
+                    APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
                     username
                 )
                 if (response.isSuccessful) {

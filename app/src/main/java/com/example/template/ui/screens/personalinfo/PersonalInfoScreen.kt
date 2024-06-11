@@ -32,6 +32,7 @@ import androidx.navigation.NavController
 import com.example.template.ui.components.buttons.LoadingButton
 import com.example.template.ui.components.buttons.TextButton
 import com.example.template.ui.components.inputs.ExpandableSection
+import com.example.template.ui.components.inputs.PhoneNumberField
 import com.example.template.ui.screens.loginandsecurity.LoginAndSecurityViewModel
 import com.example.template.utils.Constants
 import kotlinx.coroutines.Dispatchers
@@ -46,12 +47,19 @@ fun PersonalInfoScreen(navController: NavController) {
     val coroutineScope = rememberCoroutineScope()
     val isLoading by viewModel.isLoading.collectAsState()
 
+    // Legal name
+    val firstName by viewModel.firstName.collectAsState()
+    val lastName by viewModel.lastName.collectAsState()
     var isLegalNameExpanded by remember { mutableStateOf(false) }
     var isLegalNameEnabled by remember { mutableStateOf(true) }
 
     var isPreferredFirstNameExpanded by remember { mutableStateOf(false) }
     var isPreferredFirstNameEnabled by remember { mutableStateOf(true) }
 
+    // Phone number
+    val countryCode by viewModel.countryCode.collectAsState()
+    val phoneNumber by viewModel.phoneNumber.collectAsState()
+    val phoneNumberToDisplay by viewModel.phoneNumberToDisplay.collectAsState()
     var isPhoneNumberExpanded by remember { mutableStateOf(false) }
     var isPhoneNumberEnabled by remember { mutableStateOf(true) }
 
@@ -120,31 +128,39 @@ fun PersonalInfoScreen(navController: NavController) {
                 },
                 isEnabled = isLegalNameEnabled,
                 closedContent = {
-                    Text("FirstName LastName")
+                    if (firstName.isNotEmpty() && lastName.isNotEmpty()) {
+                        Text("$firstName $lastName")
+                    } else {
+                        Text("Update your legal name")
+                    }
                 },
                 openedContent = {
-                    var firstName by remember { mutableStateOf(TextFieldValue()) }
-                    var lastName by remember { mutableStateOf(TextFieldValue()) }
+                    var firstNameField by remember { mutableStateOf(TextFieldValue(viewModel.firstName.value)) }
+                    var lastNameField by remember { mutableStateOf(TextFieldValue(viewModel.lastName.value)) }
                     Column {
                         Text("Your calendar may be blocked for up to an hour while we verify your new legal name.")
                         Spacer(modifier = Modifier.height(8.dp))
                         OutlinedTextField(
-                            value = firstName,
-                            onValueChange = { firstName = it },
+                            value = firstNameField,
+                            onValueChange = { firstNameField = it },
                             label = { Text("First name on ID") },
                             modifier = Modifier.fillMaxWidth()
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         OutlinedTextField(
-                            value = lastName,
-                            onValueChange = { lastName = it },
+                            value = lastNameField,
+                            onValueChange = { lastNameField = it },
                             label = { Text("Last name on ID") },
                             modifier = Modifier.fillMaxWidth()
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         LoadingButton(
                             onClick = {
-
+                                coroutineScope.launch(Dispatchers.Main) {
+                                    if (viewModel.updateLegalName(firstNameField.text, lastNameField.text)) {
+                                        isLegalNameExpanded = false
+                                    }
+                                }
                             },
                             modifier = Modifier.fillMaxWidth(),
                             isLoading = isLoading,
@@ -166,13 +182,13 @@ fun PersonalInfoScreen(navController: NavController) {
                     Text("FirstName")
                 },
                 openedContent = {
-                    var firstName by remember { mutableStateOf(TextFieldValue()) }
+                    var preferredName by remember { mutableStateOf(TextFieldValue()) }
                     Column {
                         Text("The first name or business name that you'd like to be known by.")
                         Spacer(modifier = Modifier.height(8.dp))
                         OutlinedTextField(
-                            value = firstName,
-                            onValueChange = { firstName = it },
+                            value = preferredName,
+                            onValueChange = { preferredName = it },
                             label = { Text("Preferred first name (optional)") },
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -198,24 +214,34 @@ fun PersonalInfoScreen(navController: NavController) {
                                    },
                 isEnabled = isPhoneNumberEnabled,
                 closedContent = {
-                    Text("Add a phone number just in case we need to reach you. No one else will ever see it.")
+                    if (phoneNumberToDisplay.isNotEmpty()) {
+                        Text(phoneNumberToDisplay)
+                    } else {
+                        Text("Add a phone number just in case we need to reach you. No one else will ever see it.")
+                    }
                 },
                 openedContent = {
-                    var firstName by remember { mutableStateOf(TextFieldValue()) }
-                    var lastName by remember { mutableStateOf(TextFieldValue()) }
+
+                    var countryCodeField by remember { mutableStateOf(viewModel.countryCode.value) }
+                    var phoneNumberField by remember { mutableStateOf(viewModel.phoneNumber.value) }
+
                     Column {
-                        Text("The first name or business name that you'd like to be known by.")
-                        Spacer(modifier = Modifier.height(8.dp))
-                        OutlinedTextField(
-                            value = firstName,
-                            onValueChange = { firstName = it },
-                            label = { Text("Preferred first name (optional)") },
-                            modifier = Modifier.fillMaxWidth()
+                        PhoneNumberField(
+                            selectedCountryCode = countryCodeField,
+                            onCountryCodeChange = { countryCodeField = it },
+                            phoneNumber = phoneNumberField,
+                            onPhoneNumberChange = { phoneNumberField = it },
                         )
+
                         Spacer(modifier = Modifier.height(16.dp))
+
                         LoadingButton(
                             onClick = {
-
+                                coroutineScope.launch(Dispatchers.Main) {
+                                    if (viewModel.updatePhoneNumber(countryCodeField, phoneNumberField)) {
+                                        isPhoneNumberExpanded = false
+                                    }
+                                }
                             },
                             modifier = Modifier.fillMaxWidth(),
                             isLoading = isLoading,
@@ -224,6 +250,8 @@ fun PersonalInfoScreen(navController: NavController) {
                     }
                 }
             )
+
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }

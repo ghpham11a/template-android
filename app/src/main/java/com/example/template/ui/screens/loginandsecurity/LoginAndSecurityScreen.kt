@@ -10,6 +10,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -119,16 +120,30 @@ fun LoginAndSecurityScreen(navController: NavController) {
             TextButton(
                 onClick = {
                     coroutineScope.launch(Dispatchers.IO) {
-                        viewModel.disableUser()
+                        if (viewModel.disableUser()) {
+                            coroutineScope.launch(Dispatchers.Main) {
+                                navController.navigateUp()
+                            }
+                        }
                     }
                 },
                 buttonText = "Deactivate Account"
             )
 
+            Spacer(modifier = Modifier.height(8.dp))
+
+            HorizontalDivider()
+
+            Spacer(modifier = Modifier.height(8.dp))
+
             TextButton(
                 onClick = {
                     coroutineScope.launch(Dispatchers.IO) {
-                        viewModel.deleteUser()
+                        if (viewModel.deleteUser()) {
+                            coroutineScope.launch(Dispatchers.Main) {
+                                navController.navigateUp()
+                            }
+                        }
                     }
                 },
                 buttonText = "Delete Account"

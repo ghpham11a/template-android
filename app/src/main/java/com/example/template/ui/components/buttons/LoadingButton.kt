@@ -15,12 +15,14 @@ fun LoadingButton(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
     onClick: () -> Unit,
-    buttonText: String
+    buttonText: String,
+    disabled: Boolean = false
 ) {
     Button(
         shape = MaterialTheme.shapes.medium,
-        onClick = { if (!isLoading) onClick() },
-        modifier = modifier.height(48.dp)
+        onClick = { if (!isLoading && !disabled) onClick() },
+        modifier = modifier.height(48.dp),
+        enabled = !disabled
     ) {
         if (isLoading) {
             CircularProgressIndicator(

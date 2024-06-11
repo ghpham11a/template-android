@@ -2,6 +2,7 @@ package com.example.template.networking
 
 import com.example.template.models.AdminUpdateUserBody
 import com.example.template.models.CheckIfUserExistsResponse
+import com.example.template.models.ReadUserResponse
 import com.example.template.models.UpdateUserBody
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -12,19 +13,18 @@ import retrofit2.http.GET
 import retrofit2.http.HeaderMap
 import retrofit2.http.Headers
 import retrofit2.http.PATCH
-import retrofit2.http.PUT
 import retrofit2.http.Path
 import java.time.LocalDateTime
 import java.time.ZoneId
 
-interface LambdaService {
+interface APIGatewayService {
     @GET("admin/users/{username}")
-    suspend fun adminGetUser(
+    suspend fun adminReadUser(
         @Path("username") username: String
     ): Response<CheckIfUserExistsResponse>
 
     @Headers("Content-Type: application/json")
-    @PUT("admin/users/{username}/enable")
+    @PATCH("admin/users/{username}/enable")
     suspend fun adminEnableUser(
         @HeaderMap headers: Map<String, String>,
         @Path("username") username: String,
@@ -32,8 +32,8 @@ interface LambdaService {
     ): Response<String>
 
     @Headers("Content-Type: application/json")
-    @PUT("admin/users/{username}")
-    suspend fun adminUpdateUser(
+    @PATCH("admin/users/{username}/disable")
+    suspend fun adminDisableUser(
         @HeaderMap headers: Map<String, String>,
         @Path("username") username: String,
         @Body body: AdminUpdateUserBody
@@ -45,16 +45,22 @@ interface LambdaService {
         @Path("username") username: String,
     ): Response<String>
 
-    @PATCH("users/{userSub}")
+    @PATCH("private/users/{userId}")
     suspend fun updateUser(
         @HeaderMap headers: Map<String, String>,
-        @Path("userSub") userSub: String,
+        @Path("userId") userSub: String,
         @Body body: UpdateUserBody
     ): Response<String>
+
+    @GET("private/users/{userId}")
+    suspend fun readUser(
+        @HeaderMap headers: Map<String, String>,
+        @Path("userId") userId: String
+    ): Response<ReadUserResponse>
 }
 
 // Create Retrofit instance
-object Lambdas {
+object APIGateway {
 
     fun buildHeaders(): Map<String, String> {
         val offset = LocalDateTime.now().atZone(ZoneId.systemDefault()).offset.toString()
@@ -81,12 +87,12 @@ object Lambdas {
 
     private val retrofit by lazy {
         Retrofit.Builder()
-            .baseUrl("https://o7hniu19pc.execute-api.us-east-1.amazonaws.com/qa/")
+            .baseUrl("https://gviivl9o82.execute-api.us-east-1.amazonaws.com/qa/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 
-    val api: LambdaService by lazy {
-        retrofit.create(LambdaService::class.java)
+    val api: APIGatewayService by lazy {
+        retrofit.create(APIGatewayService::class.java)
     }
 }

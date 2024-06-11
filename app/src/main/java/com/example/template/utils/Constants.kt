@@ -29,4 +29,12 @@ object Constants {
         const val THING_TIME = "THING_TIME"
     }
 
+    val COUNTRY_CODES = listOf(
+        "United States ( +1 )",
+        "India ( +91 )",
+        "Isle of Man ( +44 )",
+        "Austalia ( +61 )",
+        "Japan ( +81 )"
+    )
+
 }

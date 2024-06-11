@@ -49,6 +49,7 @@ import com.example.template.R
 import com.example.template.Screen
 import com.example.template.ui.components.buttons.LoadingButton
 import com.example.template.ui.components.buttons.OutlinedIconButton
+import com.example.template.ui.components.inputs.PhoneNumberField
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -68,7 +69,7 @@ fun AuthHubScreen(navController: NavController) {
     val username by viewModel.username.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val isPhoneNumberMode by viewModel.isPhoneNumberMode.collectAsState()
-    val countryCodes = listOf("United States ( +1 )", "India ( +91 )", "Isle of Man ( +44 )", "Austalia ( +61 )", "Japan ( +81 )")
+
     val selectedCountryCode by viewModel.selectedCountryCode.collectAsState()
     val phoneNumber by viewModel.phoneNumber.collectAsState()
     val coroutineScope = rememberCoroutineScope()
@@ -116,7 +117,7 @@ fun AuthHubScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Login or sign up is expanded",
+                text = "Login or sign up",
                 style = MaterialTheme.typography.headlineMedium
             )
 
@@ -124,54 +125,13 @@ fun AuthHubScreen(navController: NavController) {
 
             if (isPhoneNumberMode) {
 
-                ExposedDropdownMenuBox(
-                    expanded = expanded,
-                    onExpandedChange = {expanded = !expanded}) {
-
-                    OutlinedTextField(
-                        value = selectedCountryCode,
-                        onValueChange = { viewModel.onCountryCodeChange(it) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor()
-                            .clickable { expanded = !expanded },
-                        label = { Text("Country Region") },
-                        trailingIcon = {
-                            Icon(
-                                imageVector = Icons.Filled.ArrowDropDown,
-                                contentDescription = null
-                            )
-                        },
-                        readOnly = true
-                    )
-
-                    ExposedDropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = {
-                            expanded = false
-                        }
-                    ) {
-                        countryCodes.forEach { selectionOption ->
-                            DropdownMenuItem(
-                                text = { Text(text = selectionOption) },
-                                onClick = {
-                                    viewModel.onCountryCodeChange(selectionOption)
-                                    expanded = false
-                                }
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                OutlinedTextField(
-                    value = phoneNumber,
-                    onValueChange = { viewModel.onPhoneNumberChange(it) },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Phone Number") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+                PhoneNumberField(
+                    selectedCountryCode = selectedCountryCode,
+                    onCountryCodeChange = { viewModel.onCountryCodeChange(it) },
+                    phoneNumber = phoneNumber,
+                    onPhoneNumberChange = { viewModel.onPhoneNumberChange(it) },
                 )
+
             } else {
                 OutlinedTextField(
                     value = username,
@@ -203,7 +163,8 @@ fun AuthHubScreen(navController: NavController) {
                 },
                 modifier = Modifier.fillMaxWidth(),
                 isLoading = isLoading,
-                buttonText = "Continue"
+                buttonText = "Continue",
+                disabled = isPhoneNumberMode
             )
 
             Spacer(modifier = Modifier.height(16.dp))

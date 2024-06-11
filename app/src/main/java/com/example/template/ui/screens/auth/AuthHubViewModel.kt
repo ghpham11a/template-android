@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import com.example.template.networking.Lambdas
+import com.example.template.networking.APIGateway
 import com.example.template.utils.Constants.AWS_COGNITO_USER_DOES_EXIST_MESSAGE
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -41,7 +41,7 @@ class AuthHubViewModel: ViewModel() {
 
         viewModelScope.launch {
             try {
-                val response = Lambdas.api.adminGetUser(username.lowercase())
+                val response = APIGateway.api.adminReadUser(username.lowercase())
                 if (response.isSuccessful) {
                     response.body()?.let {
                         if (it.message == AWS_COGNITO_USER_DOES_EXIST_MESSAGE) {

@@ -1,7 +1,6 @@
 package com.example.template.ui.screens.thing
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -17,7 +15,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -31,7 +28,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.template.Screen
@@ -52,14 +48,14 @@ fun ThingScreen(navController: NavController) {
     val coroutineScope = rememberCoroutineScope()
 
     var isThingTypeChecked by remember { mutableStateOf(false) }
-    var isThingTypeDescriptionChecked by remember { mutableStateOf(false) }
+    var isThingDescriptionChecked by remember { mutableStateOf(false) }
 
     fun getStepString(): String {
         val steps = mutableListOf<String>()
         if (isThingTypeChecked) {
             steps.add(Constants.ThingScreen.THING_TYPE)
         }
-        if (isThingTypeDescriptionChecked) {
+        if (isThingDescriptionChecked) {
             steps.add(Constants.ThingScreen.THING_DESCRIPTION)
         }
         return steps.joinToString(separator = ",")
@@ -126,9 +122,9 @@ fun ThingScreen(navController: NavController) {
 
             CheckboxRow(
                 title = "Thing type description",
-                isThingTypeDescriptionChecked.also { isThingTypeDescriptionChecked = it },
+                isThingDescriptionChecked.also { isThingDescriptionChecked = it },
                 onCheckedChange = {
-                    isThingTypeDescriptionChecked = it
+                    isThingDescriptionChecked = it
                 }
             )
 

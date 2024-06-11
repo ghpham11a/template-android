@@ -11,7 +11,7 @@ import com.amazonaws.mobile.client.results.SignInState
 import com.amazonaws.services.cognitoidentityprovider.model.NotAuthorizedException
 import com.example.template.models.AWSMobileClientResponse
 import com.example.template.models.AdminUpdateUserBody
-import com.example.template.networking.Lambdas
+import com.example.template.networking.APIGateway
 import com.example.template.repositories.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -41,8 +41,8 @@ class EnterPasswordViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                val response = Lambdas.api.adminEnableUser(
-                    Lambdas.buildHeaders(),
+                val response = APIGateway.api.adminEnableUser(
+                    APIGateway.buildHeaders(),
                     username,
                     AdminUpdateUserBody("enable", username)
                 )

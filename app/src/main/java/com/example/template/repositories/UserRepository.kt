@@ -1,15 +1,21 @@
 package com.example.template.repositories
 
 import android.content.SharedPreferences
+import android.util.Log
 import com.amazonaws.mobile.client.results.Tokens
 import com.example.template.models.CurrentUser
+import com.example.template.models.ReadUserResponse
+import com.example.template.networking.APIGateway
 import com.example.template.utils.Constants.INTERNAL_DATE_PATTERN
 import com.example.template.utils.Constants.SHARED_PREFERENCES_KEY_ACCESS_TOKEN
 import com.example.template.utils.Constants.SHARED_PREFERENCES_KEY_ID_TOKEN
 import com.example.template.utils.Constants.SHARED_PREFERENCES_KEY_EXPIRATION_DATE
 import com.example.template.utils.Constants.SHARED_PREFERENCES_KEY_SUB
 import com.example.template.utils.Constants.SHARED_PREFERENCES_KEY_USERNAME
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.withContext
+import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.Locale
 import javax.inject.Inject
@@ -35,6 +41,31 @@ class UserRepository @Inject constructor(
         get() = sharedPreferences.getString(SHARED_PREFERENCES_KEY_USERNAME, null)
     val idToken: String?
         get() = sharedPreferences.getString(SHARED_PREFERENCES_KEY_ID_TOKEN, null)
+
+    private var user: ReadUserResponse? = null
+
+    suspend fun readUser(refresh: Boolean = false): Response<ReadUserResponse>? {
+
+        if (user != null && !refresh) {
+            return Response.success(user)
+        }
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = APIGateway.api.readUser(
+                    APIGateway.buildAuthorizedHeaders(idToken ?: ""),
+                    userSub ?: ""
+                )
+                if (response.isSuccessful) {
+                    user = response.body()
+                }
+                response
+            } catch (e: Exception) {
+                // Handle the exception
+                null
+            }
+        }
+    }
 
     fun isLoggedIn(): Boolean {
         _isAuthenticated.value = sharedPreferences.contains(SHARED_PREFERENCES_KEY_ID_TOKEN)
