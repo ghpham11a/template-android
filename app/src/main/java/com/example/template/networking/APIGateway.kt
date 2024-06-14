@@ -14,13 +14,16 @@ import retrofit2.http.HeaderMap
 import retrofit2.http.Headers
 import retrofit2.http.PATCH
 import retrofit2.http.Path
+import retrofit2.http.Query
+import retrofit2.http.QueryName
 import java.time.LocalDateTime
 import java.time.ZoneId
 
 interface APIGatewayService {
-    @GET("admin/users/{username}")
+    @GET("admin/users")
     suspend fun adminReadUser(
-        @Path("username") username: String
+        @Query("username") username: String? = null,
+        @Query("phoneNumber") phoneNumber: String? = null
     ): Response<CheckIfUserExistsResponse>
 
     @Headers("Content-Type: application/json")
@@ -53,7 +56,13 @@ interface APIGatewayService {
     ): Response<String>
 
     @GET("private/users/{userId}")
-    suspend fun readUser(
+    suspend fun privateReadUser(
+        @HeaderMap headers: Map<String, String>,
+        @Path("userId") userId: String
+    ): Response<ReadUserResponse>
+
+    @GET("public/users/{userId}")
+    suspend fun publicReadUser(
         @HeaderMap headers: Map<String, String>,
         @Path("userId") userId: String
     ): Response<ReadUserResponse>

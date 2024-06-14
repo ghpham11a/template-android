@@ -29,6 +29,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,6 +54,8 @@ fun ThingBuilderScreen(
     val coroutineScope = rememberCoroutineScope()
 
     val stepsMap = steps.split(",").withIndex().associate { it.index to it.value }
+
+    val isNextOrSavedEnabled = remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -129,7 +133,8 @@ fun ThingBuilderScreen(
                         }
                     }, modifier = Modifier
                         .clip(RoundedCornerShape(5.dp))
-                        .height(50.dp)) {
+                        .height(50.dp),
+                        enabled = isNextOrSavedEnabled.value) {
                         Text("Next")
                     }
                 } else {
@@ -139,7 +144,8 @@ fun ThingBuilderScreen(
                         }
                     }, modifier = Modifier
                         .clip(RoundedCornerShape(5.dp))
-                        .height(50.dp)) {
+                        .height(50.dp),
+                        enabled = isNextOrSavedEnabled.value) {
                         Text("Save")
                     }
                 }

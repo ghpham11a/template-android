@@ -41,6 +41,8 @@ fun LoginAndSecurityScreen(navController: NavController) {
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
     val isLoading by viewModel.isLoading.collectAsState()
+    val isDisabling by viewModel.isDisabling.collectAsState()
+    val isDeleting by viewModel.isDeleting.collectAsState()
     var isPasswordExpanded by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -127,7 +129,7 @@ fun LoginAndSecurityScreen(navController: NavController) {
                         }
                     }
                 },
-                buttonText = "Deactivate Account"
+                buttonText = if (isDisabling) "Deactivating Account" else "Deactivate Account"
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -146,7 +148,7 @@ fun LoginAndSecurityScreen(navController: NavController) {
                         }
                     }
                 },
-                buttonText = "Delete Account"
+                buttonText = if (isDeleting) "Deleting Account" else "Delete Account"
             )
         }
     }

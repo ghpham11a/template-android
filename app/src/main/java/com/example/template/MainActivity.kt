@@ -2,6 +2,7 @@ package com.example.template
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.EnterTransition
@@ -51,6 +52,8 @@ import com.example.template.ui.screens.thing.ThingScreen
 import com.example.template.ui.screens.thing.ThingBuilderScreen
 import com.example.template.utils.Constants
 import com.example.template.utils.Constants.BOTTOM_NAVIGATION_ROUTES
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -83,6 +86,8 @@ class MainActivity : ComponentActivity() {
                     sharedPreferences.edit().remove(Constants.SHARED_PREFERENCES_KEY_EXPIRATION_DATE).apply()
                     sharedPreferences.edit().remove(Constants.SHARED_PREFERENCES_KEY_SUB).apply()
                 }
+
+
             }
             override fun onError(e: Exception) {
 
@@ -148,11 +153,11 @@ fun NavigationGraph(
         composable(Screen.LoginAndSecurity.route) { LoginAndSecurityScreen(navController) }
         composable(
             Screen.PublicProfile.route,
-            arguments = listOf(navArgument("username") { type = NavType.StringType })
+            arguments = listOf(navArgument("userId") { type = NavType.StringType })
         ) { backStackEntry ->
             PublicProfileScreen(
                 navController,
-                backStackEntry.arguments?.getString("username").toString()
+                backStackEntry.arguments?.getString("userId").toString()
             )
         }
         composable(Screen.Thing.route) { ThingScreen(navController) }
@@ -198,11 +203,15 @@ fun NavigationGraph(
         }
         composable(
             Screen.AddNewUserInfo.route,
-            arguments = listOf(navArgument("username") { type = NavType.StringType })
+            arguments = listOf(
+                navArgument("username") { type = NavType.StringType },
+                navArgument("phoneNumber") { type = NavType.StringType }
+            )
         ) { backStackEntry ->
             AddInfoScreen(
                 navController,
-                backStackEntry.arguments?.getString("username").toString()
+                backStackEntry.arguments?.getString("username").toString(),
+                backStackEntry.arguments?.getString("phoneNumber").toString()
             )
         }
         composable(

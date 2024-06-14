@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.template.Screen
+import com.example.template.ui.components.buttons.LoadingButton
 import com.example.template.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -63,8 +64,9 @@ fun CodeVerificationScreen(
     val numberOfFields = 6
     val focusRequesters = remember { List(numberOfFields) { FocusRequester() } }
     val verificationCode = remember { mutableStateOf(List(numberOfFields) { "" }) }
-
     val viewModel = hiltViewModel<CodeVerificationViewModel>()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val isSending by viewModel.isSending.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
@@ -83,8 +85,7 @@ fun CodeVerificationScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            verticalArrangement = Arrangement.Center
         ) {
 
             Text("Enter the verification code sent to your email ${username}", style = MaterialTheme.typography.headlineMedium)
@@ -139,7 +140,9 @@ fun CodeVerificationScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(
+            LoadingButton(
+                modifier = Modifier.fillMaxWidth(),
+                isLoading = isLoading,
                 onClick = {
                     // Handle verification code submission
                     verificationCode.value.joinToString("")
@@ -158,12 +161,15 @@ fun CodeVerificationScreen(
                     if (verificationType == "RESET_PASSWORD") {
                         navController.navigate(Screen.NewPassword.build(username, code))
                     }
-                }
-            ) {
-                Text("Verify")
-            }
+                },
+                buttonText = "Verify"
+            )
 
-            Button(
+            Spacer(modifier =  Modifier.height(16.dp))
+
+            LoadingButton(
+                modifier = Modifier.fillMaxWidth(),
+                isLoading = isSending,
                 onClick = {
                     // Handle verification code submission
                     verificationCode.value.joinToString("")
@@ -177,10 +183,9 @@ fun CodeVerificationScreen(
                             }
                         }
                     }
-                }
-            ) {
-                Text("Resend COde")
-            }
+                },
+                buttonText = "Resend Code"
+            )
         }
     }
 }

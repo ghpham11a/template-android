@@ -15,6 +15,7 @@ object Constants {
     const val AWS_COGNITO_USER_DOES_EXIST_MESSAGE = "User exists"
     const val AWS_COGNITO_USER_DOES_NOT_EXIST_MESSAGE = "User does not exist"
     const val USER_IMAGE_URL = "https://template-public-resources.s3.amazonaws.com/%s.jpg"
+    const val PATH_PLACEHOLDER = "NONE"
 
     val BOTTOM_NAVIGATION_ROUTES = listOf<String>(
         Screen.Home.route,

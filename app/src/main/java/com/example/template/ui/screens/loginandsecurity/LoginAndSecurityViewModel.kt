@@ -1,5 +1,6 @@
 package com.example.template.ui.screens.loginandsecurity
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.amazonaws.mobile.client.AWSMobileClient
@@ -25,11 +26,12 @@ class LoginAndSecurityViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    private val _disableIsLoading = MutableStateFlow(false)
-    val disableIsLoading: StateFlow<Boolean> = _disableIsLoading
+    private val _isDisabling = MutableStateFlow(false)
+    val isDisabling: StateFlow<Boolean> = _isDisabling
 
-    private val _deleteIsLoading = MutableStateFlow(false)
-    val deleteIsLoading: StateFlow<Boolean> = _deleteIsLoading
+    private val _isDeleting = MutableStateFlow(false)
+    val isDeleting: StateFlow<Boolean> = _isDeleting
+
 
     private val _currentPassword = MutableStateFlow("")
     val currentPassword: StateFlow<String> = _currentPassword
@@ -70,7 +72,7 @@ class LoginAndSecurityViewModel @Inject constructor(
     }
 
     suspend fun disableUser(): Boolean = suspendCancellableCoroutine { continuation ->
-        _disableIsLoading.value = true
+        _isDisabling.value = true
 
         viewModelScope.launch {
             try {
@@ -95,13 +97,14 @@ class LoginAndSecurityViewModel @Inject constructor(
                 // Handle exception
                 continuation.resumeWithException(e)
             } finally {
-                _disableIsLoading.value = false
+                _isDisabling.value = false
             }
         }
     }
 
     suspend fun deleteUser(): Boolean = suspendCancellableCoroutine { continuation ->
-        _deleteIsLoading.value = true
+
+        _isDeleting.value = true
 
         val username = userRepository.username ?: run {
             continuation.resume(false)
@@ -130,7 +133,7 @@ class LoginAndSecurityViewModel @Inject constructor(
                 // Handle exception
                 continuation.resumeWithException(e)
             } finally {
-                _deleteIsLoading.value = false
+                _isDeleting.value = false
             }
         }
     }

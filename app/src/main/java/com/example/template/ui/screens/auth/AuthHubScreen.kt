@@ -1,7 +1,6 @@
 package com.example.template.ui.screens.auth
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,12 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.ui.Alignment
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
@@ -150,21 +146,40 @@ fun AuthHubScreen(navController: NavController) {
             LoadingButton(
                 onClick = {
                     coroutineScope.launch(Dispatchers.IO) {
-                        if (viewModel.checkIfUserExists(username)) {
-                            withContext(Dispatchers.Main) {
-                                navController.navigate(Screen.EnterPassword.build(username))
+
+                        if (isPhoneNumberMode) {
+
+                            val code = "+${(selectedCountryCode.filter { it.isDigit() })}"
+
+                            val formattedPhoneNumber = code + phoneNumber.filter { it.isDigit() }
+
+                            if (viewModel.checkIfUserExists(phoneNumber = formattedPhoneNumber)) {
+                                withContext(Dispatchers.Main) {
+                                    // navController.navigate(Screen.EnterPassword.build(username))
+                                }
+                            } else {
+                                withContext(Dispatchers.Main) {
+                                    navController.navigate(Screen.AddNewUserInfo.build(phoneNumber = formattedPhoneNumber))
+                                }
                             }
+
+                            // navController.navigate(Screen.AddNewUserInfo.build(phoneNumber = phoneNumber))
                         } else {
-                            withContext(Dispatchers.Main) {
-                                navController.navigate(Screen.AddNewUserInfo.build(username))
+                            if (viewModel.checkIfUserExists(username = username)) {
+                                withContext(Dispatchers.Main) {
+                                    navController.navigate(Screen.EnterPassword.build(username))
+                                }
+                            } else {
+                                withContext(Dispatchers.Main) {
+                                    navController.navigate(Screen.AddNewUserInfo.build(username = username))
+                                }
                             }
                         }
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
                 isLoading = isLoading,
-                buttonText = "Continue",
-                disabled = isPhoneNumberMode
+                buttonText = "Continue"
             )
 
             Spacer(modifier = Modifier.height(16.dp))

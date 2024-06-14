@@ -1,7 +1,6 @@
 package com.example.template.repositories
 
 import android.content.SharedPreferences
-import android.util.Log
 import com.amazonaws.mobile.client.results.Tokens
 import com.example.template.models.CurrentUser
 import com.example.template.models.ReadUserResponse
@@ -42,9 +41,10 @@ class UserRepository @Inject constructor(
     val idToken: String?
         get() = sharedPreferences.getString(SHARED_PREFERENCES_KEY_ID_TOKEN, null)
 
+
     private var user: ReadUserResponse? = null
 
-    suspend fun readUser(refresh: Boolean = false): Response<ReadUserResponse>? {
+    suspend fun privateReadUser(refresh: Boolean = false): Response<ReadUserResponse>? {
 
         if (user != null && !refresh) {
             return Response.success(user)
@@ -52,7 +52,7 @@ class UserRepository @Inject constructor(
 
         return withContext(Dispatchers.IO) {
             try {
-                val response = APIGateway.api.readUser(
+                val response = APIGateway.api.privateReadUser(
                     APIGateway.buildAuthorizedHeaders(idToken ?: ""),
                     userSub ?: ""
                 )
@@ -66,6 +66,33 @@ class UserRepository @Inject constructor(
             }
         }
     }
+
+    suspend fun publicReadUser(userId: String, refresh: Boolean = false): Response<ReadUserResponse>? {
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = APIGateway.api.publicReadUser(
+                    APIGateway.buildHeaders(),
+                    userId
+                )
+                if (response.isSuccessful) {
+                    user = response.body()
+                }
+                response
+            } catch (e: Exception) {
+                // Handle the exception
+                null
+            }
+        }
+    }
+
+//    fun checkIfTokenIsExpired(): Boolean {
+//        val expirationDate = sharedPreferences.getString(SHARED_PREFERENCES_KEY_EXPIRATION_DATE, null)
+//        val format = SimpleDateFormat(INTERNAL_DATE_PATTERN, Locale.getDefault())
+//        val expiration = format.parse(expirationDate ?: "")
+//        val now = System.currentTimeMillis()
+//        return (expiration?.time ?: 0) < now
+//    }
 
     fun isLoggedIn(): Boolean {
         _isAuthenticated.value = sharedPreferences.contains(SHARED_PREFERENCES_KEY_ID_TOKEN)

@@ -107,7 +107,7 @@ fun ProfileScreen(navController: NavController) {
                         contentDescription = "Current User",
                         title = "Anthony",
                         onClick = {
-                            navController.navigate(Screen.PublicProfile.build(viewModel.username))
+                            navController.navigate(Screen.PublicProfile.build(viewModel.userSub.value))
                         },
                         subTitle = "View Profile"
                     )

@@ -1,0 +1,19 @@
+{
+  "Version": "1.0",
+  "IdentityManager": {
+    "Default": {}
+  },
+  "Auth": {
+    "Default": {
+      "authenticationFlowType": "string"
+    }
+  },
+  "CognitoUserPool": {
+    "Default": {
+      "PoolId": "string",
+      "AppClientId": "string",
+      "AppClientSecret": "string",
+      "Region": "string"
+    }
+  }
+}

@@ -26,7 +26,7 @@ class EnterPasswordViewModel @Inject constructor(
         const val TAG = "EnterPasswordViewModel"
     }
 
-    private val _password = MutableStateFlow("")
+    private val _password = MutableStateFlow("ABcd1234$$")
     val password: StateFlow<String> = _password
 
     private val _isLoading = MutableStateFlow(false)
@@ -64,7 +64,6 @@ class EnterPasswordViewModel @Inject constructor(
             }
         }
     }
-
 
 
     fun signIn(username: String, password: String, onResult: (AWSMobileClientResponse<SignInResult>) -> Unit) {

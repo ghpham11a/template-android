@@ -1,8 +1,13 @@
 package com.example.template.ui.screens.personalinfo
 
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.amazonaws.mobile.client.AWSMobileClient
+import com.amazonaws.mobile.client.Callback
+import com.amazonaws.mobile.client.results.SignInResult
+import com.amazonaws.mobile.client.results.SignUpResult
+import com.amazonaws.mobile.client.results.UserCodeDeliveryDetails
+import com.example.template.models.AWSMobileClientResponse
 import com.example.template.models.UpdateLegalName
 import com.example.template.models.UpdatePhoneNumber
 import com.example.template.models.UpdateUserBody
@@ -41,15 +46,17 @@ class PersonalInfoViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val response = userRepository.readUser()
+            val response = userRepository.privateReadUser()
             if (response != null && response.isSuccessful) {
                 // Handle the successful response
                 val user = response.body()
                 _firstName.value = user?.firstName ?: ""
                 _lastName.value = user?.lastName ?: ""
-                _countryCode.value = COUNTRY_CODES.find { it.contains(user?.countryCode ?: "") } ?: COUNTRY_CODES.first()
+                _countryCode.value = COUNTRY_CODES.find { it.contains(user?.countryCode ?: "") }
+                    ?: COUNTRY_CODES.first()
                 _phoneNumber.value = (user?.phoneNumber ?: "").replace(user?.countryCode ?: "", "")
-                _phoneNumberToDisplay.value = (user?.countryCode ?: "") + " " + (user?.phoneNumber ?: "")
+                _phoneNumberToDisplay.value =
+                    (user?.countryCode ?: "") + " " + (user?.phoneNumber ?: "")
             } else {
                 // Handle the error
                 println("Error reading user")
@@ -73,6 +80,19 @@ class PersonalInfoViewModel @Inject constructor(
             // Handle exception
             false
         }
+    }
+
+    fun triggerPhoneNumberVerification(onResult: (AWSMobileClientResponse<UserCodeDeliveryDetails>) -> Unit) {
+        AWSMobileClient.getInstance().verifyUserAttribute("phone_number", object :
+            Callback<UserCodeDeliveryDetails> {
+            override fun onResult(signUpResult: UserCodeDeliveryDetails) {
+                onResult(AWSMobileClientResponse(true, signUpResult, null))
+            }
+
+            override fun onError(e: Exception) {
+                onResult(AWSMobileClientResponse(false, null, e))
+            }
+        })
     }
 
     suspend fun updateLegalName(firstName: String, lastName: String): Boolean {

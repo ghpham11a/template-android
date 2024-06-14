@@ -1,11 +1,13 @@
 package com.example.template
 
+import com.example.template.utils.Constants
+
 sealed class Screen(val route: String) {
     object Home : Screen("home")
     object Features : Screen("features")
     object Profile : Screen("profile")
-    object PublicProfile : Screen("public-profile/{username}") {
-        fun build(username: String) = "public-profile/$username"
+    object PublicProfile : Screen("public-profile/{userId}") {
+        fun build(userId: String) = "public-profile/$userId"
     }
     object EditProfile : Screen("edit-profile")
     object FilterList : Screen("filter-list")
@@ -28,8 +30,8 @@ sealed class Screen(val route: String) {
     object EnterPassword : Screen("enter-password/{username}") {
         fun build(username: String) = "enter-password/$username"
     }
-    object AddNewUserInfo : Screen("add-new-user-info/{username}") {
-        fun build(username: String) = "add-new-user-info/$username"
+    object AddNewUserInfo : Screen("add-new-user-info/{username}/{phoneNumber}") {
+        fun build(username: String = Constants.PATH_PLACEHOLDER, phoneNumber: String = Constants.PATH_PLACEHOLDER) = "add-new-user-info/$username/${phoneNumber}"
     }
     object Snag : Screen("snag")
     object PersonalInfo : Screen("personal-info")

@@ -2,12 +2,16 @@ package com.example.template.ui.screens.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.amazonaws.mobile.client.results.UserCodeDeliveryDetails
+import com.example.template.models.AWSMobileClientResponse
+import com.example.template.models.CheckIfUserExistsResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import com.example.template.networking.APIGateway
 import com.example.template.utils.Constants.AWS_COGNITO_USER_DOES_EXIST_MESSAGE
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import retrofit2.Response
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -17,13 +21,13 @@ class AuthHubViewModel: ViewModel() {
         const val TAG = "AuthViewModel"
     }
 
-    private val _username = MutableStateFlow("")
+    private val _username = MutableStateFlow("gm.pham@gmail.com")
     val username: StateFlow<String> = _username
 
-    private val _selectedCountryCode = MutableStateFlow("")
+    private val _selectedCountryCode = MutableStateFlow("United States ( +1 )")
     val selectedCountryCode: StateFlow<String> = _selectedCountryCode
 
-    private val _phoneNumber = MutableStateFlow("")
+    private val _phoneNumber = MutableStateFlow("9727401265")
     val phoneNumber: StateFlow<String> = _phoneNumber
 
     private val _isLoading = MutableStateFlow(false)
@@ -36,13 +40,40 @@ class AuthHubViewModel: ViewModel() {
         _username.value = newUsername
     }
 
-    suspend fun checkIfUserExists(username: String): Boolean = suspendCancellableCoroutine { continuation ->
+    fun triggerPhoneNumberVerification(onResult: (AWSMobileClientResponse<UserCodeDeliveryDetails>) -> Unit) {
+
+//        AWSMobileClient.getInstance().verifyUserAttribute("phone_number", object :
+//            Callback<UserCodeDeliveryDetails> {
+//            override fun onResult(signUpResult: UserCodeDeliveryDetails) {
+//                onResult(AWSMobileClientResponse(true, signUpResult, null))
+//            }
+//
+//            override fun onError(e: Exception) {
+//                onResult(AWSMobileClientResponse(false, null, e))
+//            }
+//        })
+    }
+
+    suspend fun checkIfUserExists(
+        username: String = "",
+        phoneNumber: String = ""
+    ): Boolean = suspendCancellableCoroutine { continuation ->
+
         _isLoading.value = true
 
         viewModelScope.launch {
+
             try {
-                val response = APIGateway.api.adminReadUser(username.lowercase())
-                if (response.isSuccessful) {
+                var response: Response<CheckIfUserExistsResponse>? = null
+
+                if (username.isNotBlank()) {
+                    response = APIGateway.api.adminReadUser(username = username.lowercase())
+                }
+                if (phoneNumber.isNotBlank()) {
+                    response = APIGateway.api.adminReadUser(phoneNumber = phoneNumber)
+                }
+
+                if (response?.isSuccessful == true) {
                     response.body()?.let {
                         if (it.message == AWS_COGNITO_USER_DOES_EXIST_MESSAGE) {
                             continuation.resume(true)
