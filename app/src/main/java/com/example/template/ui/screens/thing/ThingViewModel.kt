@@ -1,5 +1,6 @@
 package com.example.template.ui.screens.thing
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.template.models.Thing
@@ -62,17 +63,19 @@ class ThingViewModel @Inject constructor(
         validateThing(Constants.ThingScreen.THING_DESCRIPTION)
     }
 
-    private fun validateThing(screen: String) {
+    fun validateThing(screen: String) {
         when (screen) {
             Constants.ThingScreen.THING_TYPE -> {
                 val thingTypeNotEmpty = _thing.value.thingType != null
                 _isNextEnabled.value = thingTypeNotEmpty
                 _isSaveEnabled.value = thingTypeNotEmpty && (currentPage.value == pageCount.value - 1)
+
             }
             Constants.ThingScreen.THING_DESCRIPTION -> {
-                val thingDescriptionNotNullOrEmpty = _thing.value.thingDescription?.isNotBlank() == true
-                _isNextEnabled.value = thingDescriptionNotNullOrEmpty
-                _isSaveEnabled.value = thingDescriptionNotNullOrEmpty && (currentPage.value == pageCount.value - 1)
+                val thingDescriptionNotEmpty = _thing.value.thingDescription != null
+                val thingDescriptionNotBlank = _thing.value.thingDescription?.length != 0
+                _isNextEnabled.value = thingDescriptionNotEmpty && thingDescriptionNotBlank
+                _isSaveEnabled.value = (thingDescriptionNotEmpty && thingDescriptionNotBlank) && (currentPage.value == pageCount.value - 1)
             }
             Constants.ThingScreen.THING_METHODS -> {
                 // _isNextEnabled.value = _thing.value.thingMethods != null

@@ -1,6 +1,7 @@
 package com.example.template.ui.screens.thing
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +30,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -57,7 +60,9 @@ fun ThingBuilderScreen(
 
     val viewModel = hiltViewModel<ThingViewModel>()
 
-    viewModel.updatePageCount(steps.split(",").size)
+    LaunchedEffect(Unit) {
+        viewModel.updatePageCount(steps.split(",").size)
+    }
 
     val pageCount by viewModel.pageCount.collectAsState()
     val pagerState = rememberPagerState(pageCount = { pageCount })
@@ -93,6 +98,7 @@ fun ThingBuilderScreen(
                 modifier = Modifier.weight(1f),
                 userScrollEnabled = false
             ) { page ->
+
                 when (stepsMap[page]) {
                     Constants.ThingScreen.THING_TYPE -> {
                         ThingTypeScreen(viewModel = viewModel)
@@ -132,9 +138,12 @@ fun ThingBuilderScreen(
                 if (pagerState.currentPage > 0) {
                     Button(
                         onClick = {
+                            val previousPage = pagerState.currentPage - 1
+                            viewModel.updateCurrentPage(previousPage)
                             coroutineScope.launch {
-                                pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                                pagerState.animateScrollToPage(previousPage)
                             }
+                            viewModel.validateThing(stepsMap[previousPage] ?: "")
                         }, modifier = Modifier
                             .clip(RoundedCornerShape(5.dp))
                             .height(50.dp)
@@ -149,10 +158,12 @@ fun ThingBuilderScreen(
 
                     LoadingButton(
                         onClick = {
-                            viewModel.updateCurrentPage(pagerState.currentPage + 1)
+                            val nextPage = pagerState.currentPage + 1
                             coroutineScope.launch {
-                                pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                pagerState.animateScrollToPage(nextPage)
                             }
+                            viewModel.updateCurrentPage(nextPage)
+                            viewModel.validateThing(stepsMap[nextPage] ?: "")
                         },
                         modifier = Modifier
                             .clip(RoundedCornerShape(5.dp))
