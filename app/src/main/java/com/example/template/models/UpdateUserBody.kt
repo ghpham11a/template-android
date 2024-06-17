@@ -8,8 +8,12 @@ data class UpdateUserBody(
     val updateImage: UpdateImage? = null,
     @SerializedName("updateLegalName")
     val updateLegalName: UpdateLegalName? = null,
+    @SerializedName("updatePreferredName")
+    val updatePreferredName: UpdatePreferredName? = null,
     @SerializedName("updatePhoneNumber")
-    val updatePhoneNumber: UpdatePhoneNumber? = null
+    val updatePhoneNumber: UpdatePhoneNumber? = null,
+    @SerializedName("updateSchool")
+    val updateSchool: UpdateSchool? = null
 ): Serializable
 
 
@@ -25,6 +29,11 @@ data class UpdateLegalName(
     val lastName: String
 ): Serializable
 
+data class UpdatePreferredName(
+    @SerializedName("preferredName")
+    val preferredName: String
+): Serializable
+
 data class UpdatePhoneNumber(
     @SerializedName("countryCode")
     val countryCode: String,
@@ -32,4 +41,9 @@ data class UpdatePhoneNumber(
     val phoneNumber: String,
     @SerializedName("username")
     val username: String
+): Serializable
+
+data class UpdateSchool(
+    @SerializedName("schoolName")
+    val schoolName: String
 ): Serializable

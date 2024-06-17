@@ -33,6 +33,7 @@ import com.example.template.ui.components.buttons.LoadingButton
 import com.example.template.ui.components.buttons.TextButton
 import com.example.template.ui.components.inputs.ExpandableSection
 import com.example.template.ui.components.inputs.PhoneNumberField
+import com.example.template.ui.components.misc.LoadingScreen
 import com.example.template.ui.screens.loginandsecurity.LoginAndSecurityViewModel
 import com.example.template.utils.Constants
 import kotlinx.coroutines.Dispatchers
@@ -43,6 +44,7 @@ import kotlinx.coroutines.launch
 fun PersonalInfoScreen(navController: NavController) {
 
     val viewModel = hiltViewModel<PersonalInfoViewModel>()
+    val isScreenLoading by viewModel.isScreenLoading.collectAsState()
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -53,6 +55,7 @@ fun PersonalInfoScreen(navController: NavController) {
     var isLegalNameExpanded by remember { mutableStateOf(false) }
     var isLegalNameEnabled by remember { mutableStateOf(true) }
 
+    // Preferred first name
     var isPreferredFirstNameExpanded by remember { mutableStateOf(false) }
     var isPreferredFirstNameEnabled by remember { mutableStateOf(true) }
 
@@ -63,6 +66,8 @@ fun PersonalInfoScreen(navController: NavController) {
     var isPhoneNumberExpanded by remember { mutableStateOf(false) }
     var isPhoneNumberEnabled by remember { mutableStateOf(true) }
 
+    // Email
+    val email by viewModel.email.collectAsState()
     var isEmailExpanded by remember { mutableStateOf(false) }
     var isEmailEnabled by remember { mutableStateOf(true) }
 
@@ -95,7 +100,19 @@ fun PersonalInfoScreen(navController: NavController) {
                 isAddressEnabled = !isEnabled
                 isEmergencyContactEnabled = !isEnabled
             }
+            "Email" -> {
+                isLegalNameEnabled = !isEnabled
+                isPreferredFirstNameEnabled = !isEnabled
+                isPhoneNumberEnabled = !isEnabled
+                isAddressEnabled = !isEnabled
+                isEmergencyContactEnabled = !isEnabled
+            }
         }
+    }
+
+    if (isScreenLoading) {
+        LoadingScreen()
+        return
     }
 
     Scaffold(
@@ -179,7 +196,7 @@ fun PersonalInfoScreen(navController: NavController) {
                                    },
                 isEnabled = isPreferredFirstNameEnabled,
                 closedContent = {
-                    Text("FirstName")
+                    Text("Preferred first name (optional)")
                 },
                 openedContent = {
                     var preferredName by remember { mutableStateOf(TextFieldValue()) }
@@ -195,7 +212,11 @@ fun PersonalInfoScreen(navController: NavController) {
                         Spacer(modifier = Modifier.height(16.dp))
                         LoadingButton(
                             onClick = {
-
+                                coroutineScope.launch(Dispatchers.Main) {
+                                    if (viewModel.updatePreferredName(preferredName.text)) {
+                                        isPreferredFirstNameExpanded = false
+                                    }
+                                }
                             },
                             modifier = Modifier.fillMaxWidth(),
                             isLoading = isLoading,
@@ -255,6 +276,45 @@ fun PersonalInfoScreen(navController: NavController) {
             )
 
             Spacer(modifier = Modifier.height(32.dp))
+
+            ExpandableSection(
+                title = "Email",
+                isExpanded = isEmailExpanded,
+                onExpandedChange = {
+                    updateEnabledAndDisabledSections("Email", it)
+                    isEmailExpanded = it
+                },
+                isEnabled = isEmailEnabled,
+                closedContent = {
+                    Text("Email")
+                },
+                openedContent = {
+                    var emailField by remember { mutableStateOf(viewModel.email.value) }
+                    Column {
+                        Text("The first name or business name that you'd like to be known by.")
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OutlinedTextField(
+                            value = email,
+                            onValueChange = { emailField = it },
+                            label = { Text("Email") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        LoadingButton(
+                            onClick = {
+//                                coroutineScope.launch(Dispatchers.Main) {
+//                                    if (viewModel.updatePreferredName(preferredName.text)) {
+//                                        isEmailExpanded = false
+//                                    }
+//                                }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            isLoading = isLoading,
+                            buttonText = "Save"
+                        )
+                    }
+                }
+            )
         }
     }
 }

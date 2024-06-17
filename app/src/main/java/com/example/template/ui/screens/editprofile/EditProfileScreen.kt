@@ -12,7 +12,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -24,6 +27,7 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -46,6 +50,8 @@ import com.example.template.ui.components.buttons.HorizontalIconButton
 import com.example.template.ui.components.buttons.LoadingButton
 import com.example.template.ui.components.images.GlideImage
 import com.example.template.ui.components.images.UploadImage
+import com.example.template.ui.components.inputs.BottomsheetField
+import com.example.template.ui.components.misc.LoadingScreen
 import com.example.template.ui.screens.profile.ProfileViewModel
 import com.example.template.ui.screens.publicprofile.PublicProfileViewModel
 import com.example.template.utils.Constants
@@ -63,6 +69,12 @@ fun EditProfileScreen(navController: NavController) {
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     val oldImageUri by remember { mutableStateOf<Uri?>(Uri.parse(String.format(Constants.USER_IMAGE_URL, userSub))) }
     val context = LocalContext.current
+    val isLoading by viewModel.isLoading.collectAsState()
+    val isScreenLoading by viewModel.isScreenLoading.collectAsState()
+
+    val schoolName by viewModel.schoolName.collectAsState()
+    var isSchoolExpanded by remember { mutableStateOf(false) }
+    var isSchoolEnabled by remember { mutableStateOf(true) }
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -86,6 +98,13 @@ fun EditProfileScreen(navController: NavController) {
         }
     }
 
+    viewModel.fetchUser()
+
+    if (isScreenLoading) {
+        LoadingScreen()
+        return
+    }
+
     Scaffold(
         topBar = {
             Row(
@@ -103,7 +122,9 @@ fun EditProfileScreen(navController: NavController) {
         }
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -142,6 +163,34 @@ fun EditProfileScreen(navController: NavController) {
             }
             Button(onClick = { imagePickerLauncher.launch("image/*") }) {
                 Text(text = "Edit")
+            }
+
+            Spacer(modifier = Modifier.size(32.dp))
+
+            BottomsheetField(isExpanded = isSchoolExpanded, isEnabled = isSchoolEnabled, title = "Where I went to school: $schoolName", onExpandedChange = {
+                isSchoolExpanded = it
+            }) {
+                Column {
+                    OutlinedTextField(
+                        value = schoolName,
+                        onValueChange = { viewModel.onSchoolNameChange(it) },
+                        label = { Text("Where I went to school") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    LoadingButton(
+                        onClick = {
+                            coroutineScope.launch(Dispatchers.Main) {
+                                if (viewModel.updateSchoolName(schoolName)) {
+                                    isSchoolExpanded = false
+                                }
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        isLoading = isLoading,
+                        buttonText = "Save"
+                    )
+                }
             }
         }
     }

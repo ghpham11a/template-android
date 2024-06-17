@@ -34,6 +34,7 @@ fun HorizontalIconButton(
     modifier: Modifier = Modifier,
     buttonModifier: Modifier = Modifier,
     subTitle: String = "",
+    isLabelOnly: Boolean = false
 ) {
     Column(
         modifier = modifier
@@ -65,12 +66,14 @@ fun HorizontalIconButton(
                         }
                     }
                 }
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = "Chevron Right",
-                    modifier = Modifier.size(24.dp),
-                    tint = Color.Black
-                )
+                if (!isLabelOnly) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = "Chevron Right",
+                        modifier = Modifier.size(24.dp),
+                        tint = Color.Black
+                    )
+                }
             }
         }
         HorizontalDivider(

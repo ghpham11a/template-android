@@ -29,6 +29,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -36,8 +38,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.template.ui.components.buttons.LoadingButton
 import com.example.template.utils.Constants
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -50,12 +55,19 @@ fun ThingBuilderScreen(
     closeButton: @Composable () -> Unit,
 ) {
 
-    val pagerState = rememberPagerState(pageCount = { steps.split(",").count() })
+    val viewModel = hiltViewModel<ThingViewModel>()
+
+    viewModel.updatePageCount(steps.split(",").size)
+
+    val pageCount by viewModel.pageCount.collectAsState()
+    val pagerState = rememberPagerState(pageCount = { pageCount })
+
     val coroutineScope = rememberCoroutineScope()
 
     val stepsMap = steps.split(",").withIndex().associate { it.index to it.value }
 
-    val isNextOrSavedEnabled = remember { mutableStateOf(false) }
+    val isNextEnabled by viewModel.isNextEnabled.collectAsState()
+    val isSaveEnabled by viewModel.isSaveEnabled.collectAsState()
 
     Scaffold(
         topBar = {
@@ -69,12 +81,12 @@ fun ThingBuilderScreen(
                     Icon(Icons.Filled.Close, contentDescription = "Close")
                 }
             }
-        }
+        },
+        modifier = Modifier.fillMaxSize()
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
-             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            modifier = Modifier.fillMaxSize().padding(top = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             HorizontalPager(
                 state = pagerState,
@@ -83,10 +95,15 @@ fun ThingBuilderScreen(
             ) { page ->
                 when (stepsMap[page]) {
                     Constants.ThingScreen.THING_TYPE -> {
-                        ThingTypeScreen(stepNumber = page + 1, stepDescription = "Thing Type")
+                        ThingTypeScreen(viewModel = viewModel)
                     }
+
                     Constants.ThingScreen.THING_DESCRIPTION -> {
-                        ThingDescriptionScreen(stepNumber = page + 1, stepDescription = "Thing Description")
+                        ThingDescriptionScreen(viewModel = viewModel)
+                    }
+
+                    Constants.ThingScreen.THING_METHODS -> {
+                        ThingMethodsScreen(viewModel = viewModel)
                     }
                 }
             }
@@ -113,13 +130,15 @@ fun ThingBuilderScreen(
                     .padding(10.dp)
             ) {
                 if (pagerState.currentPage > 0) {
-                    Button(onClick = {
-                        coroutineScope.launch {
-                            pagerState.animateScrollToPage(pagerState.currentPage - 1)
-                        }
-                    }, modifier = Modifier
-                        .clip(RoundedCornerShape(5.dp))
-                        .height(50.dp)) {
+                    Button(
+                        onClick = {
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                            }
+                        }, modifier = Modifier
+                            .clip(RoundedCornerShape(5.dp))
+                            .height(50.dp)
+                    ) {
                         Text("Previous")
                     }
                 } else {
@@ -127,69 +146,36 @@ fun ThingBuilderScreen(
                 }
 
                 if (pagerState.currentPage < pagerState.pageCount - 1) {
-                    Button(onClick = {
-                        coroutineScope.launch {
-                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                        }
-                    }, modifier = Modifier
-                        .clip(RoundedCornerShape(5.dp))
-                        .height(50.dp),
-                        enabled = isNextOrSavedEnabled.value) {
-                        Text("Next")
-                    }
-                } else {
-                    Button(onClick = {
-                        coroutineScope.launch {
 
-                        }
-                    }, modifier = Modifier
-                        .clip(RoundedCornerShape(5.dp))
-                        .height(50.dp),
-                        enabled = isNextOrSavedEnabled.value) {
-                        Text("Save")
-                    }
+                    LoadingButton(
+                        onClick = {
+                            viewModel.updateCurrentPage(pagerState.currentPage + 1)
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                            }
+                        },
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(5.dp))
+                            .height(50.dp),
+                        isLoading = false,
+                        buttonText = "Next",
+                        disabled = !isNextEnabled
+                    )
+
+                } else {
+                    LoadingButton(
+                        onClick = {
+
+                        },
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(5.dp))
+                            .height(50.dp),
+                        isLoading = false,
+                        buttonText = "Save",
+                        disabled = !isSaveEnabled
+                    )
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun StepView(stepNumber: Int, stepDescription: String) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        // modifier = Modifier.fillMaxSize()
-    ) {
-        Text(text = "Step $stepNumber")
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(text = stepDescription)
-    }
-}
-
-@Composable
-fun StepProgressBar(
-    totalSteps: Int,
-    completedSteps: Int,
-    modifier: Modifier = Modifier,
-    completedColor: Color = Color.Green,
-    pendingColor: Color = Color.Gray,
-    barHeight: Int = 8
-) {
-    Row(
-        modifier = modifier
-            .height(barHeight.dp)
-            .fillMaxWidth()
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        repeat(totalSteps) { step ->
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(barHeight.dp)
-                    .background(if (step < completedSteps) completedColor else pendingColor)
-            )
         }
     }
 }

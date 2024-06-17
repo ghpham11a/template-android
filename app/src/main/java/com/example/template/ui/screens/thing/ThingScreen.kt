@@ -29,9 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.template.Screen
 import com.example.template.ui.components.inputs.CheckboxRow
+import com.example.template.ui.screens.publicprofile.PublicProfileViewModel
 import com.example.template.utils.Constants
 import kotlinx.coroutines.launch
 
@@ -40,6 +42,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ThingScreen(navController: NavController) {
 
+    val viewModel = hiltViewModel<ThingViewModel>()
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
     )
@@ -49,6 +52,7 @@ fun ThingScreen(navController: NavController) {
 
     var isThingTypeChecked by remember { mutableStateOf(false) }
     var isThingDescriptionChecked by remember { mutableStateOf(false) }
+    var isThingMethodsChecked by remember { mutableStateOf(false) }
 
     fun getStepString(): String {
         val steps = mutableListOf<String>()
@@ -57,6 +61,9 @@ fun ThingScreen(navController: NavController) {
         }
         if (isThingDescriptionChecked) {
             steps.add(Constants.ThingScreen.THING_DESCRIPTION)
+        }
+        if (isThingMethodsChecked) {
+            steps.add(Constants.ThingScreen.THING_METHODS)
         }
         return steps.joinToString(separator = ",")
     }
@@ -125,6 +132,14 @@ fun ThingScreen(navController: NavController) {
                 isThingDescriptionChecked.also { isThingDescriptionChecked = it },
                 onCheckedChange = {
                     isThingDescriptionChecked = it
+                }
+            )
+
+            CheckboxRow(
+                title = "Thing methods",
+                isThingMethodsChecked.also { isThingMethodsChecked = it },
+                onCheckedChange = {
+                    isThingMethodsChecked = it
                 }
             )
 

@@ -18,8 +18,11 @@ class PublicProfileViewModel @Inject constructor(
     private val _isEditable = MutableStateFlow(false)
     val isEditable: StateFlow<Boolean> = _isEditable
 
-    val _firstName = MutableStateFlow("")
-    val firstName: StateFlow<String> = _firstName
+    val _schoolName = MutableStateFlow("")
+    val schoolName: StateFlow<String> = _schoolName
+
+    val _isScreenLoading = MutableStateFlow(true)
+    val isScreenLoading: StateFlow<Boolean> = _isScreenLoading
 
     fun checkIfEditable(userId: String) {
         viewModelScope.launch {
@@ -33,11 +36,12 @@ class PublicProfileViewModel @Inject constructor(
             if (response != null && response.isSuccessful) {
                 // Handle the successful response
                 val user = response.body()
-                _firstName.value = user?.firstName ?: ""
+                _schoolName.value = user?.schoolName ?: ""
             } else {
                 // Handle the error
                 println("Error reading user")
             }
+            _isScreenLoading.value = false
         }
     }
 

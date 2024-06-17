@@ -44,6 +44,7 @@ import com.example.template.ui.components.buttons.HorizontalIconButton
 import com.example.template.ui.components.buttons.LoadingButton
 import com.example.template.ui.components.images.GlideImage
 import com.example.template.ui.components.images.UploadImage
+import com.example.template.ui.components.misc.LoadingScreen
 import com.example.template.ui.screens.profile.ProfileViewModel
 import com.example.template.utils.Constants
 import kotlinx.coroutines.Dispatchers
@@ -55,10 +56,16 @@ fun PublicProfileScreen(navController: NavController, userId: String) {
 
     val viewModel = hiltViewModel<PublicProfileViewModel>()
     val isEditable by viewModel.isEditable.collectAsState()
-    val firstName by viewModel.firstName.collectAsState()
+    val schoolName by viewModel.schoolName.collectAsState()
+    val isScreenLoading by viewModel.isScreenLoading.collectAsState()
 
     viewModel.checkIfEditable(userId)
     viewModel.fetchUser(userId)
+
+    if (isScreenLoading) {
+        LoadingScreen()
+        return
+    }
 
     Scaffold(
         topBar = {
@@ -114,7 +121,7 @@ fun PublicProfileScreen(navController: NavController, userId: String) {
                                 .clip(CircleShape)
                                 .background(Color.Gray)
                         )
-                        Text(text = firstName)
+                        Text(text = "")
                     }
                     Column(
                         modifier = Modifier.weight(1f),
@@ -124,6 +131,23 @@ fun PublicProfileScreen(navController: NavController, userId: String) {
                     }
                 }
             }
+
+            HorizontalIconButton(
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.AddCircle,
+                        contentDescription = "Add",
+                        modifier = Modifier.size(24.dp),
+                        tint = Color.Black
+                    )
+                },
+                contentDescription = "Add",
+                title = "Where I went to school ${if (schoolName != "") ": $schoolName" else ""}",
+                onClick = {
+
+                },
+                isLabelOnly = true
+            )
         }
     }
 }

@@ -3,7 +3,7 @@ package com.example.template.models
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
-data class ReadUserResponse(
+data class ReadUserPrivateResponse(
     @SerializedName("userId")
     val userId: String,
     @SerializedName("email")
@@ -15,5 +15,7 @@ data class ReadUserResponse(
     @SerializedName("countryCode")
     val countryCode: String,
     @SerializedName("phoneNumber")
-    val phoneNumber: String
+    val phoneNumber: String,
+    @SerializedName("preferredName")
+    val preferredName: String
 ): Serializable

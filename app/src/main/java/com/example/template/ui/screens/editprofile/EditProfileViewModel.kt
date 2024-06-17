@@ -5,6 +5,7 @@ import android.util.Base64
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.template.models.UpdateImage
+import com.example.template.models.UpdateSchool
 import com.example.template.models.UpdateUserBody
 import com.example.template.networking.APIGateway
 import com.example.template.repositories.UserRepository
@@ -23,12 +24,41 @@ class EditProfileViewModel @Inject constructor(
     private val userRepository: UserRepository
 ): ViewModel() {
 
+    val _isScreenLoading = MutableStateFlow(true)
+    val isScreenLoading: StateFlow<Boolean> = _isScreenLoading
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
     private val _userSub = MutableStateFlow("")
     val userSub: StateFlow<String> = _userSub
+
+    private val _schoolName = MutableStateFlow("")
+    val schoolName: StateFlow<String> = _schoolName
 
     init {
         userRepository.isLoggedIn()
         _userSub.value = userRepository.userSub ?: ""
+    }
+
+    fun onSchoolNameChange(schoolName: String) {
+        _schoolName.value = schoolName
+    }
+
+    fun fetchUser() {
+        viewModelScope.launch {
+            val response = userRepository.publicReadUser(userRepository.userSub ?: "")
+            if (response != null && response.isSuccessful) {
+                // Handle the successful response
+                val user = response.body()
+                _schoolName.value = user?.schoolName ?: ""
+
+            } else {
+                // Handle the error
+                println("Error reading user")
+            }
+            _isScreenLoading.value = false
+        }
     }
 
     private fun encodeImageToBase64(bitmap: Bitmap): String {
@@ -67,5 +97,26 @@ class EditProfileViewModel @Inject constructor(
 
             }
         }
+    }
+
+    suspend fun updateSchoolName(schoolName: String): Boolean {
+        _isLoading.value = true
+        return try {
+            executeUpdate(UpdateUserBody(updateSchool = UpdateSchool(schoolName)))
+        } catch (e: Exception) {
+            // Handle exception
+            _isLoading.value = false
+            false
+        }
+    }
+
+    private suspend fun executeUpdate(body: UpdateUserBody): Boolean {
+        val response = APIGateway.api.updateUser(
+            APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
+            userRepository.userSub ?: "",
+            body
+        )
+        _isLoading.value = false
+        return response.isSuccessful
     }
 }

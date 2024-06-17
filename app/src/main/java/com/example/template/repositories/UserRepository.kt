@@ -3,7 +3,8 @@ package com.example.template.repositories
 import android.content.SharedPreferences
 import com.amazonaws.mobile.client.results.Tokens
 import com.example.template.models.CurrentUser
-import com.example.template.models.ReadUserResponse
+import com.example.template.models.ReadUserPrivateResponse
+import com.example.template.models.ReadUserPublicResponse
 import com.example.template.networking.APIGateway
 import com.example.template.utils.Constants.INTERNAL_DATE_PATTERN
 import com.example.template.utils.Constants.SHARED_PREFERENCES_KEY_ACCESS_TOKEN
@@ -42,12 +43,13 @@ class UserRepository @Inject constructor(
         get() = sharedPreferences.getString(SHARED_PREFERENCES_KEY_ID_TOKEN, null)
 
 
-    private var user: ReadUserResponse? = null
+    private var userPrivate: ReadUserPrivateResponse? = null
+    private var userPublic: ReadUserPublicResponse? = null
 
-    suspend fun privateReadUser(refresh: Boolean = false): Response<ReadUserResponse>? {
+    suspend fun privateReadUser(refresh: Boolean = false): Response<ReadUserPrivateResponse>? {
 
-        if (user != null && !refresh) {
-            return Response.success(user)
+        if (userPrivate != null && !refresh) {
+            return Response.success(userPrivate)
         }
 
         return withContext(Dispatchers.IO) {
@@ -57,7 +59,7 @@ class UserRepository @Inject constructor(
                     userSub ?: ""
                 )
                 if (response.isSuccessful) {
-                    user = response.body()
+                    userPrivate = response.body()
                 }
                 response
             } catch (e: Exception) {
@@ -67,16 +69,20 @@ class UserRepository @Inject constructor(
         }
     }
 
-    suspend fun publicReadUser(userId: String, refresh: Boolean = false): Response<ReadUserResponse>? {
+    suspend fun publicReadUser(userId: String, refresh: Boolean = false): Response<ReadUserPublicResponse>? {
+
+        if (userPublic != null && !refresh) {
+            return Response.success(userPublic)
+        }
 
         return withContext(Dispatchers.IO) {
             try {
                 val response = APIGateway.api.publicReadUser(
-                    APIGateway.buildHeaders(),
+                    APIGateway.buildAuthorizedHeaders(idToken ?: ""),
                     userId
                 )
                 if (response.isSuccessful) {
-                    user = response.body()
+                    userPublic = response.body()
                 }
                 response
             } catch (e: Exception) {

@@ -26,6 +26,7 @@ object Constants {
     object ThingScreen {
         const val THING_TYPE = "THING_TYPE"
         const val THING_DESCRIPTION = "THING_DESCRIPTION"
+        const val THING_METHODS = "THING_METHODS"
         const val THING_LOCATION = "THING_LOCATION"
         const val THING_TIME = "THING_TIME"
     }

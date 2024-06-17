@@ -10,6 +10,7 @@ import com.amazonaws.mobile.client.results.UserCodeDeliveryDetails
 import com.example.template.models.AWSMobileClientResponse
 import com.example.template.models.UpdateLegalName
 import com.example.template.models.UpdatePhoneNumber
+import com.example.template.models.UpdatePreferredName
 import com.example.template.models.UpdateUserBody
 import com.example.template.networking.APIGateway
 import com.example.template.repositories.UserRepository
@@ -35,6 +36,9 @@ class PersonalInfoViewModel @Inject constructor(
     val _lastName = MutableStateFlow("")
     val lastName: StateFlow<String> = _lastName
 
+    val _preferredName = MutableStateFlow("")
+    val preferredName: StateFlow<String> = _preferredName
+
     val _countryCode = MutableStateFlow("")
     val countryCode: StateFlow<String> = _countryCode
 
@@ -44,6 +48,12 @@ class PersonalInfoViewModel @Inject constructor(
     val _phoneNumberToDisplay = MutableStateFlow("")
     val phoneNumberToDisplay: StateFlow<String> = _phoneNumberToDisplay
 
+    val _email = MutableStateFlow("")
+    val email: StateFlow<String> = _email
+
+    val _isScreenLoading = MutableStateFlow(true)
+    val isScreenLoading: StateFlow<Boolean> = _isScreenLoading
+
     init {
         viewModelScope.launch {
             val response = userRepository.privateReadUser()
@@ -52,6 +62,7 @@ class PersonalInfoViewModel @Inject constructor(
                 val user = response.body()
                 _firstName.value = user?.firstName ?: ""
                 _lastName.value = user?.lastName ?: ""
+                _preferredName.value = user?.preferredName ?: ""
                 _countryCode.value = COUNTRY_CODES.find { it.contains(user?.countryCode ?: "") }
                     ?: COUNTRY_CODES.first()
                 _phoneNumber.value = (user?.phoneNumber ?: "").replace(user?.countryCode ?: "", "")
@@ -61,6 +72,7 @@ class PersonalInfoViewModel @Inject constructor(
                 // Handle the error
                 println("Error reading user")
             }
+            _isScreenLoading.value = false
         }
     }
 
@@ -98,6 +110,15 @@ class PersonalInfoViewModel @Inject constructor(
     suspend fun updateLegalName(firstName: String, lastName: String): Boolean {
         return try {
             executeUpdate(UpdateUserBody(updateLegalName = UpdateLegalName(firstName, lastName)))
+        } catch (e: Exception) {
+            // Handle exception
+            false
+        }
+    }
+
+    suspend fun updatePreferredName(preferredName: String): Boolean {
+        return try {
+            executeUpdate(UpdateUserBody(updatePreferredName = UpdatePreferredName(preferredName)))
         } catch (e: Exception) {
             // Handle exception
             false
