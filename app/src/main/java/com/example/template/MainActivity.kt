@@ -45,6 +45,10 @@ import com.example.template.ui.screens.editprofile.EditProfileScreen
 import com.example.template.ui.screens.filterlist.FilterListScreen
 import com.example.template.ui.screens.loginandsecurity.LoginAndSecurityScreen
 import com.example.template.ui.screens.passwordresetsucess.PasswordResetSuccess
+import com.example.template.ui.screens.paymentshub.PaymentMethodsScreen
+import com.example.template.ui.screens.paymentshub.PaymentsHubScreen
+import com.example.template.ui.screens.paymentshub.PayoutMethodsScreen
+import com.example.template.ui.screens.paymentshub.YourPaymentsScreen
 import com.example.template.ui.screens.personalinfo.PersonalInfoScreen
 import com.example.template.ui.screens.publicprofile.PublicProfileScreen
 import com.example.template.ui.screens.snag.SnagScreen
@@ -259,6 +263,18 @@ fun NavigationGraph(
         }
         composable(Screen.PersonalInfo.route) {
             PersonalInfoScreen(navController)
+        }
+        composable(Screen.PaymentsHub.route) {
+            PaymentsHubScreen(navController)
+        }
+        composable(Screen.PaymentMethods.route) {
+            PaymentMethodsScreen(navController)
+        }
+        composable(Screen.YourPayments.route) {
+            YourPaymentsScreen(navController)
+        }
+        composable(Screen.PayoutMethods.route) {
+            PayoutMethodsScreen(navController)
         }
     }
 }

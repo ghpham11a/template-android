@@ -76,10 +76,10 @@ fun HorizontalIconButton(
                 }
             }
         }
-        HorizontalDivider(
-            modifier = Modifier.padding(top = 8.dp),
-            thickness = 1.dp,
-            color = Color.Gray
-        )
+//        HorizontalDivider(
+//            modifier = Modifier.padding(top = 8.dp),
+//            thickness = 1.dp,
+//            color = Color.Gray
+//        )
     }
 }

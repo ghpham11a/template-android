@@ -171,7 +171,9 @@ fun ProfileScreen(navController: NavController) {
                         },
                         contentDescription = "Add",
                         title = "Payments & Payouts",
-                        onClick = { /* Handle button click */ }
+                        onClick = {
+                            navController.navigate(Screen.PaymentsHub.route)
+                        }
                     )
                 }
             }
