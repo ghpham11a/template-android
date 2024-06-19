@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.template.models.Thing
 import com.example.template.models.ThingType
+import com.example.template.repositories.ThingRepository
 import com.example.template.repositories.UserRepository
 import com.example.template.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,8 +16,17 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ThingViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val thingRepository: ThingRepository
 ): ViewModel() {
+
+    var thingId: String = ""
+    var action: String = ""
+    var mode: String = ""
+    var steps: String = ""
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
     private val _pageCount = MutableStateFlow(1)
     val pageCount: StateFlow<Int> = _pageCount
@@ -89,4 +99,25 @@ class ThingViewModel @Inject constructor(
         }
     }
 
+    fun saveThing() {
+
+        _isLoading.value = true
+
+        when (action) {
+            "CREATE" -> {
+                viewModelScope.launch {
+                    val response = thingRepository.createThing(thing = _thing.value)
+                    if (response != null && response.isSuccessful) {
+                        // Handle the successful response
+                        val result = response.body()
+
+                        _isLoading.value = false
+                    } else {
+                        // Handle the error
+                        _isLoading.value = false
+                    }
+                }
+            }
+        }
+    }
 }

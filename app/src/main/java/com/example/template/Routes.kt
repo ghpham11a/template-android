@@ -15,8 +15,8 @@ sealed class Screen(val route: String) {
     object ResetPassword : Screen("reset-password")
     object ResetPasswordSuccess : Screen("reset-password-success")
     object Thing : Screen("thing")
-    object ThingBuilder: Screen("thing-builder/{mode}?steps={steps}") {
-        fun build(mode: String, steps: String) = "thing-builder/$mode?steps=$steps"
+    object ThingBuilder: Screen("thing-builder/{thingId}?action={action}&mode={mode}&steps={steps}") {
+        fun build(thingId: String, action: String, mode: String, steps: String) = "thing-builder/${thingId}?action=$action&mode=$mode&steps=$steps"
     }
     object AuthHub : Screen("auth-hub")
     object NewPassword : Screen("auth-hub/{username}/{code}") {

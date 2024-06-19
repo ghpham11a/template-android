@@ -80,6 +80,8 @@ fun ThingScreen(navController: NavController) {
         ) {
             ThingBuilderScreen(
                 navController = navController,
+                thingId = "NULL",
+                action = "CREATE",
                 mode = "BOTTOM_SHEET",
                 steps = getStepString(),
                 closeButton = {
@@ -146,7 +148,7 @@ fun ThingScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(onClick = {
-                navController.navigate(Screen.ThingBuilder.build("SCREEN", getStepString()))
+                navController.navigate(Screen.ThingBuilder.build("NULL","CREATE","SCREEN", getStepString()))
             }, modifier = Modifier.fillMaxWidth()) {
                 Text(text = "Launch in screen")
             }

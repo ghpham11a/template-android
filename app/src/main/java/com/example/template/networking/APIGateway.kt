@@ -2,8 +2,10 @@ package com.example.template.networking
 
 import com.example.template.models.AdminUpdateUserBody
 import com.example.template.models.CheckIfUserExistsResponse
+import com.example.template.models.CreateThingResponse
 import com.example.template.models.ReadUserPrivateResponse
 import com.example.template.models.ReadUserPublicResponse
+import com.example.template.models.Thing
 import com.example.template.models.UpdateUserBody
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -14,6 +16,7 @@ import retrofit2.http.GET
 import retrofit2.http.HeaderMap
 import retrofit2.http.Headers
 import retrofit2.http.PATCH
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 import java.time.LocalDateTime
@@ -66,6 +69,12 @@ interface APIGatewayService {
         @HeaderMap headers: Map<String, String>,
         @Path("userId") userId: String
     ): Response<ReadUserPublicResponse>
+
+    @POST("private/things")
+    suspend fun privateCreateThing(
+        @HeaderMap headers: Map<String, String>,
+        @Body body: Thing
+    ): Response<CreateThingResponse>
 }
 
 // Create Retrofit instance

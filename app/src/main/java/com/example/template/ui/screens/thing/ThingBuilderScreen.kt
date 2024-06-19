@@ -53,12 +53,19 @@ import kotlinx.coroutines.launch
 @Composable
 fun ThingBuilderScreen(
     navController: NavController,
+    thingId: String,
+    action: String,
     mode: String,
     steps: String,
     closeButton: @Composable () -> Unit,
 ) {
 
     val viewModel = hiltViewModel<ThingViewModel>()
+
+    viewModel.thingId = thingId
+    viewModel.action = action
+    viewModel.mode = mode
+    viewModel.steps = steps
 
     LaunchedEffect(Unit) {
         viewModel.updatePageCount(steps.split(",").size)
@@ -73,6 +80,8 @@ fun ThingBuilderScreen(
 
     val isNextEnabled by viewModel.isNextEnabled.collectAsState()
     val isSaveEnabled by viewModel.isSaveEnabled.collectAsState()
+
+    val isLoading by viewModel.isLoading.collectAsState()
 
     Scaffold(
         topBar = {
@@ -176,12 +185,14 @@ fun ThingBuilderScreen(
                 } else {
                     LoadingButton(
                         onClick = {
-
+                            coroutineScope.launch {
+                                viewModel.saveThing()
+                            }
                         },
                         modifier = Modifier
                             .clip(RoundedCornerShape(5.dp))
                             .height(50.dp),
-                        isLoading = false,
+                        isLoading = isLoading,
                         buttonText = "Save",
                         disabled = !isSaveEnabled
                     )

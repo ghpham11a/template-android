@@ -239,12 +239,16 @@ fun NavigationGraph(
         composable(
             Screen.ThingBuilder.route,
             arguments = listOf(
-                navArgument("mode") { type = NavType.StringType },
+                navArgument("thingId") { type = NavType.StringType },
+                navArgument("action") { defaultValue = "" },
+                navArgument("mode") { defaultValue = "" },
                 navArgument("steps") { defaultValue = "" }
             )
         ) { backStackEntry ->
             ThingBuilderScreen(
                 navController,
+                backStackEntry.arguments?.getString("thingId") ?: "NULL",
+                backStackEntry.arguments?.getString("action") ?: "CREATE",
                 backStackEntry.arguments?.getString("mode") ?: "SHEET",
                 backStackEntry.arguments?.getString("steps") ?: "",
                 closeButton = {
