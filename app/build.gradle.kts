@@ -11,6 +11,8 @@ android {
     namespace = "com.example.template"
     compileSdk = 34
 
+    buildFeatures.buildConfig = true
+
     defaultConfig {
         applicationId = "com.example.template"
         minSdk = 26
@@ -22,6 +24,8 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField("String", "STRIPE_API_KEY", "\"${project.property("STRIPE_API_KEY")}\"")
     }
 
     buildTypes {
@@ -42,6 +46,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.3"
@@ -63,6 +68,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     // implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material3:material3:1.2.0-rc01")
     implementation("androidx.compose.material3:material3-android:1.2.0-rc01")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
@@ -91,7 +97,10 @@ dependencies {
 
     implementation("com.github.bumptech.glide:glide:4.16.0")
 
-    implementation("androidx.compose.foundation:foundation:1.6.7")
+    implementation("androidx.compose.foundation:foundation:1.6.8")
+
+    implementation("com.stripe:stripe-android:20.46.0")
+
 }
 
 kapt {
