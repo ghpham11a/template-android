@@ -5,7 +5,7 @@ import java.io.Serializable
 
 data class CreateThingResponse(
     @SerializedName("message")
-    val message: String,
+    val message: String? = null,
     @SerializedName("error")
-    val error: String,
+    val error: String? = null,
 ): Serializable

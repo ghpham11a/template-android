@@ -40,7 +40,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ThingScreen(navController: NavController) {
+fun ThingScreen(navController: NavController, thingId: String) {
 
     val viewModel = hiltViewModel<ThingViewModel>()
     val sheetState = rememberModalBottomSheetState(
@@ -101,70 +101,86 @@ fun ThingScreen(navController: NavController) {
         }
     }
 
-    Scaffold(
-        topBar = {
-            TextButton(
-                onClick = {
-                    navController.navigateUp()
-                },
-            ) {
-                Icon(Icons.Filled.Close, contentDescription = "Close")
+    if (thingId != "NULL") {
+        Scaffold(
+            topBar = {
+                TextButton(
+                    onClick = {
+                        navController.navigateUp()
+                    },
+                ) {
+                    Icon(Icons.Filled.Close, contentDescription = "Close")
+                }
             }
-        }
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Steps Guide")
-
-            CheckboxRow(
-                title = "Thing type",
-                isThingTypeChecked.also { isThingTypeChecked = it },
-                onCheckedChange = {
-                    isThingTypeChecked = it
+            Text(thingId)
+        }
+    } else {
+        Scaffold(
+            topBar = {
+                TextButton(
+                    onClick = {
+                        navController.navigateUp()
+                    },
+                ) {
+                    Icon(Icons.Filled.Close, contentDescription = "Close")
                 }
-            )
-
-            CheckboxRow(
-                title = "Thing type description",
-                isThingDescriptionChecked.also { isThingDescriptionChecked = it },
-                onCheckedChange = {
-                    isThingDescriptionChecked = it
-                }
-            )
-
-            CheckboxRow(
-                title = "Thing methods",
-                isThingMethodsChecked.also { isThingMethodsChecked = it },
-                onCheckedChange = {
-                    isThingMethodsChecked = it
-                }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(onClick = {
-                navController.navigate(Screen.ThingBuilder.build("NULL","CREATE","SCREEN", getStepString()))
-            }, modifier = Modifier.fillMaxWidth()) {
-                Text(text = "Launch in screen")
             }
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = "Steps Guide")
 
-            Spacer(modifier = Modifier.height(16.dp))
+                CheckboxRow(
+                    title = "Thing type",
+                    isThingTypeChecked.also { isThingTypeChecked = it },
+                    onCheckedChange = {
+                        isThingTypeChecked = it
+                    }
+                )
 
-            HorizontalDivider()
+                CheckboxRow(
+                    title = "Thing type description",
+                    isThingDescriptionChecked.also { isThingDescriptionChecked = it },
+                    onCheckedChange = {
+                        isThingDescriptionChecked = it
+                    }
+                )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                CheckboxRow(
+                    title = "Thing methods",
+                    isThingMethodsChecked.also { isThingMethodsChecked = it },
+                    onCheckedChange = {
+                        isThingMethodsChecked = it
+                    }
+                )
 
-            Button(onClick = {
-                coroutineScope.launch {
-                    showBottomSheet = true
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(onClick = {
+                    navController.navigate(Screen.ThingBuilder.build("NULL","CREATE","SCREEN", getStepString()))
+                }, modifier = Modifier.fillMaxWidth()) {
+                    Text(text = "Launch in screen")
                 }
-            }, modifier = Modifier.fillMaxWidth()) {
-                Text(text = "Launch in bottom sheet")
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                HorizontalDivider()
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(onClick = {
+                    coroutineScope.launch {
+                        showBottomSheet = true
+                    }
+                }, modifier = Modifier.fillMaxWidth()) {
+                    Text(text = "Launch in bottom sheet")
+                }
             }
         }
     }

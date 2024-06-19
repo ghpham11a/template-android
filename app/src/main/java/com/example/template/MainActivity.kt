@@ -164,7 +164,17 @@ fun NavigationGraph(
                 backStackEntry.arguments?.getString("userId").toString()
             )
         }
-        composable(Screen.Thing.route) { ThingScreen(navController) }
+        composable(
+            Screen.Thing.route,
+            arguments = listOf(
+                navArgument("thingId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            ThingScreen(
+                navController,
+                backStackEntry.arguments?.getString("thingId").toString()
+            )
+        }
         composable(Screen.EditProfile.route) { EditProfileScreen(navController) }
         composable(Screen.AuthHub.route) { AuthHubScreen(navController) }
         composable(Screen.ResetPassword.route) { ResetPasswordScreen(navController) }

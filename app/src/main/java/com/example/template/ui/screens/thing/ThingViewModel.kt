@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.template.models.Thing
 import com.example.template.models.ThingType
+import com.example.template.models.UpdateUserBody
+import com.example.template.networking.APIGateway
 import com.example.template.repositories.ThingRepository
 import com.example.template.repositories.UserRepository
 import com.example.template.utils.Constants
@@ -99,25 +101,27 @@ class ThingViewModel @Inject constructor(
         }
     }
 
-    fun saveThing() {
+    suspend fun saveThing(): Boolean {
 
-        _isLoading.value = true
+        return true
 
-        when (action) {
-            "CREATE" -> {
-                viewModelScope.launch {
-                    val response = thingRepository.createThing(thing = _thing.value)
-                    if (response != null && response.isSuccessful) {
-                        // Handle the successful response
-                        val result = response.body()
-
-                        _isLoading.value = false
-                    } else {
-                        // Handle the error
-                        _isLoading.value = false
-                    }
-                }
-            }
-        }
+//        _isLoading.value = true
+//
+//        when (action) {
+//            "CREATE" -> {
+//                val response = thingRepository.createThing(thing = _thing.value)
+//                if (response != null && response.isSuccessful) {
+//                    // Handle the successful response
+//                    val result = response.body()
+//                    _isLoading.value = false
+//                    return true
+//                } else {
+//                    // Handle the error
+//                    _isLoading.value = false
+//                    return false
+//                }
+//            }
+//            else -> return false
+//        }
     }
 }

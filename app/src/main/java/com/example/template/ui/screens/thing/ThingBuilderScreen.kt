@@ -43,10 +43,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.get
+import com.example.template.Screen
 import com.example.template.ui.components.buttons.LoadingButton
 import com.example.template.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.Route
 
 @OptIn(ExperimentalFoundationApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -186,7 +189,13 @@ fun ThingBuilderScreen(
                     LoadingButton(
                         onClick = {
                             coroutineScope.launch {
-                                viewModel.saveThing()
+                                if (viewModel.saveThing()) {
+                                    navController.navigate(Screen.Thing.build("new")) {
+                                        popUpTo(navController.graph[Screen.Features.route].id) {
+                                            inclusive = false
+                                        }
+                                    }
+                                }
                             }
                         },
                         modifier = Modifier

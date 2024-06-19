@@ -39,7 +39,7 @@ class FeaturesViewModel @Inject constructor(
             }
         }
         _newItems.value = listOf(
-            Feature("Thing Builder", "This is a flow that guides you through several steps one at a time", Screen.Thing.route),
+            Feature("Thing Builder", "This is a flow that guides you through several steps one at a time", Screen.Thing.build("NULL")),
             Feature("Filter List", "List of a lot of items that can be filtered", Screen.FilterList.route),
         )
 
