@@ -54,6 +54,9 @@ import com.example.template.ui.screens.publicprofile.PublicProfileScreen
 import com.example.template.ui.screens.snag.SnagScreen
 import com.example.template.ui.screens.thing.ThingScreen
 import com.example.template.ui.screens.thing.ThingBuilderScreen
+import com.example.template.ui.screens.thing.ThingIntroScreen
+import com.example.template.ui.screens.thinglist.ThingListScreen
+import com.example.template.ui.screens.xmlview.XMLViewScreen
 import com.example.template.utils.Constants
 import com.example.template.utils.Constants.BOTTOM_NAVIGATION_ROUTES
 import java.text.SimpleDateFormat
@@ -175,9 +178,12 @@ fun NavigationGraph(
                 backStackEntry.arguments?.getString("thingId").toString()
             )
         }
+        composable(Screen.ThingIntro.route) { ThingIntroScreen(navController) }
+        composable(Screen.ThingList.route) { ThingListScreen(navController) }
         composable(Screen.EditProfile.route) { EditProfileScreen(navController) }
         composable(Screen.AuthHub.route) { AuthHubScreen(navController) }
         composable(Screen.ResetPassword.route) { ResetPasswordScreen(navController) }
+
         composable(
             Screen.CodeVerification.route,
             arguments = listOf(
@@ -290,6 +296,7 @@ fun NavigationGraph(
         composable(Screen.PayoutMethods.route) {
             PayoutMethodsScreen(navController)
         }
+        composable(Screen.XMLView.route) { XMLViewScreen(navController) }
     }
 }
 

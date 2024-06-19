@@ -39,8 +39,10 @@ class FeaturesViewModel @Inject constructor(
             }
         }
         _newItems.value = listOf(
-            Feature("Thing Builder", "This is a flow that guides you through several steps one at a time", Screen.Thing.build("NULL")),
+            Feature("Thing Builder", "This is a flow that guides you through several steps one at a time", Screen.ThingIntro.route),
+            Feature("Thing Updater", "Here you can go into thing details and update the values.", Screen.ThingList.route),
             Feature("Filter List", "List of a lot of items that can be filtered", Screen.FilterList.route),
+            Feature("XML View", "This screen was constructing using the prevous XML based view system.", Screen.XMLView.route),
         )
 
         _oldItems.value = listOf(

@@ -14,9 +14,11 @@ sealed class Screen(val route: String) {
     object LoginAndSecurity : Screen("login_and_security")
     object ResetPassword : Screen("reset-password")
     object ResetPasswordSuccess : Screen("reset-password-success")
+    object ThingIntro : Screen("thing-intro}")
     object Thing : Screen("thing/{thingId}") {
         fun build(thingId: String) = "thing/$thingId"
     }
+    object ThingList : Screen("thing-list")
     object ThingBuilder: Screen("thing-builder/{thingId}?action={action}&mode={mode}&steps={steps}") {
         fun build(thingId: String, action: String, mode: String, steps: String) = "thing-builder/${thingId}?action=$action&mode=$mode&steps=$steps"
     }
@@ -42,4 +44,5 @@ sealed class Screen(val route: String) {
     object PaymentMethods : Screen("payments-hub/payment-methods")
     object YourPayments : Screen("payments-hub/your-payments")
     object PayoutMethods : Screen("payments-hub/payout-methods")
+    object XMLView : Screen("xml-view")
 }
