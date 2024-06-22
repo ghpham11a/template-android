@@ -1,7 +1,6 @@
 package com.example.template.ui.screens.personalinfo
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,9 +32,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.template.Screen
 import com.example.template.ui.components.buttons.LoadingButton
-import com.example.template.ui.components.inputs.CodeInputField
+import com.example.template.ui.components.inputs.CodeField
 import com.example.template.ui.components.inputs.ExpandableSection
 import com.example.template.ui.components.inputs.PhoneNumberField
 import com.example.template.ui.components.misc.LoadingScreen
@@ -142,7 +140,7 @@ fun PersonalInfoScreen(navController: NavController) {
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                CodeInputField(emailVerificationCode, emailFocusRequesters, 6)
+                CodeField(emailVerificationCode, emailFocusRequesters, 6)
 
                 Spacer(modifier = Modifier.height(16.dp))
 
