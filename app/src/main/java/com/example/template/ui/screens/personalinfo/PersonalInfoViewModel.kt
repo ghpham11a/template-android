@@ -4,10 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.amazonaws.mobile.client.AWSMobileClient
 import com.amazonaws.mobile.client.Callback
-import com.amazonaws.mobile.client.results.SignInResult
-import com.amazonaws.mobile.client.results.SignUpResult
 import com.amazonaws.mobile.client.results.UserCodeDeliveryDetails
 import com.example.template.models.AWSMobileClientResponse
+import com.example.template.models.UpdateEmail
 import com.example.template.models.UpdateLegalName
 import com.example.template.models.UpdatePhoneNumber
 import com.example.template.models.UpdatePreferredName
@@ -68,11 +67,30 @@ class PersonalInfoViewModel @Inject constructor(
                 _phoneNumber.value = (user?.phoneNumber ?: "").replace(user?.countryCode ?: "", "")
                 _phoneNumberToDisplay.value =
                     (user?.countryCode ?: "") + " " + (user?.phoneNumber ?: "")
+                _email.value = user?.email ?: ""
             } else {
                 // Handle the error
                 println("Error reading user")
             }
             _isScreenLoading.value = false
+        }
+    }
+
+    suspend fun updateLegalName(firstName: String, lastName: String): Boolean {
+        return try {
+            executeUpdate(UpdateUserBody(updateLegalName = UpdateLegalName(firstName, lastName)))
+        } catch (e: Exception) {
+            // Handle exception
+            false
+        }
+    }
+
+    suspend fun updatePreferredName(preferredName: String): Boolean {
+        return try {
+            executeUpdate(UpdateUserBody(updatePreferredName = UpdatePreferredName(preferredName)))
+        } catch (e: Exception) {
+            // Handle exception
+            false
         }
     }
 
@@ -107,26 +125,34 @@ class PersonalInfoViewModel @Inject constructor(
         })
     }
 
-    suspend fun updateLegalName(firstName: String, lastName: String): Boolean {
+    suspend fun updateEmail(email: String): Boolean {
         return try {
-            executeUpdate(UpdateUserBody(updateLegalName = UpdateLegalName(firstName, lastName)))
+            executeUpdate(
+                UpdateUserBody(
+                    updateEmail = UpdateEmail(email = email)
+                )
+            )
         } catch (e: Exception) {
             // Handle exception
             false
         }
     }
 
-    suspend fun updatePreferredName(preferredName: String): Boolean {
-        return try {
-            executeUpdate(UpdateUserBody(updatePreferredName = UpdatePreferredName(preferredName)))
-        } catch (e: Exception) {
-            // Handle exception
-            false
-        }
+    fun triggerEmailVerification(onResult: (AWSMobileClientResponse<UserCodeDeliveryDetails>) -> Unit) {
+        AWSMobileClient.getInstance().verifyUserAttribute("email", object :
+            Callback<UserCodeDeliveryDetails> {
+            override fun onResult(signUpResult: UserCodeDeliveryDetails) {
+                onResult(AWSMobileClientResponse(true, signUpResult, null))
+            }
+
+            override fun onError(e: Exception) {
+                onResult(AWSMobileClientResponse(false, null, e))
+            }
+        })
     }
 
     private suspend fun executeUpdate(body: UpdateUserBody): Boolean {
-        val response = APIGateway.api.updateUser(
+        val response = APIGateway.api.privateUpdateUser(
             APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
             userRepository.userSub ?: "",
             body

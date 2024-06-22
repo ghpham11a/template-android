@@ -48,7 +48,7 @@ class EnterPasswordViewModel @Inject constructor(
                 )
                 if (response.isSuccessful) {
                     response.body()?.let {
-                        if (it.contains("enabled successfully")) {
+                        if (it.message?.contains("enabled successfully") == true) {
                             signIn(username, password, onResult)
                         } else {
                             onResult(AWSMobileClientResponse(false, null, null))

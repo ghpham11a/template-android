@@ -83,7 +83,7 @@ class LoginAndSecurityViewModel @Inject constructor(
                 )
                 if (response.isSuccessful) {
                     response.body()?.let {
-                        if (it.contains("disabled successfully")) {
+                        if (it.message?.contains("disabled successfully") == true) {
                             userRepository.logOut()
                             continuation.resume(true)
                         } else {
@@ -119,7 +119,7 @@ class LoginAndSecurityViewModel @Inject constructor(
                 )
                 if (response.isSuccessful) {
                     response.body()?.let {
-                        if (it.contains("deleted successfully")) {
+                        if (it.message?.contains("deleted successfully") == true) {
                             userRepository.logOut()
                             continuation.resume(true)
                         } else {

@@ -72,7 +72,7 @@ class EditProfileViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                val response = APIGateway.api.updateUser(
+                val response = APIGateway.api.privateUpdateUser(
                     APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
                     userRepository.userSub ?: "",
                     UpdateUserBody(
@@ -81,7 +81,7 @@ class EditProfileViewModel @Inject constructor(
                 )
                 if (response.isSuccessful) {
                     response.body()?.let {
-                        if (it.contains("Image uploaded successfully!")) {
+                        if (it.message?.contains("Image uploaded successfully!") == true) {
                             continuation.resume(true)
                         } else {
                             continuation.resume(false)
@@ -111,7 +111,7 @@ class EditProfileViewModel @Inject constructor(
     }
 
     private suspend fun executeUpdate(body: UpdateUserBody): Boolean {
-        val response = APIGateway.api.updateUser(
+        val response = APIGateway.api.privateUpdateUser(
             APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
             userRepository.userSub ?: "",
             body

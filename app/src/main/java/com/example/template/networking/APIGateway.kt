@@ -1,5 +1,8 @@
 package com.example.template.networking
 
+import com.example.template.models.AdminDeleteUserResponse
+import com.example.template.models.AdminDisableUserResponse
+import com.example.template.models.AdminEnableUserResponse
 import com.example.template.models.AdminUpdateUserBody
 import com.example.template.models.CheckIfUserExistsResponse
 import com.example.template.models.CreateThingResponse
@@ -7,6 +10,7 @@ import com.example.template.models.ReadUserPrivateResponse
 import com.example.template.models.ReadUserPublicResponse
 import com.example.template.models.Thing
 import com.example.template.models.UpdateUserBody
+import com.example.template.models.UpdateUserPrivateResponse
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -35,7 +39,7 @@ interface APIGatewayService {
         @HeaderMap headers: Map<String, String>,
         @Path("username") username: String,
         @Body body: AdminUpdateUserBody
-    ): Response<String>
+    ): Response<AdminEnableUserResponse>
 
     @Headers("Content-Type: application/json")
     @PATCH("admin/users/{username}/disable")
@@ -43,20 +47,20 @@ interface APIGatewayService {
         @HeaderMap headers: Map<String, String>,
         @Path("username") username: String,
         @Body body: AdminUpdateUserBody
-    ): Response<String>
+    ): Response<AdminDisableUserResponse>
 
     @DELETE("admin/users/{username}")
     suspend fun adminDeleteUser(
         @HeaderMap headers: Map<String, String>,
         @Path("username") username: String,
-    ): Response<String>
+    ): Response<AdminDeleteUserResponse>
 
     @PATCH("private/users/{userId}")
-    suspend fun updateUser(
+    suspend fun privateUpdateUser(
         @HeaderMap headers: Map<String, String>,
         @Path("userId") userSub: String,
         @Body body: UpdateUserBody
-    ): Response<String>
+    ): Response<UpdateUserPrivateResponse>
 
     @GET("private/users/{userId}")
     suspend fun privateReadUser(

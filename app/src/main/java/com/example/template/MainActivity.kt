@@ -2,7 +2,6 @@ package com.example.template
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.EnterTransition
@@ -13,10 +12,15 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.painterResource
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -24,8 +28,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.template.ui.components.bottomnavigation.BottomNavigation
-import com.example.template.ui.components.bottomnavigation.BottomNavigationItem
 import com.example.template.ui.screens.home.HomeScreen
 import com.example.template.ui.screens.features.FeaturesScreen
 import com.example.template.ui.screens.profile.ProfileScreen
@@ -59,8 +61,6 @@ import com.example.template.ui.screens.thinglist.ThingListScreen
 import com.example.template.ui.screens.xmlview.XMLViewScreen
 import com.example.template.utils.Constants
 import com.example.template.utils.Constants.BOTTOM_NAVIGATION_ROUTES
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -100,6 +100,50 @@ class MainActivity : ComponentActivity() {
 
             }
         })
+    }
+}
+
+sealed class BottomNavigationItem(var title:String, var icon:Int, var screenRoute:String){
+    object Alpha : BottomNavigationItem("Home", R.drawable.ic_android_black_24dp, Screen.Home.route)
+    object Bravo: BottomNavigationItem("Features",R.drawable.ic_android_black_24dp, Screen.Features.route)
+    object Delta: BottomNavigationItem("Profile",R.drawable.ic_android_black_24dp, Screen.Profile.route)
+}
+
+@Composable
+fun BottomNavigation(navController: NavController) {
+    val items = listOf(
+        BottomNavigationItem.Alpha,
+        BottomNavigationItem.Bravo,
+        BottomNavigationItem.Delta
+    )
+
+    NavigationBar {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
+        items.forEach { item ->
+            NavigationBarItem(
+                selected = currentRoute == item.screenRoute,
+                onClick = {
+                    navController.navigate(item.screenRoute) {
+
+                        navController.graph.startDestinationRoute?.let { screen_route ->
+                            popUpTo(screen_route) {
+                                saveState = true
+                            }
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+                alwaysShowLabel = true,
+                label = {
+                    Text(item.title)
+                },
+                icon = {
+                    Icon(painter = painterResource(id = item.icon), contentDescription = item.title)
+                }
+            )
+        }
     }
 }
 
