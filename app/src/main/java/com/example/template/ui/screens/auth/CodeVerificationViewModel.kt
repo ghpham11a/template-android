@@ -64,7 +64,7 @@ class CodeVerificationViewModel @Inject constructor(
             override fun onResult(signInResult: SignInResult) {
                 _isLoading.value = false
                 if (signInResult.signInState == SignInState.DONE) {
-                    userRepository.setLoggedIn(AWSMobileClient.getInstance().tokens, username, AWSMobileClient.getInstance().userSub)
+                    userRepository.setLoggedIn(AWSMobileClient.getInstance().tokens, username, AWSMobileClient.getInstance().userAttributes ?: emptyMap())
                 }
 
                 onResult(AWSMobileClientResponse(true, signInResult))

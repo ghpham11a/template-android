@@ -6,12 +6,25 @@ import com.example.template.models.CurrentUser
 import com.example.template.models.ReadUserPrivateResponse
 import com.example.template.models.ReadUserPublicResponse
 import com.example.template.networking.APIGateway
+import com.example.template.utils.Constants
 import com.example.template.utils.Constants.INTERNAL_DATE_PATTERN
 import com.example.template.utils.Constants.SHARED_PREFERENCES_KEY_ACCESS_TOKEN
+import com.example.template.utils.Constants.SHARED_PREFERENCES_KEY_BIRTHDATE
 import com.example.template.utils.Constants.SHARED_PREFERENCES_KEY_ID_TOKEN
 import com.example.template.utils.Constants.SHARED_PREFERENCES_KEY_EXPIRATION_DATE
+import com.example.template.utils.Constants.SHARED_PREFERENCES_KEY_FIRSTNAME
+import com.example.template.utils.Constants.SHARED_PREFERENCES_KEY_LASTNAME
 import com.example.template.utils.Constants.SHARED_PREFERENCES_KEY_SUB
 import com.example.template.utils.Constants.SHARED_PREFERENCES_KEY_USERNAME
+import com.example.template.utils.removeValues
+import com.example.template.utils.updateAccessToken
+import com.example.template.utils.updateBirthdate
+import com.example.template.utils.updateEmail
+import com.example.template.utils.updateExpirationDate
+import com.example.template.utils.updateFirstName
+import com.example.template.utils.updateIdToken
+import com.example.template.utils.updateLastName
+import com.example.template.utils.updateUserId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
@@ -35,12 +48,18 @@ class UserRepository @Inject constructor(
     private val _currentUser = MutableStateFlow(CurrentUser(isLoggedIn = false))
     val currentUser: MutableStateFlow<CurrentUser> = _currentUser
 
-    val userSub: String?
+    val userId: String?
         get() = sharedPreferences.getString(SHARED_PREFERENCES_KEY_SUB, null)
     val username: String?
         get() = sharedPreferences.getString(SHARED_PREFERENCES_KEY_USERNAME, null)
     val idToken: String?
         get() = sharedPreferences.getString(SHARED_PREFERENCES_KEY_ID_TOKEN, null)
+    val firstName: String?
+        get() = sharedPreferences.getString(SHARED_PREFERENCES_KEY_FIRSTNAME, null)
+    val lastName: String?
+        get() = sharedPreferences.getString(SHARED_PREFERENCES_KEY_LASTNAME, null)
+    val birthDate: String?
+        get() = sharedPreferences.getString(SHARED_PREFERENCES_KEY_BIRTHDATE, null)
 
 
     private var userPrivate: ReadUserPrivateResponse? = null
@@ -56,7 +75,7 @@ class UserRepository @Inject constructor(
             try {
                 val response = APIGateway.api.privateReadUser(
                     APIGateway.buildAuthorizedHeaders(idToken ?: ""),
-                    userSub ?: ""
+                    userId ?: ""
                 )
                 if (response.isSuccessful) {
                     userPrivate = response.body()
@@ -105,25 +124,37 @@ class UserRepository @Inject constructor(
         return sharedPreferences.contains(SHARED_PREFERENCES_KEY_ID_TOKEN)
     }
 
-    fun setLoggedIn(token: Tokens, username: String, userSub: String) {
+    fun setLoggedIn(token: Tokens, username: String, userAttributes: Map<String, String>) {
         val format = SimpleDateFormat(INTERNAL_DATE_PATTERN, Locale.getDefault())
         val readableDate = format.format(token.idToken.expiration)
 
-        sharedPreferences.edit().putString(SHARED_PREFERENCES_KEY_ID_TOKEN, token.idToken.tokenString).apply()
-        sharedPreferences.edit().putString(SHARED_PREFERENCES_KEY_ACCESS_TOKEN, token.accessToken.tokenString).apply()
-        sharedPreferences.edit().putString(SHARED_PREFERENCES_KEY_USERNAME, username).apply()
-        sharedPreferences.edit().putString(SHARED_PREFERENCES_KEY_SUB, userSub).apply()
-        sharedPreferences.edit().putString(SHARED_PREFERENCES_KEY_EXPIRATION_DATE, readableDate).apply()
+        sharedPreferences.updateUserId(userAttributes["sub"] ?: "")
+        sharedPreferences.updateIdToken(token.idToken.tokenString)
+        sharedPreferences.updateAccessToken(token.accessToken.tokenString)
+        sharedPreferences.updateEmail(userAttributes["email"] ?: "")
+        sharedPreferences.updateFirstName(userAttributes["given_name"] ?: "")
+        sharedPreferences.updateLastName(userAttributes["family_name"] ?: "")
+        sharedPreferences.updateBirthdate(userAttributes["birthdate"] ?: "")
+        sharedPreferences.updateExpirationDate(readableDate)
 
         _isAuthenticated.value = true
     }
 
+    fun updateUser(key: String, value: String) {
+        when (key) {
+            SHARED_PREFERENCES_KEY_SUB -> sharedPreferences.updateUserId(value)
+            SHARED_PREFERENCES_KEY_ID_TOKEN -> sharedPreferences.updateIdToken(value)
+            SHARED_PREFERENCES_KEY_ACCESS_TOKEN -> sharedPreferences.updateAccessToken(value)
+            SHARED_PREFERENCES_KEY_USERNAME -> sharedPreferences.updateEmail(value)
+            SHARED_PREFERENCES_KEY_FIRSTNAME -> sharedPreferences.updateFirstName(value)
+            SHARED_PREFERENCES_KEY_LASTNAME -> sharedPreferences.updateLastName(value)
+            SHARED_PREFERENCES_KEY_BIRTHDATE -> sharedPreferences.updateBirthdate(value)
+            SHARED_PREFERENCES_KEY_EXPIRATION_DATE -> sharedPreferences.updateExpirationDate(value)
+        }
+    }
+
     fun logOut() {
         _isAuthenticated.value = false
-        sharedPreferences.edit().remove(SHARED_PREFERENCES_KEY_ID_TOKEN).apply()
-        sharedPreferences.edit().remove(SHARED_PREFERENCES_KEY_ACCESS_TOKEN).apply()
-        sharedPreferences.edit().remove(SHARED_PREFERENCES_KEY_USERNAME).apply()
-        sharedPreferences.edit().remove(SHARED_PREFERENCES_KEY_EXPIRATION_DATE).apply()
-        sharedPreferences.edit().remove(SHARED_PREFERENCES_KEY_SUB).apply()
+        sharedPreferences.removeValues()
     }
 }

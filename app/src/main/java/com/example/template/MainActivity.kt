@@ -61,6 +61,7 @@ import com.example.template.ui.screens.thinglist.ThingListScreen
 import com.example.template.ui.screens.xmlview.XMLViewScreen
 import com.example.template.utils.Constants
 import com.example.template.utils.Constants.BOTTOM_NAVIGATION_ROUTES
+import com.example.template.utils.removeValues
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -87,14 +88,8 @@ class MainActivity : ComponentActivity() {
                 val sharedPrefsAuthKeyExists = sharedPreferences.contains(Constants.SHARED_PREFERENCES_KEY_ID_TOKEN)
                 if ((isUserStateSignedIn && !sharedPrefsAuthKeyExists) || !isUserStateSignedIn) {
                     AWSMobileClient.getInstance().signOut()
-                    sharedPreferences.edit().remove(Constants.SHARED_PREFERENCES_KEY_ID_TOKEN).apply()
-                    sharedPreferences.edit().remove(Constants.SHARED_PREFERENCES_KEY_ACCESS_TOKEN).apply()
-                    sharedPreferences.edit().remove(Constants.SHARED_PREFERENCES_KEY_USERNAME).apply()
-                    sharedPreferences.edit().remove(Constants.SHARED_PREFERENCES_KEY_EXPIRATION_DATE).apply()
-                    sharedPreferences.edit().remove(Constants.SHARED_PREFERENCES_KEY_SUB).apply()
+                    sharedPreferences.removeValues()
                 }
-
-
             }
             override fun onError(e: Exception) {
 

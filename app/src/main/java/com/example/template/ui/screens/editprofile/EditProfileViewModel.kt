@@ -38,7 +38,7 @@ class EditProfileViewModel @Inject constructor(
 
     init {
         userRepository.isLoggedIn()
-        _userSub.value = userRepository.userSub ?: ""
+        _userSub.value = userRepository.userId ?: ""
     }
 
     fun onSchoolNameChange(schoolName: String) {
@@ -47,7 +47,7 @@ class EditProfileViewModel @Inject constructor(
 
     fun fetchUser() {
         viewModelScope.launch {
-            val response = userRepository.publicReadUser(userRepository.userSub ?: "")
+            val response = userRepository.publicReadUser(userRepository.userId ?: "")
             if (response != null && response.isSuccessful) {
                 // Handle the successful response
                 val user = response.body()
@@ -74,7 +74,7 @@ class EditProfileViewModel @Inject constructor(
             try {
                 val response = APIGateway.api.privateUpdateUser(
                     APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
-                    userRepository.userSub ?: "",
+                    userRepository.userId ?: "",
                     UpdateUserBody(
                         updateImage = UpdateImage(encodeImageToBase64(image))
                     )
@@ -113,7 +113,7 @@ class EditProfileViewModel @Inject constructor(
     private suspend fun executeUpdate(body: UpdateUserBody): Boolean {
         val response = APIGateway.api.privateUpdateUser(
             APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
-            userRepository.userSub ?: "",
+            userRepository.userId ?: "",
             body
         )
         _isLoading.value = false

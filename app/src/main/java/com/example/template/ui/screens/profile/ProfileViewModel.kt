@@ -52,7 +52,7 @@ class ProfileViewModel @Inject constructor(
             userRepository.isAuthenticated.collect { newValue ->
                 _isLoggedIn.value = newValue
 
-                _userSub.value = userRepository.userSub ?: ""
+                _userSub.value = userRepository.userId ?: ""
                 username = userRepository.username ?: ""
 
                 if (newValue) {

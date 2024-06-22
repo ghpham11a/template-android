@@ -1,5 +1,6 @@
 package com.example.template.ui.screens.auth
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.amazonaws.mobile.client.AWSMobileClient
@@ -8,6 +9,7 @@ import com.amazonaws.mobile.client.results.SignInResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import com.amazonaws.mobile.client.results.SignInState
+import com.amazonaws.mobile.client.results.Tokens
 import com.amazonaws.services.cognitoidentityprovider.model.NotAuthorizedException
 import com.example.template.models.AWSMobileClientResponse
 import com.example.template.models.AdminUpdateUserBody
@@ -65,7 +67,6 @@ class EnterPasswordViewModel @Inject constructor(
         }
     }
 
-
     fun signIn(username: String, password: String, onResult: (AWSMobileClientResponse<SignInResult>) -> Unit) {
 
         _isLoading.value = true
@@ -73,9 +74,11 @@ class EnterPasswordViewModel @Inject constructor(
         AWSMobileClient.getInstance().signIn(username, password, null, object : Callback<SignInResult> {
             override fun onResult(signInResult: SignInResult) {
                 _isLoading.value = false
+                var analTits = AWSMobileClient.getInstance().userAttributes
                 if (signInResult.signInState == SignInState.DONE) {
-                    userRepository.setLoggedIn(AWSMobileClient.getInstance().tokens, username, AWSMobileClient.getInstance().userSub)
+                    userRepository.setLoggedIn(AWSMobileClient.getInstance().tokens, username, AWSMobileClient.getInstance().userAttributes ?: emptyMap())
                 }
+                getUserAttributes()
                 onResult(AWSMobileClientResponse(true, signInResult))
             }
 
@@ -92,6 +95,31 @@ class EnterPasswordViewModel @Inject constructor(
                     _isLoading.value = false
                     onResult(AWSMobileClientResponse(false, null, e))
                 }
+            }
+        })
+    }
+
+    private fun getUserAttributes() {
+        AWSMobileClient.getInstance().getTokens(object : Callback<Tokens> {
+            override fun onResult(result: Tokens?) {
+                AWSMobileClient.getInstance().getUserAttributes(object : Callback<Map<String, String>> {
+                    override fun onResult(userAttributes: Map<String, String>?) {
+                        if (userAttributes != null) {
+                            // Use the userAttributes map which contains all the Cognito data for the user
+                            for ((key, value) in userAttributes) {
+                                Log.d("UserAttribute", "$key: $value")
+                            }
+                        }
+                    }
+
+                    override fun onError(e: Exception?) {
+                        Log.e("GetUserAttributes", "Error getting user attributes", e)
+                    }
+                })
+            }
+
+            override fun onError(e: Exception?) {
+                Log.e("GetTokens", "Error getting tokens", e)
             }
         })
     }

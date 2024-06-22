@@ -15,8 +15,8 @@ import com.example.template.models.UpdateUserBody
 import com.example.template.networking.APIGateway
 import com.example.template.repositories.UserRepository
 import com.example.template.utils.Constants.COUNTRY_CODES
+import com.example.template.utils.Constants.SHARED_PREFERENCES_KEY_USERNAME
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -64,15 +64,15 @@ class PersonalInfoViewModel @Inject constructor(
             if (response != null && response.isSuccessful) {
                 // Handle the successful response
                 val user = response.body()
-                _firstName.value = user?.firstName ?: ""
-                _lastName.value = user?.lastName ?: ""
+                _firstName.value = userRepository.firstName ?: ""
+                _lastName.value = userRepository.lastName ?: ""
                 _preferredName.value = user?.preferredName ?: ""
                 _countryCode.value = COUNTRY_CODES.find { it.contains(user?.countryCode ?: "") }
                     ?: COUNTRY_CODES.first()
                 _phoneNumber.value = (user?.phoneNumber ?: "").replace(user?.countryCode ?: "", "")
                 _phoneNumberToDisplay.value =
                     (user?.countryCode ?: "") + " " + (user?.phoneNumber ?: "")
-                _email.value = user?.email ?: ""
+                _email.value = userRepository.username ?: ""
             } else {
                 // Handle the error
                 println("Error reading user")
@@ -132,34 +132,27 @@ class PersonalInfoViewModel @Inject constructor(
 
     suspend fun updateEmail(email: String): Boolean {
         _isLoading.value = true
-
-        delay(3000)
-
-        _isLoading.value = false
-
-        return true
-
-//        return try {
-//            val result = executeUpdate(
-//                UpdateUserBody(
-//                    updateEmail = UpdateEmail(email = email)
-//                )
-//            )
-//            _isLoading.value = false
-//            result
-//        } catch (e: Exception) {
-//            // Handle exception
-//            _isLoading.value = false
-//            false
-//        }
+        return try {
+            _email.value = email
+            val result = executeUpdate(
+                UpdateUserBody(
+                    updateEmail = UpdateEmail(email = email)
+                )
+            )
+            _isLoading.value = false
+            result
+        } catch (e: Exception) {
+            // Handle exception
+            _isLoading.value = false
+            false
+        }
     }
 
     fun confirmEmailChange(verificationCode: String, onResult: (AWSMobileClientResponse<Void>) -> Unit) {
         _isLoading.value = true
-
         AWSMobileClient.getInstance().confirmUpdateUserAttribute("email", verificationCode, object : Callback<Void> {
-
             override fun onResult(result: Void?) {
+                userRepository.updateUser(SHARED_PREFERENCES_KEY_USERNAME, _email.value)
                 onResult(AWSMobileClientResponse(true, result, null))
             }
 
@@ -189,7 +182,7 @@ class PersonalInfoViewModel @Inject constructor(
     private suspend fun executeUpdate(body: UpdateUserBody): Boolean {
         val response = APIGateway.api.privateUpdateUser(
             APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
-            userRepository.userSub ?: "",
+            userRepository.userId ?: "",
             body
         )
         return response.isSuccessful

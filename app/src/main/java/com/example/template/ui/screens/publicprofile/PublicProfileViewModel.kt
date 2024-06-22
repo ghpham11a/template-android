@@ -3,7 +3,6 @@ package com.example.template.ui.screens.publicprofile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.template.repositories.UserRepository
-import com.example.template.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,7 +25,7 @@ class PublicProfileViewModel @Inject constructor(
 
     fun checkIfEditable(userId: String) {
         viewModelScope.launch {
-            _isEditable.value = userRepository.userSub == userId
+            _isEditable.value = userRepository.userId == userId
         }
     }
 
