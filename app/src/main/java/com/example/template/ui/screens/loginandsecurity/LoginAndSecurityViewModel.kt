@@ -1,6 +1,5 @@
 package com.example.template.ui.screens.loginandsecurity
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.amazonaws.mobile.client.AWSMobileClient

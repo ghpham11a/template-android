@@ -48,6 +48,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.template.Screen
 import com.example.template.ui.components.buttons.LoadingButton
+import com.example.template.ui.components.inputs.CodeInputField
 import com.example.template.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -90,53 +91,7 @@ fun CodeVerificationScreen(
 
             Text("Enter the verification code sent to your email ${username}", style = MaterialTheme.typography.headlineMedium)
 
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                for (i in 0 until numberOfFields) {
-                    OutlinedTextField(
-                        value = verificationCode.value[i],
-                        onValueChange = { value ->
-                            if (value.length <= 1) {
-                                val newVerificationCode = verificationCode.value.toMutableList()
-                                newVerificationCode[i] = value
-                                verificationCode.value = newVerificationCode
-
-                                when {
-                                    value.isNotEmpty() && i < numberOfFields - 1 -> {
-                                        focusRequesters[i + 1].requestFocus()
-                                    }
-                                    value.isEmpty() && i > 0 -> {
-                                        focusRequesters[i - 1].requestFocus()
-                                    }
-                                }
-                            }
-                        },
-                        modifier = Modifier
-                            .width(50.dp)
-                            .focusRequester(focusRequesters[i]),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            keyboardType = KeyboardType.Number,
-                            imeAction = if (i < numberOfFields - 1) ImeAction.Next else ImeAction.Done
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onNext = {
-                                if (i < numberOfFields - 1) {
-                                    focusRequesters[i + 1].requestFocus()
-                                }
-                            },
-                            onDone = {
-                                // Handle the done action, if necessary
-                            }
-                        )
-                    )
-
-                    LaunchedEffect(Unit) {
-                        if (i == 0) {
-                            focusRequesters[i].requestFocus()
-                        }
-                    }
-                }
-            }
+            CodeInputField(verificationCode, focusRequesters, 6)
 
             Spacer(modifier = Modifier.height(16.dp))
 

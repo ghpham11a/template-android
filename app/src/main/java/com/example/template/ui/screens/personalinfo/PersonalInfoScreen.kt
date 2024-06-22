@@ -1,8 +1,7 @@
 package com.example.template.ui.screens.personalinfo
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,7 +12,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
@@ -29,13 +27,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.template.Screen
 import com.example.template.ui.components.buttons.LoadingButton
+import com.example.template.ui.components.inputs.CodeInputField
 import com.example.template.ui.components.inputs.ExpandableSection
 import com.example.template.ui.components.inputs.PhoneNumberField
 import com.example.template.ui.components.misc.LoadingScreen
@@ -52,6 +52,7 @@ fun PersonalInfoScreen(navController: NavController) {
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
     val isLoading by viewModel.isLoading.collectAsState()
+    val numberOfFields = 6
 
     // Legal name
     val firstName by viewModel.firstName.collectAsState()
@@ -60,6 +61,7 @@ fun PersonalInfoScreen(navController: NavController) {
     var isLegalNameEnabled by remember { mutableStateOf(true) }
 
     // Preferred first name
+    val preferrredFirstName by viewModel.preferredName.collectAsState()
     var isPreferredFirstNameExpanded by remember { mutableStateOf(false) }
     var isPreferredFirstNameEnabled by remember { mutableStateOf(true) }
 
@@ -74,6 +76,9 @@ fun PersonalInfoScreen(navController: NavController) {
     val email by viewModel.email.collectAsState()
     var isEmailExpanded by remember { mutableStateOf(false) }
     var isEmailEnabled by remember { mutableStateOf(true) }
+    // Code verification
+    val emailFocusRequesters = remember { List(numberOfFields) { FocusRequester() } }
+    val emailVerificationCode = remember { mutableStateOf(List(numberOfFields) { "" }) }
 
     var isAddressExpanded by remember { mutableStateOf(false) }
     var isAddressEnabled by remember { mutableStateOf(true) }
@@ -129,10 +134,38 @@ fun PersonalInfoScreen(navController: NavController) {
                 showBottomSheet = false
             },
             sheetState = sheetState,
-            modifier =  Modifier.height(LocalConfiguration.current.screenHeightDp.dp * 0.9f),
+            modifier =  Modifier.height(LocalConfiguration.current.screenHeightDp.dp * 0.5f),
         ) {
             // Sheet content
-            Text("Verifier")
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                CodeInputField(emailVerificationCode, emailFocusRequesters, 6)
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                LoadingButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    isLoading = isLoading,
+                    onClick = {
+                        // Handle verification code submission
+                        emailVerificationCode.value.joinToString("")
+                        val code = emailVerificationCode.value.joinToString("")
+
+                        viewModel.confirmEmailChange(code) { response ->
+                            coroutineScope.launch(Dispatchers.Main) {
+                                if (response.isSuccessful) {
+                                    showBottomSheet = false
+                                }
+                            }
+                        }
+
+                    },
+                    buttonText = "Verify"
+                )
+            }
         }
     }
 
@@ -217,7 +250,7 @@ fun PersonalInfoScreen(navController: NavController) {
                                    },
                 isEnabled = isPreferredFirstNameEnabled,
                 closedContent = {
-                    Text("Preferred first name (optional)")
+                    Text(preferrredFirstName.ifEmpty { "Preferred first name (optional)" })
                 },
                 openedContent = {
                     var preferredNameField by remember { mutableStateOf(TextFieldValue()) }
@@ -307,7 +340,7 @@ fun PersonalInfoScreen(navController: NavController) {
                 },
                 isEnabled = isEmailEnabled,
                 closedContent = {
-                    Text("Email")
+                    Text(email.ifEmpty { "Add an email address" })
                 },
                 openedContent = {
                     var emailField by remember { mutableStateOf(viewModel.email.value) }
@@ -326,6 +359,7 @@ fun PersonalInfoScreen(navController: NavController) {
                                 coroutineScope.launch(Dispatchers.Main) {
                                     if (viewModel.updateEmail(emailField)) {
                                         isEmailExpanded = false
+                                        showBottomSheet = true
                                     }
                                 }
                             },

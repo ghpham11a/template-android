@@ -54,7 +54,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun CodeInputFields(
+fun CodeInputField(
     verificationCode: MutableState<List<String>>,
     focusRequesters: List<FocusRequester>,
     numberOfFields: Int

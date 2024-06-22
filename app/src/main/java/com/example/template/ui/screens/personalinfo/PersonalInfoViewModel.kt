@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.amazonaws.mobile.client.AWSMobileClient
 import com.amazonaws.mobile.client.Callback
+import com.amazonaws.mobile.client.results.SignUpResult
 import com.amazonaws.mobile.client.results.UserCodeDeliveryDetails
 import com.example.template.models.AWSMobileClientResponse
 import com.example.template.models.UpdateEmail
@@ -15,6 +16,7 @@ import com.example.template.networking.APIGateway
 import com.example.template.repositories.UserRepository
 import com.example.template.utils.Constants.COUNTRY_CODES
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -27,6 +29,9 @@ class PersonalInfoViewModel @Inject constructor(
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
+
+    private val _isSending = MutableStateFlow(false)
+    val isSending: StateFlow<Boolean> = _isSending
 
     // Legal name
     val _firstName = MutableStateFlow("")
@@ -126,27 +131,57 @@ class PersonalInfoViewModel @Inject constructor(
     }
 
     suspend fun updateEmail(email: String): Boolean {
-        return try {
-            executeUpdate(
-                UpdateUserBody(
-                    updateEmail = UpdateEmail(email = email)
-                )
-            )
-        } catch (e: Exception) {
-            // Handle exception
-            false
-        }
+        _isLoading.value = true
+
+        delay(3000)
+
+        _isLoading.value = false
+
+        return true
+
+//        return try {
+//            val result = executeUpdate(
+//                UpdateUserBody(
+//                    updateEmail = UpdateEmail(email = email)
+//                )
+//            )
+//            _isLoading.value = false
+//            result
+//        } catch (e: Exception) {
+//            // Handle exception
+//            _isLoading.value = false
+//            false
+//        }
     }
 
-    fun triggerEmailVerification(onResult: (AWSMobileClientResponse<UserCodeDeliveryDetails>) -> Unit) {
-        AWSMobileClient.getInstance().verifyUserAttribute("email", object :
-            Callback<UserCodeDeliveryDetails> {
-            override fun onResult(signUpResult: UserCodeDeliveryDetails) {
-                onResult(AWSMobileClientResponse(true, signUpResult, null))
+    fun confirmEmailChange(verificationCode: String, onResult: (AWSMobileClientResponse<Void>) -> Unit) {
+        _isLoading.value = true
+
+        AWSMobileClient.getInstance().confirmUpdateUserAttribute("email", verificationCode, object : Callback<Void> {
+
+            override fun onResult(result: Void?) {
+                onResult(AWSMobileClientResponse(true, result, null))
             }
 
             override fun onError(e: Exception) {
+                _isLoading.value = false
+                // Handle the error
                 onResult(AWSMobileClientResponse(false, null, e))
+            }
+        })
+    }
+
+    fun resendConfirmationCode(username: String, onResult: (AWSMobileClientResponse<SignUpResult>) -> Unit) {
+        _isSending.value = true
+        AWSMobileClient.getInstance().resendSignUp(username, object : Callback<SignUpResult> {
+            override fun onResult(signUpResult: SignUpResult) {
+                _isSending.value = false
+                onResult(AWSMobileClientResponse(true, signUpResult))
+            }
+
+            override fun onError(e: Exception) {
+                _isSending.value = false
+                onResult(AWSMobileClientResponse(false))
             }
         })
     }
