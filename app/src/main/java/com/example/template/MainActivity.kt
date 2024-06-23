@@ -3,7 +3,9 @@ package com.example.template
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
@@ -46,6 +48,7 @@ import com.example.template.ui.screens.auth.ResetPasswordScreen
 import com.example.template.ui.screens.editprofile.EditProfileScreen
 import com.example.template.ui.screens.filterlist.FilterListScreen
 import com.example.template.ui.screens.loginandsecurity.LoginAndSecurityScreen
+import com.example.template.ui.screens.map.MapScreen
 import com.example.template.ui.screens.passwordresetsucess.PasswordResetSuccess
 import com.example.template.ui.screens.paymentshub.PaymentMethodsScreen
 import com.example.template.ui.screens.paymentshub.PaymentsHubScreen
@@ -149,6 +152,16 @@ fun MainScreen() {
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            // Permission granted
+        } else {
+            // Handle permission denial
+        }
+    }
 
     Scaffold(
         bottomBar = {
@@ -336,6 +349,7 @@ fun NavigationGraph(
             PayoutMethodsScreen(navController)
         }
         composable(Screen.XMLView.route) { XMLViewScreen(navController) }
+        composable(Screen.Map.route) { MapScreen(navController) }
     }
 }
 

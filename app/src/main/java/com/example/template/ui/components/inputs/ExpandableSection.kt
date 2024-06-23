@@ -39,8 +39,11 @@ fun ExpandableSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(text = title, fontSize = 20.sp, color = textColor)
-            Button(onClick = { if (isEnabled) onExpandedChange(!isExpanded) }) {
-                Text(if (isExpanded) "Close" else "Open", color = textColor)
+            Button(
+                onClick = { if (isEnabled) onExpandedChange(!isExpanded) },
+                colors = ButtonDefaults.buttonColors(Color.Transparent)
+            ) {
+                Text(if (isExpanded) "Cancel" else "Edit", color = textColor)
             }
         }
         Row(modifier = Modifier

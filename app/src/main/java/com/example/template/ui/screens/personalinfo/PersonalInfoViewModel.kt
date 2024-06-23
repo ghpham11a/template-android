@@ -14,8 +14,7 @@ import com.example.template.models.UpdatePreferredName
 import com.example.template.models.UpdateUserBody
 import com.example.template.networking.APIGateway
 import com.example.template.repositories.UserRepository
-import com.example.template.utils.Constants.COUNTRY_CODES
-import com.example.template.utils.Constants.SHARED_PREFERENCES_KEY_USERNAME
+import com.example.template.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -54,6 +53,8 @@ class PersonalInfoViewModel @Inject constructor(
 
     val _email = MutableStateFlow("")
     val email: StateFlow<String> = _email
+    // save this until user confirms
+    var tempEmail: String = ""
 
     val _isScreenLoading = MutableStateFlow(true)
     val isScreenLoading: StateFlow<Boolean> = _isScreenLoading
@@ -67,8 +68,8 @@ class PersonalInfoViewModel @Inject constructor(
                 _firstName.value = userRepository.firstName ?: ""
                 _lastName.value = userRepository.lastName ?: ""
                 _preferredName.value = user?.preferredName ?: ""
-                _countryCode.value = COUNTRY_CODES.find { it.contains(user?.countryCode ?: "") }
-                    ?: COUNTRY_CODES.first()
+                _countryCode.value = Constants.COUNTRY_CODES.find { it.contains(user?.countryCode ?: "") }
+                    ?: Constants.COUNTRY_CODES.first()
                 _phoneNumber.value = (user?.phoneNumber ?: "").replace(user?.countryCode ?: "", "")
                 _phoneNumberToDisplay.value =
                     (user?.countryCode ?: "") + " " + (user?.phoneNumber ?: "")
@@ -82,8 +83,16 @@ class PersonalInfoViewModel @Inject constructor(
     }
 
     suspend fun updateLegalName(firstName: String, lastName: String): Boolean {
+        _isLoading.value = true
         return try {
-            executeUpdate(UpdateUserBody(updateLegalName = UpdateLegalName(firstName, lastName)))
+            val result = executeUpdate(UpdateUserBody(updateLegalName = UpdateLegalName(firstName, lastName)))
+            if (result) {
+                _firstName.value = firstName
+                userRepository.updateUser(Constants.SHARED_PREFERENCES_KEY_FIRSTNAME, firstName)
+                _lastName.value = lastName
+                userRepository.updateUser(Constants.SHARED_PREFERENCES_KEY_LASTNAME, lastName)
+            }
+            result
         } catch (e: Exception) {
             // Handle exception
             false
@@ -91,18 +100,26 @@ class PersonalInfoViewModel @Inject constructor(
     }
 
     suspend fun updatePreferredName(preferredName: String): Boolean {
+        _isLoading.value = true
         return try {
-            executeUpdate(UpdateUserBody(updatePreferredName = UpdatePreferredName(preferredName)))
+            val result = executeUpdate(UpdateUserBody(updatePreferredName = UpdatePreferredName(preferredName)))
+            _isLoading.value = false
+            if (result) {
+                _preferredName.value = preferredName
+            }
+            result
         } catch (e: Exception) {
             // Handle exception
+            _isLoading.value = false
             false
         }
     }
 
     suspend fun updatePhoneNumber(countryCode: String, phoneNumber: String): Boolean {
+        _isLoading.value = true
         val code = "+${(countryCode.filter { it.isDigit() })}"
         return try {
-            executeUpdate(
+            val result = executeUpdate(
                 UpdateUserBody(
                     updatePhoneNumber = UpdatePhoneNumber(
                         code,
@@ -111,8 +128,16 @@ class PersonalInfoViewModel @Inject constructor(
                     )
                 )
             )
+            _isLoading.value = false
+            if (result) {
+                _countryCode.value = countryCode
+                _phoneNumber.value = phoneNumber
+                _phoneNumberToDisplay.value = "$code $phoneNumber"
+            }
+            result
         } catch (e: Exception) {
             // Handle exception
+            _isLoading.value = false
             false
         }
     }
@@ -140,6 +165,9 @@ class PersonalInfoViewModel @Inject constructor(
                 )
             )
             _isLoading.value = false
+            if (result) {
+                tempEmail = email
+            }
             result
         } catch (e: Exception) {
             // Handle exception
@@ -152,7 +180,9 @@ class PersonalInfoViewModel @Inject constructor(
         _isLoading.value = true
         AWSMobileClient.getInstance().confirmUpdateUserAttribute("email", verificationCode, object : Callback<Void> {
             override fun onResult(result: Void?) {
-                userRepository.updateUser(SHARED_PREFERENCES_KEY_USERNAME, _email.value)
+                userRepository.updateUser(Constants.SHARED_PREFERENCES_KEY_USERNAME, _email.value)
+                _email.value = tempEmail
+                _isLoading.value = false
                 onResult(AWSMobileClientResponse(true, result, null))
             }
 

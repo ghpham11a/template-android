@@ -251,7 +251,7 @@ fun PersonalInfoScreen(navController: NavController) {
                     Text(preferrredFirstName.ifEmpty { "Preferred first name (optional)" })
                 },
                 openedContent = {
-                    var preferredNameField by remember { mutableStateOf(TextFieldValue()) }
+                    var preferredNameField by remember { mutableStateOf(TextFieldValue(viewModel.preferredName.value)) }
                     Column {
                         Text("The first name or business name that you'd like to be known by.")
                         Spacer(modifier = Modifier.height(8.dp))
@@ -266,6 +266,7 @@ fun PersonalInfoScreen(navController: NavController) {
                             onClick = {
                                 coroutineScope.launch(Dispatchers.Main) {
                                     if (viewModel.updatePreferredName(preferredNameField.text)) {
+                                        updateEnabledAndDisabledSections("Preferred first name", false)
                                         isPreferredFirstNameExpanded = false
                                     }
                                 }

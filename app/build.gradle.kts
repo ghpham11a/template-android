@@ -26,6 +26,9 @@ android {
         }
 
         buildConfigField("String", "STRIPE_API_KEY", "\"${project.property("STRIPE_API_KEY")}\"")
+
+        manifestPlaceholders["MAPS_API_KEY"] = project.property("MAPS_API_KEY") ?: ""
+
     }
 
     buildTypes {
@@ -95,11 +98,19 @@ dependencies {
     implementation("com.amazonaws:aws-android-sdk-mobile-client:2.75.1")
     implementation("com.amazonaws:aws-android-sdk-cognitoidentityprovider:2.75.1")
 
+    // To get images via url
     implementation("com.github.bumptech.glide:glide:4.16.0")
 
     implementation("androidx.compose.foundation:foundation:1.6.8")
 
     implementation("com.stripe:stripe-android:20.46.0")
+
+    implementation("com.google.accompanist:accompanist-permissions:0.30.0")
+    // Google Maps
+    implementation("com.google.maps.android:maps-compose:2.11.0")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    // To get the last known location
+    implementation("com.google.android.gms:play-services-location:21.3.0")
 
 }
 
