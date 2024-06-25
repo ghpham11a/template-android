@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.example.template.repositories.UserRepository
 import com.example.template.utils.Constants.SHARED_PREFERENCES_NAME
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.net.PlacesClient
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,5 +27,11 @@ object MainAppModule {
     @Singleton
     fun provideUserRepository(sharedPreferences: SharedPreferences): UserRepository {
         return UserRepository(sharedPreferences)
+    }
+
+    @Provides
+    @Singleton
+    fun providePlacesClient(@ApplicationContext context: Context): PlacesClient {
+        return Places.createClient(context)
     }
 }
