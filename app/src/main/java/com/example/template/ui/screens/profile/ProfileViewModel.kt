@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.amazonaws.mobile.client.AWSMobileClient
 import com.example.template.repositories.UserRepository
+import com.example.template.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,7 +46,6 @@ class ProfileViewModel @Inject constructor(
     private val _cells = MutableStateFlow(emptyList<String>())
     val cells: StateFlow<List<String>> = _cells
 
-
     init {
         userRepository.isLoggedIn()
         viewModelScope.launch {
@@ -64,6 +64,12 @@ class ProfileViewModel @Inject constructor(
                         Cells.PAYMENTS_AND_PAYOUTS,
                         Cells.LOG_OUT
                     )
+
+                    val response = userRepository.privateReadUser()
+                    if (response != null && response.isSuccessful) {
+
+                    }
+
                 } else {
                     _cells.value = listOf(
                         Cells.GUEST_BANNER,

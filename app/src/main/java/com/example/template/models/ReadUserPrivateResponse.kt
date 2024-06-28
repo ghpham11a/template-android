@@ -5,17 +5,21 @@ import java.io.Serializable
 
 data class ReadUserPrivateResponse(
     @SerializedName("userId")
-    val userId: String,
+    val userId: String? = null,
     @SerializedName("email")
-    val email: String,
+    val email: String? = null,
     @SerializedName("firstName")
-    val firstName: String,
+    val firstName: String? = null,
     @SerializedName("lastName")
-    val lastName: String,
+    val lastName: String? = null,
     @SerializedName("countryCode")
-    val countryCode: String,
+    val countryCode: String? = null,
     @SerializedName("phoneNumber")
-    val phoneNumber: String,
+    val phoneNumber: String? = null,
     @SerializedName("preferredName")
-    val preferredName: String
+    val preferredName: String? = null,
+    @SerializedName("stripeCustomerId")
+    val stripeCustomerId: String? = null,
+    @SerializedName("stripeConnectedAccountId")
+    val stripeConnectedAccountId: String? = null
 ): Serializable

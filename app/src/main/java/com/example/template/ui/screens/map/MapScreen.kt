@@ -34,6 +34,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -42,6 +43,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -127,13 +129,13 @@ fun MapScreen(navController: NavController) {
 
     Scaffold(
         topBar = {
-            TextButton(
-                onClick = {
-                    navController.navigateUp()
-                },
-            ) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Close")
-            }
+//            TextButton(
+//                onClick = {
+//                    navController.navigateUp()
+//                },
+//            ) {
+//                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Close")
+//            }
         }
     ) {
 
@@ -149,7 +151,20 @@ fun MapScreen(navController: NavController) {
                         .background(Color.Transparent)
                 ) {
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Row {
+                        TextButton(
+                            onClick = {
+                                if (isTextFieldClicked) {
+                                    searchContent = searchPlaceholder
+                                    isTextFieldClicked = false
+                                } else {
+                                    navController.navigateUp()
+                                }
+                            },
+                        ) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Close")
+                        }
+                    }
 
                     Row(
                         modifier = Modifier
@@ -175,12 +190,11 @@ fun MapScreen(navController: NavController) {
                                 )
                                 IconButton(
                                     onClick = {
-                                        searchContent = searchPlaceholder
-                                        isTextFieldClicked = false
+                                        searchContent = ""
                                     },
                                     modifier = Modifier.align(Alignment.CenterEnd)
                                 ) {
-                                    Icon(Icons.Filled.Delete, contentDescription = "Add Icon")
+                                    Icon(Icons.Filled.Close, contentDescription = "Add Icon")
                                 }
                             }
                         } else {
@@ -205,23 +219,30 @@ fun MapScreen(navController: NavController) {
                             .background(Color.White)) {
                             items(locations) { prediction ->
                                 HorizontalDivider()
-                                Button(
-                                    onClick = {
-                                        val selectedPrediction = prediction.getFullText(StyleSpan(Typeface.BOLD)).toString()
-                                        searchContent = selectedPrediction
-                                        searchPlaceholder = selectedPrediction
-                                        isTextFieldClicked = false
-                                        viewModel.readPlaceDetails(BuildConfig.MAPS_API_KEY, prediction.placeId)
-                                    },
+                                Row(
                                     modifier = Modifier
-                                        .fillMaxWidth(),
-                                    colors = ButtonDefaults.buttonColors(Color.Transparent)
+                                        .fillMaxWidth()
+                                        .background(Color.Transparent),
+                                    horizontalArrangement = Arrangement.Start
                                 ) {
-                                    Text(
-                                        prediction.getFullText(StyleSpan(Typeface.BOLD)).toString(),
-                                        modifier = Modifier.padding(16.dp),
-                                        color = Color.Black
-                                    )
+                                    Button(
+                                        onClick = {
+                                            val selectedPrediction = prediction.getFullText(StyleSpan(Typeface.BOLD)).toString()
+                                            searchContent = selectedPrediction
+                                            searchPlaceholder = selectedPrediction
+                                            isTextFieldClicked = false
+                                            viewModel.readPlaceDetails(BuildConfig.MAPS_API_KEY, prediction.placeId)
+                                        },
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        colors = ButtonDefaults.buttonColors(Color.Transparent),
+                                    ) {
+                                        Text(
+                                            prediction.getFullText(StyleSpan(Typeface.BOLD)).toString(),
+                                            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                                            color = Color.Black
+                                        )
+                                    }
                                 }
                             }
                         }

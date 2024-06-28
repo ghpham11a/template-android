@@ -1,6 +1,7 @@
 package com.example.template.ui.screens.paymentshub
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -51,16 +54,56 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.template.Screen
 import com.example.template.ui.components.buttons.HorizontalIconButton
+import com.example.template.ui.components.buttons.LoadingButton
 import com.example.template.ui.components.texts.HeadingText
 import com.example.template.ui.screens.auth.CodeVerificationViewModel
+import com.example.template.ui.screens.filterlist.FilterListViewModel
 import com.example.template.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import com.stripe.android.paymentsheet.PaymentSheet
+import com.stripe.android.paymentsheet.PaymentSheetResult
+import com.stripe.android.paymentsheet.rememberPaymentSheet
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PaymentMethodsScreen(navController: NavController) {
+
+    val viewModel = hiltViewModel<PaymentMethodsViewModel>()
+    val isLoading by viewModel.isLoading.collectAsState()
+
+    val paymentMethods by viewModel.paymentMethods.collectAsState()
+
+    val coroutineScope = rememberCoroutineScope()
+
+    val paymentSheet = rememberPaymentSheet { paymentResult ->
+        when (paymentResult) {
+            is PaymentSheetResult.Completed -> {
+                // showToast("Payment complete!")
+            }
+
+            is PaymentSheetResult.Canceled -> {
+                // showToast("Payment canceled!")
+            }
+
+            is PaymentSheetResult.Failed -> {
+
+            }
+        }
+    }
+
+    fun onPayClicked(
+        paymentSheet: PaymentSheet,
+        stripeCustomerId: String,
+        stripeEphemeralKey: String,
+        setupIntentClientSecret: String,
+    ) {
+        val configuration = PaymentSheet.Configuration.Builder(merchantDisplayName = "Template")
+            .customer(PaymentSheet.CustomerConfiguration(stripeCustomerId, stripeEphemeralKey))
+            .build()
+        paymentSheet.presentWithSetupIntent(setupIntentClientSecret, configuration)
+    }
 
     Scaffold(
         topBar = {
@@ -82,6 +125,32 @@ fun PaymentMethodsScreen(navController: NavController) {
             Spacer(modifier = Modifier.padding(32.dp))
 
             HeadingText(text = "Payment Methods")
+
+            LazyColumn {
+                items(paymentMethods) {
+                    Text(text = it.brand ?: "")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            LoadingButton(
+                onClick = {
+                    coroutineScope.launch(Dispatchers.Main) {
+                        viewModel.createSetupIntent()?.let {
+                            onPayClicked(
+                                paymentSheet,
+                                it.stripeCustomerId ?: "",
+                                it.ephemeralKey ?: "",
+                                it.setupIntent ?: ""
+                            )
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                isLoading = isLoading,
+                buttonText = "Add payment method"
+            )
         }
     }
 }

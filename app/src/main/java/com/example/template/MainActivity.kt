@@ -350,6 +350,8 @@ fun NavigationGraph(
         }
         composable(Screen.XMLView.route) { XMLViewScreen(navController) }
         composable(Screen.Map.route) { MapScreen(navController) }
+        composable(Screen.PaymentMethods.route) { PaymentMethodsScreen(navController) }
+        composable(Screen.PayoutMethods.route) { PayoutMethodsScreen(navController) }
     }
 }
 

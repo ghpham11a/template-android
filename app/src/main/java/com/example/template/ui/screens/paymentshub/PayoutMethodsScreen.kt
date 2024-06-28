@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -51,6 +53,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.template.Screen
 import com.example.template.ui.components.buttons.HorizontalIconButton
+import com.example.template.ui.components.buttons.LoadingButton
 import com.example.template.ui.components.texts.HeadingText
 import com.example.template.ui.screens.auth.CodeVerificationViewModel
 import com.example.template.utils.Constants
@@ -61,6 +64,10 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PayoutMethodsScreen(navController: NavController) {
+
+    val viewModel = hiltViewModel<PayoutMethodsViewModel>()
+
+    val payoutMethods by viewModel.payoutMethods.collectAsState()
 
     Scaffold(
         topBar = {
@@ -82,6 +89,23 @@ fun PayoutMethodsScreen(navController: NavController) {
             Spacer(modifier = Modifier.padding(32.dp))
 
             HeadingText(text = "Payout Methods")
+
+            LazyColumn {
+                items(payoutMethods) {
+                    Text(text = it.bankName ?: "")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            LoadingButton(
+                onClick = {
+
+                },
+                modifier = Modifier.fillMaxWidth(),
+                isLoading = false,
+                buttonText = "Add payout method"
+            )
 
         }
     }

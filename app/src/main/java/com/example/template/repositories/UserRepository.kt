@@ -62,8 +62,8 @@ class UserRepository @Inject constructor(
         get() = sharedPreferences.getString(SHARED_PREFERENCES_KEY_BIRTHDATE, null)
 
 
-    private var userPrivate: ReadUserPrivateResponse? = null
-    private var userPublic: ReadUserPublicResponse? = null
+    var userPrivate: ReadUserPrivateResponse? = null
+    var userPublic: ReadUserPublicResponse? = null
 
     suspend fun privateReadUser(refresh: Boolean = false): Response<ReadUserPrivateResponse>? {
 

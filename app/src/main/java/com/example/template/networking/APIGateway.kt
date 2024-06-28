@@ -5,6 +5,8 @@ import com.example.template.models.AdminDisableUserResponse
 import com.example.template.models.AdminEnableUserResponse
 import com.example.template.models.AdminUpdateUserBody
 import com.example.template.models.CheckIfUserExistsResponse
+import com.example.template.models.CreateSetupIntentRequest
+import com.example.template.models.CreateSetupIntentResponse
 import com.example.template.models.CreateThingResponse
 import com.example.template.models.ReadUserPrivateResponse
 import com.example.template.models.ReadUserPublicResponse
@@ -79,6 +81,13 @@ interface APIGatewayService {
         @HeaderMap headers: Map<String, String>,
         @Body body: Thing
     ): Response<CreateThingResponse>
+
+    @POST("private/users/{userId}/payments")
+    suspend fun privateCreatePaymentIntent(
+        @HeaderMap headers: Map<String, String>,
+        @Path("userId") userId: String,
+        @Body body: CreateSetupIntentRequest
+    ): Response<CreateSetupIntentResponse>
 }
 
 // Create Retrofit instance
