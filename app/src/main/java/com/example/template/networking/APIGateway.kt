@@ -8,6 +8,8 @@ import com.example.template.models.CheckIfUserExistsResponse
 import com.example.template.models.CreateSetupIntentRequest
 import com.example.template.models.CreateSetupIntentResponse
 import com.example.template.models.CreateThingResponse
+import com.example.template.models.ReadPaymentMethodsResponse
+import com.example.template.models.ReadPayoutMethodsResponse
 import com.example.template.models.ReadUserPrivateResponse
 import com.example.template.models.ReadUserPublicResponse
 import com.example.template.models.Thing
@@ -88,6 +90,20 @@ interface APIGatewayService {
         @Path("userId") userId: String,
         @Body body: CreateSetupIntentRequest
     ): Response<CreateSetupIntentResponse>
+
+    @GET("private/users/{userId}/payments")
+    suspend fun privateReadPaymentMethods(
+        @HeaderMap headers: Map<String, String>,
+        @Path("userId") userId: String,
+        @Query("customerId") customerId: String
+    ): Response<ReadPaymentMethodsResponse>
+
+    @GET("private/users/{userId}/payouts")
+    suspend fun privateReadPayoutMethods(
+        @HeaderMap headers: Map<String, String>,
+        @Path("userId") userId: String,
+        @Query("accountId") accountId: String
+    ): Response<ReadPayoutMethodsResponse>
 }
 
 // Create Retrofit instance

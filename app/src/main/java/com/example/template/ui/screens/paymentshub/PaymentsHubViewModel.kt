@@ -8,6 +8,7 @@ import com.example.template.models.Todo
 import com.example.template.networking.APIGateway
 import com.example.template.networking.JSONPlaceholder
 import com.example.template.repositories.UserRepository
+import com.example.template.ui.screens.profile.ProfileViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,24 +16,16 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PayoutMethodsViewModel @Inject constructor(
+class PaymentsHubViewModel @Inject constructor(
     private val userRepository: UserRepository
 ): ViewModel() {
 
-    private val _payoutMethods = MutableStateFlow<List<PayoutMethod>>(emptyList())
-    val payoutMethods: StateFlow<List<PayoutMethod>> = _payoutMethods
-
     init {
         viewModelScope.launch {
-            val response = APIGateway.api.privateReadPayoutMethods(
-                APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
-                userRepository.userId ?: "",
-                userRepository.userPrivate?.stripeConnectedAccountId ?: ""
-            )
-            if (response.isSuccessful) {
-                _payoutMethods.value = response.body()?.payoutMethods ?: emptyList()
+            val response = userRepository.privateReadUser()
+            if (response != null && response.isSuccessful) {
+
             }
         }
     }
-
 }

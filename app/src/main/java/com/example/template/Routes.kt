@@ -46,4 +46,5 @@ sealed class Screen(val route: String) {
     object PayoutMethods : Screen("payments-hub/payout-methods")
     object XMLView : Screen("xml-view")
     object Map : Screen("map")
+    object AddPayout: Screen("add-payout")
 }

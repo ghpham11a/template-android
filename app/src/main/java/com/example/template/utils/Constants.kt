@@ -42,4 +42,9 @@ object Constants {
         "Japan ( +81 )"
     )
 
+    val COUNTRIES = listOf(
+        "United States",
+        "United Kingdom"
+    )
+
 }

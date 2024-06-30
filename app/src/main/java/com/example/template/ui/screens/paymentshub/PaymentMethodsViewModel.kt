@@ -32,6 +32,19 @@ class PaymentMethodsViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
+    init {
+        viewModelScope.launch {
+            val response = APIGateway.api.privateReadPaymentMethods(
+                APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
+                userRepository.userId ?: "",
+                userRepository.userPrivate?.stripeCustomerId ?: ""
+            )
+            if (response.isSuccessful) {
+                _paymentMethods.value = response.body()?.paymentMethods ?: emptyList()
+            }
+        }
+    }
+
     suspend fun createSetupIntent(): CreateSetupIntentResponse? {
         _isLoading.value = true
 

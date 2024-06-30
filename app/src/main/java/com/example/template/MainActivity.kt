@@ -39,6 +39,7 @@ import com.amazonaws.mobile.client.AWSMobileClient
 import com.amazonaws.mobile.client.Callback
 import com.amazonaws.mobile.client.UserState
 import com.amazonaws.mobile.client.UserStateDetails
+import com.example.template.ui.screens.addpayout.AddPayoutScreen
 import com.example.template.ui.screens.auth.AddInfoScreen
 import com.example.template.ui.screens.auth.AuthHubScreen
 import com.example.template.ui.screens.auth.CodeVerificationScreen
@@ -352,6 +353,7 @@ fun NavigationGraph(
         composable(Screen.Map.route) { MapScreen(navController) }
         composable(Screen.PaymentMethods.route) { PaymentMethodsScreen(navController) }
         composable(Screen.PayoutMethods.route) { PayoutMethodsScreen(navController) }
+        composable(Screen.AddPayout.route) { AddPayoutScreen(navController) }
     }
 }
 

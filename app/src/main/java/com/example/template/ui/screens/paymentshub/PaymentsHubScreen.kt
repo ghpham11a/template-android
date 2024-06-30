@@ -62,6 +62,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun PaymentsHubScreen(navController: NavController) {
 
+    val viewModel = hiltViewModel<PaymentsHubViewModel>()
+
     Scaffold(
         topBar = {
             TextButton(

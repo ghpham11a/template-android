@@ -90,9 +90,17 @@ fun PayoutMethodsScreen(navController: NavController) {
 
             HeadingText(text = "Payout Methods")
 
-            LazyColumn {
-                items(payoutMethods) {
-                    Text(text = it.bankName ?: "")
+            if (payoutMethods.isEmpty()) {
+                Text(
+                    text = "No payout methods added",
+                    fontSize = 16.sp,
+                    color = Color.Gray
+                )
+            } else {
+                LazyColumn {
+                    items(payoutMethods) {
+                        Text(text = it.accountHolderType ?: "")
+                    }
                 }
             }
 
@@ -100,7 +108,7 @@ fun PayoutMethodsScreen(navController: NavController) {
 
             LoadingButton(
                 onClick = {
-
+                    navController.navigate(Screen.AddPayout.route)
                 },
                 modifier = Modifier.fillMaxWidth(),
                 isLoading = false,

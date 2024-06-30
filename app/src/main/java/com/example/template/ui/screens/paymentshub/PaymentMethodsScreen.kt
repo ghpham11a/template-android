@@ -28,6 +28,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -59,6 +60,7 @@ import com.example.template.ui.components.texts.HeadingText
 import com.example.template.ui.screens.auth.CodeVerificationViewModel
 import com.example.template.ui.screens.filterlist.FilterListViewModel
 import com.example.template.utils.Constants
+import com.stripe.android.payments.paymentlauncher.PaymentResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.stripe.android.paymentsheet.PaymentSheet
@@ -81,6 +83,7 @@ fun PaymentMethodsScreen(navController: NavController) {
         when (paymentResult) {
             is PaymentSheetResult.Completed -> {
                 // showToast("Payment complete!")
+
             }
 
             is PaymentSheetResult.Canceled -> {
@@ -88,7 +91,7 @@ fun PaymentMethodsScreen(navController: NavController) {
             }
 
             is PaymentSheetResult.Failed -> {
-
+                Log.d("PaymentMethodScreen", "Payment failed: ${paymentResult.error}")
             }
         }
     }
@@ -126,9 +129,36 @@ fun PaymentMethodsScreen(navController: NavController) {
 
             HeadingText(text = "Payment Methods")
 
-            LazyColumn {
-                items(paymentMethods) {
-                    Text(text = it.brand ?: "")
+            if (paymentMethods.isEmpty()) {
+                Text(
+                    text = "No payment methods added",
+                    fontSize = 16.sp,
+                    color = Color.Gray
+                )
+            } else {
+                LazyColumn {
+                    items(paymentMethods) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(text = it.brand ?: "")
+                            Column {
+                                Text(text = it.last4 ?: "")
+                                Text(text = it.expMonth.toString() + "/" + it.expYear.toString())
+                            }
+                            Spacer(modifier = Modifier.width(16.dp))
+
+                            OutlinedButton(onClick = {
+
+                            }) {
+                                Text("Edit")
+                            }
+                        }
+
+                    }
                 }
             }
 

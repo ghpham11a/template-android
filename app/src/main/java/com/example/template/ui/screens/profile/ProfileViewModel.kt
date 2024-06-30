@@ -65,10 +65,10 @@ class ProfileViewModel @Inject constructor(
                         Cells.LOG_OUT
                     )
 
-                    val response = userRepository.privateReadUser()
-                    if (response != null && response.isSuccessful) {
-
-                    }
+//                    val response = userRepository.privateReadUser()
+//                    if (response != null && response.isSuccessful) {
+//
+//                    }
 
                 } else {
                     _cells.value = listOf(
