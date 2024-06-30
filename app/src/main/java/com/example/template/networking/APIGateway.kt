@@ -84,8 +84,8 @@ interface APIGatewayService {
         @Body body: Thing
     ): Response<CreateThingResponse>
 
-    @POST("private/users/{userId}/payments")
-    suspend fun privateCreatePaymentIntent(
+    @POST("private/users/{userId}/payments/setup-intent")
+    suspend fun privateCreatePaymentSetupIntent(
         @HeaderMap headers: Map<String, String>,
         @Path("userId") userId: String,
         @Body body: CreateSetupIntentRequest

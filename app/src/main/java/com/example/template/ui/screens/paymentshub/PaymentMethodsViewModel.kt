@@ -1,23 +1,17 @@
 package com.example.template.ui.screens.paymentshub
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.template.models.CreateSetupIntentRequest
 import com.example.template.models.CreateSetupIntentResponse
 import com.example.template.models.PaymentMethod
-import com.example.template.models.Todo
-import com.example.template.models.UpdateEmail
-import com.example.template.models.UpdateUserBody
 import com.example.template.networking.APIGateway
-import com.example.template.networking.JSONPlaceholder
 import com.example.template.repositories.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.stripe.android.paymentsheet.PaymentSheet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -50,7 +44,7 @@ class PaymentMethodsViewModel @Inject constructor(
 
         return withContext(Dispatchers.IO) {
             try {
-                val response = APIGateway.api.privateCreatePaymentIntent(
+                val response = APIGateway.api.privateCreatePaymentSetupIntent(
                     headers = APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
                     userId = userRepository.userId ?: "",
                     body = CreateSetupIntentRequest(
