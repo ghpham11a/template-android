@@ -1,6 +1,8 @@
 package com.example.template.ui.screens.paymentshub
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,6 +29,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -47,6 +50,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -66,11 +70,18 @@ import kotlinx.coroutines.launch
 fun PayoutMethodsScreen(navController: NavController) {
 
     val viewModel = hiltViewModel<PayoutMethodsViewModel>()
+    val accountLinkUrl = viewModel.accountLinkUrl.collectAsState()
+    val isRefreshing = viewModel.isRefreshing.collectAsState()
 
     val payoutMethods by viewModel.payoutMethods.collectAsState()
 
+    val coroutineScope = rememberCoroutineScope()
+
+    val context = LocalContext.current
+
     Scaffold(
         topBar = {
+
             TextButton(
                 onClick = {
                     navController.navigateUp()
@@ -88,7 +99,23 @@ fun PayoutMethodsScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.padding(32.dp))
 
-            HeadingText(text = "Payout Methods")
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                HeadingText(text = "Payout Methods")
+
+                TextButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            viewModel.readUser()
+                        }
+                    },
+                ) {
+                    Text(if (isRefreshing.value) "Refreshing" else "Refresh")
+                }
+            }
+
 
             if (payoutMethods.isEmpty()) {
                 Text(
@@ -99,8 +126,39 @@ fun PayoutMethodsScreen(navController: NavController) {
             } else {
                 LazyColumn {
                     items(payoutMethods) {
-                        Text(text = it.accountHolderType ?: "")
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Icon(Icons.Filled.Close, contentDescription = "Close")
+                            Column {
+                                Text("Bank Account")
+                                Text("${it.accountHolderName ?: ""} ...${it.last4 ?: ""} (${it.currency?.uppercase()})")
+                                if (it.status == "new") {
+                                    Text("On hold")
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(16.dp))
+
+                            OutlinedButton(onClick = {
+
+                            }) {
+                                Text("Edit")
+                            }
+                        }
                     }
+                }
+            }
+
+            if (accountLinkUrl.value != "") {
+                TextButton(onClick = {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(accountLinkUrl.value))
+                    context.startActivity(intent)
+                }) {
+                    Text("Verify payout account through Stripe")
                 }
             }
 

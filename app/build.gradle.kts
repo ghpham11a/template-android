@@ -104,6 +104,7 @@ dependencies {
 
     implementation("androidx.compose.foundation:foundation:1.6.8")
 
+    // To use stripe components to add payment methods
     implementation("com.stripe:stripe-android:20.46.0")
 
     implementation("com.google.accompanist:accompanist-permissions:0.30.0")

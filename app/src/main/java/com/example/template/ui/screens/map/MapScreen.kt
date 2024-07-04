@@ -2,9 +2,7 @@ package com.example.template.ui.screens.map
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
@@ -14,12 +12,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -27,24 +23,17 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Typeface
-import android.text.style.CharacterStyle
 import android.text.style.StyleSpan
-import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -62,11 +51,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.template.BuildConfig
-import com.example.template.ui.screens.filterlist.FilterListViewModel
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.shouldShowRationale
-import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
@@ -155,7 +141,13 @@ fun MapScreen(navController: NavController) {
                         TextButton(
                             onClick = {
                                 if (isTextFieldClicked) {
-                                    searchContent = searchPlaceholder
+                                    if (marker != null) {
+                                        searchContent = searchPlaceholder
+                                    } else {
+                                        searchContent = ""
+                                        searchPlaceholder = "Search location"
+                                        viewModel.clearLocations()
+                                    }
                                     isTextFieldClicked = false
                                 } else {
                                     navController.navigateUp()
@@ -191,6 +183,8 @@ fun MapScreen(navController: NavController) {
                                 IconButton(
                                     onClick = {
                                         searchContent = ""
+                                        searchPlaceholder = "Search locations"
+                                        viewModel.clearLocations()
                                     },
                                     modifier = Modifier.align(Alignment.CenterEnd)
                                 ) {

@@ -65,14 +65,14 @@ class PersonalInfoViewModel @Inject constructor(
             if (response != null && response.isSuccessful) {
                 // Handle the successful response
                 val user = response.body()
-                _firstName.value = userRepository.firstName ?: ""
-                _lastName.value = userRepository.lastName ?: ""
-                _preferredName.value = user?.preferredName ?: ""
-                _countryCode.value = Constants.COUNTRY_CODES.find { it.contains(user?.countryCode ?: "") }
-                    ?: Constants.COUNTRY_CODES.first()
-                _phoneNumber.value = (user?.phoneNumber ?: "").replace(user?.countryCode ?: "", "")
-                _phoneNumberToDisplay.value =
-                    (user?.countryCode ?: "") + " " + (user?.phoneNumber ?: "")
+                _firstName.value = user?.user?.firstName ?: ""
+                _lastName.value = user?.user?.lastName ?: ""
+                _preferredName.value = user?.user?.preferredName ?: ""
+//                _countryCode.value = Constants.COUNTRY_CODES.find { it.contains(user?.countryCode ?: "") }
+//                    ?: Constants.COUNTRY_CODES.first()
+//                _phoneNumber.value = (user?.phoneNumber ?: "").replace(user?.countryCode ?: "", "")
+//                _phoneNumberToDisplay.value =
+//                    (user?.countryCode ?: "") + " " + (user?.phoneNumber ?: "")
                 _email.value = userRepository.username ?: ""
             } else {
                 // Handle the error

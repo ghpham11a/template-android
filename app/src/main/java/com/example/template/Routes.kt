@@ -47,4 +47,7 @@ sealed class Screen(val route: String) {
     object XMLView : Screen("xml-view")
     object Map : Screen("map")
     object AddPayout: Screen("add-payout")
+    object AddBankInfo: Screen("add-bank-info/{country}") {
+        fun build(country: String) = "add-bank-info/$country"
+    }
 }

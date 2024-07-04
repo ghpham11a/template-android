@@ -5,6 +5,8 @@ import com.example.template.models.AdminDisableUserResponse
 import com.example.template.models.AdminEnableUserResponse
 import com.example.template.models.AdminUpdateUserBody
 import com.example.template.models.CheckIfUserExistsResponse
+import com.example.template.models.CreatePayoutMethodRequest
+import com.example.template.models.CreatePayoutMethodResponse
 import com.example.template.models.CreateSetupIntentRequest
 import com.example.template.models.CreateSetupIntentResponse
 import com.example.template.models.CreateThingResponse
@@ -84,7 +86,7 @@ interface APIGatewayService {
         @Body body: Thing
     ): Response<CreateThingResponse>
 
-    @POST("private/users/{userId}/payments/setup-intent")
+    @POST("private/users/{userId}/payments")
     suspend fun privateCreatePaymentSetupIntent(
         @HeaderMap headers: Map<String, String>,
         @Path("userId") userId: String,
@@ -104,6 +106,13 @@ interface APIGatewayService {
         @Path("userId") userId: String,
         @Query("accountId") accountId: String
     ): Response<ReadPayoutMethodsResponse>
+
+    @POST("private/users/{userId}/payouts")
+    suspend fun privateCreatePayoutMethod(
+        @HeaderMap headers: Map<String, String>,
+        @Path("userId") userId: String,
+        @Body body: CreatePayoutMethodRequest
+    ): Response<CreatePayoutMethodResponse>
 }
 
 // Create Retrofit instance

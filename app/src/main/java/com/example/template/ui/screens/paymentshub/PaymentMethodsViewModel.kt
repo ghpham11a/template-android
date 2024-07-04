@@ -28,14 +28,18 @@ class PaymentMethodsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val response = APIGateway.api.privateReadPaymentMethods(
-                APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
-                userRepository.userId ?: "",
-                userRepository.userPrivate?.stripeCustomerId ?: ""
-            )
-            if (response.isSuccessful) {
-                _paymentMethods.value = response.body()?.paymentMethods ?: emptyList()
-            }
+            fetchPaymentMethods()
+        }
+    }
+
+    suspend fun fetchPaymentMethods() {
+        val response = APIGateway.api.privateReadPaymentMethods(
+            APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
+            userRepository.userId ?: "",
+            userRepository.userPrivate?.user?.stripeCustomerId ?: ""
+        )
+        if (response.isSuccessful) {
+            _paymentMethods.value = response.body()?.paymentMethods ?: emptyList()
         }
     }
 
@@ -48,7 +52,7 @@ class PaymentMethodsViewModel @Inject constructor(
                     headers = APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
                     userId = userRepository.userId ?: "",
                     body = CreateSetupIntentRequest(
-                        userRepository.userPrivate?.stripeCustomerId ?: ""
+                        userRepository.userPrivate?.user?.stripeCustomerId ?: ""
                     )
                 )
                 _isLoading.value = false
@@ -61,6 +65,14 @@ class PaymentMethodsViewModel @Inject constructor(
                 _isLoading.value = false
                 null
             }
+        }
+    }
+
+    suspend fun readUser() {
+        val response = userRepository.privateReadUser()
+        if (response != null && response.isSuccessful) {
+            val user = response.body()
+
         }
     }
 }

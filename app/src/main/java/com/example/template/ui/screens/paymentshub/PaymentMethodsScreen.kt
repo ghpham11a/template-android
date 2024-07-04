@@ -83,7 +83,9 @@ fun PaymentMethodsScreen(navController: NavController) {
         when (paymentResult) {
             is PaymentSheetResult.Completed -> {
                 // showToast("Payment complete!")
-
+                coroutineScope.launch {
+                    viewModel.fetchPaymentMethods()
+                }
             }
 
             is PaymentSheetResult.Canceled -> {

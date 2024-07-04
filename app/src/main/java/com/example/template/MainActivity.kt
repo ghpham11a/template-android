@@ -39,6 +39,7 @@ import com.amazonaws.mobile.client.AWSMobileClient
 import com.amazonaws.mobile.client.Callback
 import com.amazonaws.mobile.client.UserState
 import com.amazonaws.mobile.client.UserStateDetails
+import com.example.template.ui.screens.addpayout.AddBankInfoScreen
 import com.example.template.ui.screens.addpayout.AddPayoutScreen
 import com.example.template.ui.screens.auth.AddInfoScreen
 import com.example.template.ui.screens.auth.AuthHubScreen
@@ -354,6 +355,17 @@ fun NavigationGraph(
         composable(Screen.PaymentMethods.route) { PaymentMethodsScreen(navController) }
         composable(Screen.PayoutMethods.route) { PayoutMethodsScreen(navController) }
         composable(Screen.AddPayout.route) { AddPayoutScreen(navController) }
+        composable(
+            Screen.AddBankInfo.route,
+            arguments = listOf(
+                navArgument("country") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            AddBankInfoScreen(
+                navController,
+                backStackEntry.arguments?.getString("country").toString()
+            )
+        }
     }
 }
 

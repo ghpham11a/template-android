@@ -1,6 +1,10 @@
 package com.example.template.ui.screens.addpayout
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
+import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,17 +29,26 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.amazonaws.mobile.client.results.SignInState
+import com.example.template.Screen
+import com.example.template.ui.components.buttons.LoadingButton
 import com.example.template.utils.Constants
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -49,6 +62,26 @@ fun AddPayoutScreen(navController: NavController) {
 
     val availablePayoutTypes by viewModel.availablePayoutTypes.collectAsState()
     val selectedPayoutType by viewModel.selectedPayoutType.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+
+    var coroutineScope = rememberCoroutineScope()
+
+    val context = LocalContext.current
+
+    fun getCountryCode(country: String): String {
+        return when (country) {
+            "United States" -> "US"
+            "Canada" -> "CA"
+            "United Kingdom" -> "GB"
+            "Australia" -> "AU"
+            "New Zealand" -> "NZ"
+            else -> ""
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.onCountryChange(viewModel.selectedCountry.value)
+    }
 
     Scaffold(
         topBar = {
@@ -66,6 +99,9 @@ fun AddPayoutScreen(navController: NavController) {
                 .fillMaxSize()
                 .padding(16.dp),
         ) {
+
+            Spacer(modifier = Modifier.height(32.dp))
+
             Text("Let's add a payout method")
 
             Text("To start, let us know where you like us to send your money")
@@ -141,7 +177,21 @@ fun AddPayoutScreen(navController: NavController) {
                 }
             }
 
-
+            LoadingButton(
+                onClick = {
+                    coroutineScope.launch(Dispatchers.IO) {
+                        val response = viewModel.handleContinue()
+                        if (response) {
+                            withContext(Dispatchers.Main) {
+                                navController.navigate(Screen.AddBankInfo.build(getCountryCode(selectedCountry)))
+                            }
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                isLoading = isLoading,
+                buttonText = "Continue"
+            )
         }
     }
 }

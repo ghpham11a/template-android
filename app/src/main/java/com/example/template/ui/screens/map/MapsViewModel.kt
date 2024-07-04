@@ -1,6 +1,5 @@
 package com.example.template.ui.screens.map
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.template.networking.GoogleMaps
 import com.google.android.gms.maps.model.LatLng
@@ -33,6 +32,10 @@ class MapsViewModel @Inject constructor(
 
     fun updateMapOrigin(origin: LatLng) {
         _mapOrigin.value = origin
+    }
+
+    fun clearLocations() {
+        _location.value = emptyList()
     }
 
     fun searchLocations(origin: LatLng, query: String) {
