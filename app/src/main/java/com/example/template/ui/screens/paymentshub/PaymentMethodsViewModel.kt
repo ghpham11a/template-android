@@ -1,9 +1,12 @@
 package com.example.template.ui.screens.paymentshub
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.template.models.CreateSetupIntentRequest
 import com.example.template.models.CreateSetupIntentResponse
+import com.example.template.models.DeletePaymentMethodRequest
+import com.example.template.models.DeletePaymentMethodResponse
 import com.example.template.models.PaymentMethod
 import com.example.template.networking.APIGateway
 import com.example.template.repositories.UserRepository
@@ -25,6 +28,8 @@ class PaymentMethodsViewModel @Inject constructor(
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
+
+    var selectedPaymentMethodId = ""
 
     init {
         viewModelScope.launch {
@@ -57,6 +62,32 @@ class PaymentMethodsViewModel @Inject constructor(
                 )
                 _isLoading.value = false
                 if (response.isSuccessful) {
+                    response.body()
+                } else {
+                    null
+                }
+            } catch (e: Exception) {
+                _isLoading.value = false
+                null
+            }
+        }
+    }
+
+    suspend fun deletePaymentmethod(paymentMethodId: String): DeletePaymentMethodResponse? {
+        _isLoading.value = true
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = APIGateway.api.privateDeletePaymentMethod(
+                    headers = APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
+                    userId = userRepository.userId ?: "",
+                    body = DeletePaymentMethodRequest(
+                        userRepository.userPrivate?.user?.stripeAccountId ?: "",
+                        paymentMethodId
+                    )
+                )
+                _isLoading.value = false
+                if (response.isSuccessful) {
+                    selectedPaymentMethodId = ""
                     response.body()
                 } else {
                     null

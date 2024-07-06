@@ -2,7 +2,9 @@ package com.example.template.ui.screens.paymentshub
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,12 +30,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -46,6 +50,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -60,6 +65,7 @@ import com.example.template.ui.components.texts.HeadingText
 import com.example.template.ui.screens.auth.CodeVerificationViewModel
 import com.example.template.ui.screens.filterlist.FilterListViewModel
 import com.example.template.utils.Constants
+import com.google.maps.android.compose.rememberComposeUiViewRenderer
 import com.stripe.android.payments.paymentlauncher.PaymentResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -79,6 +85,8 @@ fun PaymentMethodsScreen(navController: NavController) {
 
     val coroutineScope = rememberCoroutineScope()
 
+    var paymentMethodId = ""
+
     val paymentSheet = rememberPaymentSheet { paymentResult ->
         when (paymentResult) {
             is PaymentSheetResult.Completed -> {
@@ -94,6 +102,43 @@ fun PaymentMethodsScreen(navController: NavController) {
 
             is PaymentSheetResult.Failed -> {
                 Log.d("PaymentMethodScreen", "Payment failed: ${paymentResult.error}")
+            }
+        }
+    }
+
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+    )
+    var showBottomSheet by remember { mutableStateOf(false) }
+    if (showBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                showBottomSheet = false
+            },
+            sheetState = sheetState,
+            modifier =  Modifier.height(LocalConfiguration.current.screenHeightDp.dp * 0.9f),
+        ) {
+            // Sheet content
+            Column {
+                com.example.template.ui.components.buttons.TextButton(
+                    onClick = {
+
+                    },
+                    buttonText = "Set default"
+                )
+                HorizontalDivider()
+                com.example.template.ui.components.buttons.TextButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            var result = viewModel.deletePaymentmethod(paymentMethodId = viewModel.selectedPaymentMethodId)
+                            if (result != null) {
+                                viewModel.fetchPaymentMethods()
+                                showBottomSheet = false
+                            }
+                        }
+                    },
+                    buttonText = if (isLoading) "Removing" else "Remove"
+                )
             }
         }
     }
@@ -150,11 +195,13 @@ fun PaymentMethodsScreen(navController: NavController) {
                             Column {
                                 Text(text = it.last4 ?: "")
                                 Text(text = it.expMonth.toString() + "/" + it.expYear.toString())
+                                Text(text = it.id ?: "")
                             }
                             Spacer(modifier = Modifier.width(16.dp))
 
                             OutlinedButton(onClick = {
-
+                                viewModel.selectedPaymentMethodId = it.id ?: ""
+                                showBottomSheet = true
                             }) {
                                 Text("Edit")
                             }

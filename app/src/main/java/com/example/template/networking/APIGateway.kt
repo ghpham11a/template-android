@@ -10,6 +10,10 @@ import com.example.template.models.CreatePayoutMethodResponse
 import com.example.template.models.CreateSetupIntentRequest
 import com.example.template.models.CreateSetupIntentResponse
 import com.example.template.models.CreateThingResponse
+import com.example.template.models.DeletePaymentMethodRequest
+import com.example.template.models.DeletePaymentMethodResponse
+import com.example.template.models.DeletePayoutMethodRequest
+import com.example.template.models.DeletePayoutMethodResponse
 import com.example.template.models.ReadPaymentMethodsResponse
 import com.example.template.models.ReadPayoutMethodsResponse
 import com.example.template.models.ReadUserPrivateResponse
@@ -113,6 +117,20 @@ interface APIGatewayService {
         @Path("userId") userId: String,
         @Body body: CreatePayoutMethodRequest
     ): Response<CreatePayoutMethodResponse>
+
+    @PATCH("private/users/{userId}/payments")
+    suspend fun privateDeletePaymentMethod(
+        @HeaderMap headers: Map<String, String>,
+        @Path("userId") userId: String,
+        @Body body: DeletePaymentMethodRequest
+    ): Response<DeletePaymentMethodResponse>
+
+    @PATCH("private/users/{userId}/payouts")
+    suspend fun privateDeletePayoutMethod(
+        @HeaderMap headers: Map<String, String>,
+        @Path("userId") userId: String,
+        @Body body: DeletePayoutMethodRequest
+    ): Response<DeletePayoutMethodResponse>
 }
 
 // Create Retrofit instance

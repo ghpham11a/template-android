@@ -1,8 +1,18 @@
 package com.example.template.utils
 
 import com.example.template.Screen
+import com.google.gson.annotations.SerializedName
 
 object Constants {
+
+    object UserAttributes {
+        const val UserId = "userId"
+        const val Email = "email"
+        const val FirstName = "firstName"
+        const val LastName = "lastName"
+        const val PreferredName = "preferredName"
+    }
+
 
     const val SHARED_PREFERENCES_NAME = "template_shared_preferences"
     const val SHARED_PREFERENCES_KEY_USERNAME = "username"

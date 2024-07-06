@@ -88,9 +88,9 @@ class PersonalInfoViewModel @Inject constructor(
             val result = executeUpdate(UpdateUserBody(updateLegalName = UpdateLegalName(firstName, lastName)))
             if (result) {
                 _firstName.value = firstName
-                userRepository.updateUser(Constants.SHARED_PREFERENCES_KEY_FIRSTNAME, firstName)
+                userRepository.updateUser(Constants.UserAttributes.FirstName, firstName)
                 _lastName.value = lastName
-                userRepository.updateUser(Constants.SHARED_PREFERENCES_KEY_LASTNAME, lastName)
+                userRepository.updateUser(Constants.UserAttributes.LastName, lastName)
             }
             result
         } catch (e: Exception) {
@@ -106,6 +106,7 @@ class PersonalInfoViewModel @Inject constructor(
             _isLoading.value = false
             if (result) {
                 _preferredName.value = preferredName
+                userRepository.updateUser(Constants.UserAttributes.PreferredName, preferredName)
             }
             result
         } catch (e: Exception) {

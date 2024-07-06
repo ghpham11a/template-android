@@ -5,7 +5,7 @@ import java.io.Serializable
 
 data class ReadUserPrivateResponse(
     @SerializedName("user")
-    val user: DynamoDBUser? = null,
+    var user: DynamoDBUser? = null,
     @SerializedName("stripeAccount")
-    val stripeAccount: StripeAccount? = null,
+    var stripeAccount: StripeAccount? = null,
 ): Serializable

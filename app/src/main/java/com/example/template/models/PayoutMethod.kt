@@ -18,6 +18,8 @@ data class PayoutMethod(
     var last4: String? = null,
     @SerializedName("status")
     var status: String? = null,
+    @SerializedName("defaultForCurrency")
+    var defaultForCurrency: Boolean? = null,
     //
     var isSelected: Boolean? = null
 ): Serializable

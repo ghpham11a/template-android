@@ -145,9 +145,19 @@ class UserRepository @Inject constructor(
             SHARED_PREFERENCES_KEY_SUB -> sharedPreferences.updateUserId(value)
             SHARED_PREFERENCES_KEY_ID_TOKEN -> sharedPreferences.updateIdToken(value)
             SHARED_PREFERENCES_KEY_ACCESS_TOKEN -> sharedPreferences.updateAccessToken(value)
-            SHARED_PREFERENCES_KEY_USERNAME -> sharedPreferences.updateEmail(value)
-            SHARED_PREFERENCES_KEY_FIRSTNAME -> sharedPreferences.updateFirstName(value)
-            SHARED_PREFERENCES_KEY_LASTNAME -> sharedPreferences.updateLastName(value)
+            SHARED_PREFERENCES_KEY_USERNAME -> {
+                userPrivate?.user?.email = value
+                sharedPreferences.updateEmail(value)
+            }
+            Constants.UserAttributes.FirstName -> {
+                userPrivate?.user?.lastName = value
+            }
+            Constants.UserAttributes.LastName -> {
+                userPrivate?.user?.lastName = value
+            }
+            Constants.UserAttributes.PreferredName -> {
+                userPrivate?.user?.preferredName = value
+            }
             SHARED_PREFERENCES_KEY_BIRTHDATE -> sharedPreferences.updateBirthdate(value)
             SHARED_PREFERENCES_KEY_EXPIRATION_DATE -> sharedPreferences.updateExpirationDate(value)
         }
