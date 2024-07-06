@@ -50,4 +50,5 @@ sealed class Screen(val route: String) {
     object AddBankInfo: Screen("add-bank-info/{country}") {
         fun build(country: String) = "add-bank-info/$country"
     }
+    object Availability: Screen("availability")
 }

@@ -47,6 +47,7 @@ import com.example.template.ui.screens.auth.CodeVerificationScreen
 import com.example.template.ui.screens.auth.EnterPasswordScreen
 import com.example.template.ui.screens.auth.NewPasswordScreen
 import com.example.template.ui.screens.auth.ResetPasswordScreen
+import com.example.template.ui.screens.availability.AvailabilityScreen
 import com.example.template.ui.screens.editprofile.EditProfileScreen
 import com.example.template.ui.screens.filterlist.FilterListScreen
 import com.example.template.ui.screens.loginandsecurity.LoginAndSecurityScreen
@@ -365,6 +366,9 @@ fun NavigationGraph(
                 navController,
                 backStackEntry.arguments?.getString("country").toString()
             )
+        }
+        composable(Screen.Availability.route) {
+            AvailabilityScreen(navController)
         }
     }
 }

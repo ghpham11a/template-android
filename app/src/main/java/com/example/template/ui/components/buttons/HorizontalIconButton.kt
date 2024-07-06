@@ -39,6 +39,7 @@ fun HorizontalIconButton(
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .padding(vertical = 8.dp)
     ) {
         Button(
             onClick = onClick,
