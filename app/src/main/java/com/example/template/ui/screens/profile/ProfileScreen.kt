@@ -26,10 +26,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.template.R
 import com.example.template.Screen
 import com.example.template.ui.components.buttons.HorizontalIconButton
 import com.example.template.ui.components.buttons.LoadingButton
@@ -163,9 +166,9 @@ fun ProfileScreen(navController: NavController) {
                     HorizontalIconButton(
                         icon = {
                             Icon(
-                                imageVector = Icons.Default.AddCircle,
+                                imageVector = ImageVector.vectorResource(id = R.drawable.ic_payments_hub),
                                 contentDescription = "Add",
-                                modifier = Modifier.size(24.dp),
+                                modifier = Modifier.size(35.dp),
                                 tint = Color.Black
                             )
                         },
