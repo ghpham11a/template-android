@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -56,6 +57,8 @@ fun ProfileScreen(navController: NavController) {
     val coroutineScope = rememberCoroutineScope()
 
     val cells by viewModel.cells.collectAsState()
+
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -131,7 +134,7 @@ fun ProfileScreen(navController: NavController) {
                     )
                 },
                 contentDescription = "Add",
-                title = "Login & Security",
+                title = context.getString(R.string.profile_loginandsecurity_button),
                 onClick = {
                     navController.navigate(Screen.LoginAndSecurity.route)
                 }
@@ -149,7 +152,7 @@ fun ProfileScreen(navController: NavController) {
                     )
                 },
                 contentDescription = "Add",
-                title = "Payments & Payouts",
+                title = context.getString(R.string.profile_paymentshub_button),
                 onClick = {
                     navController.navigate(Screen.PaymentsHub.route)
                 }
@@ -167,7 +170,7 @@ fun ProfileScreen(navController: NavController) {
                     )
                 },
                 contentDescription = "Add",
-                title = "Availability",
+                title = context.getString(R.string.profile_availability_button),
                 onClick = {
                     navController.navigate(Screen.Availability.route)
                 }

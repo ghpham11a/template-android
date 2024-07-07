@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Template</string>
+
+    <string name="profile_paymentshub_button">Payments &amp; payouts</string>
+
+    <string name="profile_loginandsecurity_button">Login &amp; security</string>
+    <string name="profile_availability_button">Availability</string>
 </resources>
