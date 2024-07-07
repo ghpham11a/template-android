@@ -18,8 +18,5 @@ class MainApplication: Application() {
 
         // To use the Google Places SDK / APIs
         Places.initializeWithNewPlacesApiEnabled(applicationContext, BuildConfig.MAPS_API_KEY);
-
-
-
     }
 }

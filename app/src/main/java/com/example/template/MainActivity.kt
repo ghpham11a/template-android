@@ -1,7 +1,9 @@
 package com.example.template
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -68,6 +70,11 @@ import com.example.template.ui.screens.xmlview.XMLViewScreen
 import com.example.template.utils.Constants
 import com.example.template.utils.Constants.BOTTOM_NAVIGATION_ROUTES
 import com.example.template.utils.removeValues
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -76,14 +83,14 @@ class MainActivity : ComponentActivity() {
         const val TAG = "MainActivity"
     }
 
+    private lateinit var navController: NavHostController
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
-
         setContent {
+            navController = rememberNavController()
             TemplateTheme(darkTheme = false) {
-                MainScreen()
+                MainScreen(navController)
             }
         }
 
@@ -101,6 +108,37 @@ class MainActivity : ComponentActivity() {
 
             }
         })
+
+        handleIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    private fun handleIntent(intent: Intent) {
+        val data = intent.data
+        data?.let {
+            val pathSegments = it.pathSegments
+            val queryParameterNames = it.queryParameterNames
+            GlobalScope.launch(Dispatchers.Main) {
+                delay(1000)
+                // normal route
+                // navController.navigate("")
+                // tab route
+                // navController.navigate("") {
+                //     navController.graph.startDestinationRoute?.let { screen_route ->
+                //         popUpTo(screen_route) {
+                //             saveState = true
+                //         }
+                //     }
+                //     launchSingleTop = true
+                //     restoreState = true
+                // }
+            }
+        }
     }
 }
 
@@ -111,7 +149,7 @@ sealed class BottomNavigationItem(var title:String, var icon:Int, var screenRout
 }
 
 @Composable
-fun BottomNavigation(navController: NavController) {
+fun BottomNavigation(navController: NavHostController) {
     val items = listOf(
         BottomNavigationItem.Alpha,
         BottomNavigationItem.Bravo,
@@ -126,7 +164,6 @@ fun BottomNavigation(navController: NavController) {
                 selected = currentRoute == item.screenRoute,
                 onClick = {
                     navController.navigate(item.screenRoute) {
-
                         navController.graph.startDestinationRoute?.let { screen_route ->
                             popUpTo(screen_route) {
                                 saveState = true
@@ -150,8 +187,7 @@ fun BottomNavigation(navController: NavController) {
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen() {
-    val navController = rememberNavController()
+fun MainScreen(navController: NavHostController) {
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route

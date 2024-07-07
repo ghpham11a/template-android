@@ -11,7 +11,7 @@ android {
     namespace = "com.example.template"
     compileSdk = 34
 
-    buildFeatures.buildConfig = true
+    // buildFeatures.buildConfig = true
 
     defaultConfig {
         applicationId = "com.example.template"
