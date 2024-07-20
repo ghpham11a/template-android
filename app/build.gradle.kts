@@ -116,6 +116,13 @@ dependencies {
     // To search for places via Google maps
     implementation("com.google.android.libraries.places:places:3.5.0")
 
+    // https://mvnrepository.com/artifact/com.twilio/video-android
+    implementation("com.twilio:video-android:7.6.4")
+    // https://mvnrepository.com/artifact/com.twilio/voice-android
+    implementation("com.twilio:voice-android:6.3.3")
+    // https://mvnrepository.com/artifact/com.twilio/audioswitch
+    implementation("com.twilio:audioswitch:1.1.8")
+
 }
 
 kapt {

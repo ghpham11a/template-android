@@ -23,6 +23,7 @@ object Constants {
     const val SHARED_PREFERENCES_KEY_BIRTHDATE = "birthdate"
     const val SHARED_PREFERENCES_KEY_FIRSTNAME = "given_name"
     const val SHARED_PREFERENCES_KEY_LASTNAME = "family_name"
+    const val SHARED_PREFERENCES_KEY_AZCS_ACCESSTOKEN = "SHARED_PREFERENCES_KEY_AZCS_ACCESSTOKEN"
     const val INTERNAL_DATE_PATTERN = "yyyy-MM-dd HH:mm:ss"
     const val USER_NOT_CONFIRMED_INDICATOR = "not confirmed"
     const val AWS_COGNITO_USER_DOES_EXIST_MESSAGE = "User exists"
@@ -31,7 +32,6 @@ object Constants {
     const val PATH_PLACEHOLDER = "NONE"
 
     val BOTTOM_NAVIGATION_ROUTES = listOf<String>(
-        Screen.Home.route,
         Screen.Features.route,
         Screen.Profile.route,
     )

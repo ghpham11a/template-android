@@ -1,6 +1,7 @@
 package com.example.template.ui.screens.availability
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,11 +15,14 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.ui.Alignment
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -59,6 +63,8 @@ fun AvailabilityScreen(navController: NavController) {
 
     val selectedDay = remember { mutableStateOf(LocalDate.now()) }
 
+    var isAvailabilityTypeSelectorExpanded by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TextButton(
@@ -92,6 +98,46 @@ fun AvailabilityScreen(navController: NavController) {
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(selectedDay.value.toString())
+
+            ExposedDropdownMenuBox(
+                expanded = isAvailabilityTypeSelectorExpanded,
+                onExpandedChange = { isAvailabilityTypeSelectorExpanded = it },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = "selectedCountryCode",
+                    onValueChange = {
+
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor()
+                        .clickable { isAvailabilityTypeSelectorExpanded = !isAvailabilityTypeSelectorExpanded },
+                    label = { Text("Availability Type") },
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowDropDown,
+                            contentDescription = null
+                        )
+                    },
+                    readOnly = true
+                )
+
+                ExposedDropdownMenu(
+                    expanded = isAvailabilityTypeSelectorExpanded,
+                    onDismissRequest = { isAvailabilityTypeSelectorExpanded = false }
+                ) {
+                    Constants.COUNTRY_CODES.forEach { selectionOption ->
+                        DropdownMenuItem(
+                            text = { Text(text = selectionOption) },
+                            onClick = {
+                                // onCountryCodeChange(selectionOption)
+                                isAvailabilityTypeSelectorExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
         }
     }
 }

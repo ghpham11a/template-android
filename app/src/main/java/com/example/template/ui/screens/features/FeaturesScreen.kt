@@ -42,12 +42,6 @@ fun FeaturesScreen(navController: NavController) {
 
     Column(modifier = Modifier.fillMaxSize()) {
 
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)) {
-            Text("Features")
-        }
-
         if (!isLoggedIn) {
             Spacer(modifier = Modifier.padding(8.dp))
 
@@ -67,46 +61,13 @@ fun FeaturesScreen(navController: NavController) {
                 Text(text = "Log in")
             }
         } else {
-            TabRow(
-                selectedTabIndex = tabIndex,
-                modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 200.dp),
-                divider = { }
-            ) {
-                tabs.forEachIndexed { index, title ->
-                    Tab(text = { Text(title) },
-                        selected = tabIndex == index,
-                        onClick = { tabIndex = index }
-                    )
-                }
-            }
-            HorizontalDivider(
-                color = Color.Gray,
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp)
-            )
-
-            when (tabIndex) {
-                0 -> {
-                    LazyColumn(modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp)) {
-                        items(newItems) { item ->
-                            FeatureCard(title = item.title, description = item.description, onClick = {
-                                navController.navigate(item.route)
-                            })
-                            if (item != newItems.last()) {
-                                HorizontalDivider()
-                            }
-                        }
-                    }
-                }
-                1 -> {
-                    LazyColumn(modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp)) {
-                        items(oldItems) { item ->
-                            FeatureCard(title = item.title, description = item.description, onClick = {
-                                navController.navigate(item.route)
-                            })
-                            if (item != oldItems.last()) {
-                                HorizontalDivider()
-                            }
-                        }
+            LazyColumn(modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp)) {
+                items(newItems) { item ->
+                    FeatureCard(title = item.title, description = item.description, onClick = {
+                        navController.navigate(item.route)
+                    })
+                    if (item != newItems.last()) {
+                        HorizontalDivider()
                     }
                 }
             }

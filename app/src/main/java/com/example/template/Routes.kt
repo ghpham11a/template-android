@@ -3,7 +3,6 @@ package com.example.template
 import com.example.template.utils.Constants
 
 sealed class Screen(val route: String) {
-    object Home : Screen("home")
     object Features : Screen("features")
     object Profile : Screen("profile")
     object PublicProfile : Screen("public-profile/{userId}") {
@@ -51,4 +50,13 @@ sealed class Screen(val route: String) {
         fun build(country: String) = "add-bank-info/$country"
     }
     object Availability: Screen("availability")
+    object TabbedList: Screen("tabbed-list")
+    object SendPaymentHub: Screen("send-payment-hub")
+    object PaymentAmount: Screen("payment-amount/{accountId}") {
+        fun build(accountId: String) = "payment-amount/$accountId"
+    }
+    object ProxyCallHub: Screen("proxy-call-hub")
+
+    object VideoCallHub: Screen("video-call-hub")
+    object ChatHub: Screen("chat-hub")
 }

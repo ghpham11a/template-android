@@ -35,7 +35,6 @@ fun PhoneNumberField(
 
     var expanded by remember { mutableStateOf(false) }
 
-
     Column {
         ExposedDropdownMenuBox(
             expanded = expanded,

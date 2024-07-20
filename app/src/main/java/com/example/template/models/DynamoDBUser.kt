@@ -13,6 +13,10 @@ data class DynamoDBUser(
     var lastName: String? = null,
     @SerializedName("preferredName")
     var preferredName: String? = null,
+    @SerializedName("countryCode")
+    var countryCode: String? = null,
+    @SerializedName("phoneNumber")
+    var phoneNumber: String? = null,
     @SerializedName("stripeCustomerId")
     var stripeCustomerId: String? = null,
     @SerializedName("stripeAccountId")

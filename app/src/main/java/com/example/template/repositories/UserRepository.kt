@@ -2,6 +2,7 @@ package com.example.template.repositories
 
 import android.content.SharedPreferences
 import com.amazonaws.mobile.client.results.Tokens
+import com.example.template.models.CreateAZCSAccessTokenResponse
 import com.example.template.models.CurrentUser
 import com.example.template.models.ReadUserPrivateResponse
 import com.example.template.models.ReadUserPublicResponse
@@ -104,6 +105,29 @@ class UserRepository @Inject constructor(
                     userPublic = response.body()
                 }
                 response
+            } catch (e: Exception) {
+                // Handle the exception
+                null
+            }
+        }
+    }
+
+    suspend fun getAZCSAccessToken(refresh: Boolean = false): Response<CreateAZCSAccessTokenResponse>? {
+
+        if (userPublic != null && !refresh) {
+            return Response.success(CreateAZCSAccessTokenResponse("token", "type", "expires_in"))
+        }
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = APIGateway.api.azcsCreateAccessToken(
+                    APIGateway.buildAuthorizedHeaders(idToken ?: "")
+                )
+                if (response.isSuccessful) {
+                    Response.success(response.body())
+                } else {
+                    null
+                }
             } catch (e: Exception) {
                 // Handle the exception
                 null

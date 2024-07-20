@@ -5,8 +5,12 @@ import com.example.template.models.AdminDisableUserResponse
 import com.example.template.models.AdminEnableUserResponse
 import com.example.template.models.AdminUpdateUserBody
 import com.example.template.models.CheckIfUserExistsResponse
+import com.example.template.models.CreateAZCSAccessTokenResponse
+import com.example.template.models.CreatePaymentIntentRequest
 import com.example.template.models.CreatePayoutMethodRequest
 import com.example.template.models.CreatePayoutMethodResponse
+import com.example.template.models.CreateProxyCallRequest
+import com.example.template.models.CreateProxyCallResponse
 import com.example.template.models.CreateSetupIntentRequest
 import com.example.template.models.CreateSetupIntentResponse
 import com.example.template.models.CreateThingResponse
@@ -16,8 +20,10 @@ import com.example.template.models.DeletePayoutMethodRequest
 import com.example.template.models.DeletePayoutMethodResponse
 import com.example.template.models.ReadPaymentMethodsResponse
 import com.example.template.models.ReadPayoutMethodsResponse
+import com.example.template.models.ReadProxyCallsResponse
 import com.example.template.models.ReadUserPrivateResponse
 import com.example.template.models.ReadUserPublicResponse
+import com.example.template.models.ReadUsersResponse
 import com.example.template.models.Thing
 import com.example.template.models.UpdateUserBody
 import com.example.template.models.UpdateUserPrivateResponse
@@ -64,6 +70,12 @@ interface APIGatewayService {
         @HeaderMap headers: Map<String, String>,
         @Path("username") username: String,
     ): Response<AdminDeleteUserResponse>
+
+    @POST("stripe/payment-intents")
+    suspend fun stripeCreatePaymentIntent(
+        @HeaderMap headers: Map<String, String>,
+        @Body body: CreatePaymentIntentRequest
+    ): Response<CreateThingResponse>
 
     @PATCH("private/users/{userId}")
     suspend fun privateUpdateUser(
@@ -131,6 +143,28 @@ interface APIGatewayService {
         @Path("userId") userId: String,
         @Body body: DeletePayoutMethodRequest
     ): Response<DeletePayoutMethodResponse>
+
+    @POST("proxy-calls")
+    suspend fun createProxyCall(
+        @HeaderMap headers: Map<String, String>,
+        @Body body: CreateProxyCallRequest
+    ): Response<CreateProxyCallResponse>
+
+    @GET("proxy-calls/{userId}")
+    suspend fun readProxyCalls(
+        @HeaderMap headers: Map<String, String>,
+        @Path("userId") userId: String,
+    ): Response<ReadProxyCallsResponse>
+
+    @GET("users")
+    suspend fun readUsers(
+        @HeaderMap headers: Map<String, String>
+    ): Response<ReadUsersResponse>
+
+    @POST("azcs/access-tokens")
+    suspend fun azcsCreateAccessToken(
+        @HeaderMap headers: Map<String, String>
+    ): Response<CreateAZCSAccessTokenResponse>
 }
 
 // Create Retrofit instance

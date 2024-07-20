@@ -313,10 +313,10 @@ fun PersonalInfoScreen(navController: NavController) {
                             onClick = {
                                 coroutineScope.launch(Dispatchers.Main) {
                                     if (viewModel.updatePhoneNumber(countryCodeField, phoneNumberField)) {
-                                        // isPhoneNumberExpanded = false
-                                        viewModel.triggerPhoneNumberVerification {
-                                            // Handle the result
-                                        }
+                                        isPhoneNumberExpanded = false
+//                                        viewModel.triggerPhoneNumberVerification {
+//                                            // Handle the result
+//                                        }
                                     }
                                 }
                             },

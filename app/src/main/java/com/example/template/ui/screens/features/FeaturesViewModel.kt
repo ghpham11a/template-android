@@ -44,6 +44,11 @@ class FeaturesViewModel @Inject constructor(
             Feature("Filter List", "List of a lot of items that can be filtered", Screen.FilterList.route),
             Feature("XML View", "This screen was constructed using the prevous XML based view system.", Screen.XMLView.route),
             Feature("Map", "This is a location search screen with a Google map", Screen.Map.route),
+            Feature("Tabbed List", "Switch between multiple lists using a tab bar at the top", Screen.TabbedList.route),
+            Feature("Send Payment", "Send a payment to another account via Stripe", Screen.SendPaymentHub.route),
+            Feature("Masked Phone Call", "Call another number while masking your phone number using Twilio", Screen.ProxyCallHub.route),
+            Feature("Video calls", "Make a video call using Azure Communication Service", Screen.VideoCallHub.route),
+            Feature("Chat", "Chat using Azure Communication Service", Screen.ChatHub.route),
         )
 
         _oldItems.value = listOf(

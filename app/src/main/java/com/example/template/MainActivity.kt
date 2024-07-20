@@ -3,7 +3,6 @@ package com.example.template
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -24,7 +23,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.painterResource
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -32,7 +30,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.template.ui.screens.home.HomeScreen
 import com.example.template.ui.screens.features.FeaturesScreen
 import com.example.template.ui.screens.profile.ProfileScreen
 import com.example.template.ui.theme.TemplateTheme
@@ -50,6 +47,7 @@ import com.example.template.ui.screens.auth.EnterPasswordScreen
 import com.example.template.ui.screens.auth.NewPasswordScreen
 import com.example.template.ui.screens.auth.ResetPasswordScreen
 import com.example.template.ui.screens.availability.AvailabilityScreen
+import com.example.template.ui.screens.chathub.ChatHubScreen
 import com.example.template.ui.screens.editprofile.EditProfileScreen
 import com.example.template.ui.screens.filterlist.FilterListScreen
 import com.example.template.ui.screens.loginandsecurity.LoginAndSecurityScreen
@@ -60,12 +58,17 @@ import com.example.template.ui.screens.paymentshub.PaymentsHubScreen
 import com.example.template.ui.screens.paymentshub.PayoutMethodsScreen
 import com.example.template.ui.screens.paymentshub.YourPaymentsScreen
 import com.example.template.ui.screens.personalinfo.PersonalInfoScreen
+import com.example.template.ui.screens.proxycallhub.ProxyCallHubScreen
 import com.example.template.ui.screens.publicprofile.PublicProfileScreen
+import com.example.template.ui.screens.sendpaymenthub.PaymentAmountScreen
+import com.example.template.ui.screens.sendpaymenthub.SendPaymentHubScreen
 import com.example.template.ui.screens.snag.SnagScreen
+import com.example.template.ui.screens.tabbedlist.TabbedListScreen
 import com.example.template.ui.screens.thing.ThingScreen
 import com.example.template.ui.screens.thing.ThingBuilderScreen
 import com.example.template.ui.screens.thing.ThingIntroScreen
 import com.example.template.ui.screens.thinglist.ThingListScreen
+import com.example.template.ui.screens.videocallhub.VideoCallHubScreen
 import com.example.template.ui.screens.xmlview.XMLViewScreen
 import com.example.template.utils.Constants
 import com.example.template.utils.Constants.BOTTOM_NAVIGATION_ROUTES
@@ -143,17 +146,15 @@ class MainActivity : ComponentActivity() {
 }
 
 sealed class BottomNavigationItem(var title:String, var icon:Int, var screenRoute:String){
-    object Alpha : BottomNavigationItem("Home", R.drawable.ic_android_black_24dp, Screen.Home.route)
-    object Bravo: BottomNavigationItem("Features",R.drawable.ic_android_black_24dp, Screen.Features.route)
-    object Delta: BottomNavigationItem("Profile",R.drawable.ic_android_black_24dp, Screen.Profile.route)
+    object Features: BottomNavigationItem("Features",R.drawable.ic_android_black_24dp, Screen.Features.route)
+    object Profile: BottomNavigationItem("Profile",R.drawable.ic_android_black_24dp, Screen.Profile.route)
 }
 
 @Composable
 fun BottomNavigation(navController: NavHostController) {
     val items = listOf(
-        BottomNavigationItem.Alpha,
-        BottomNavigationItem.Bravo,
-        BottomNavigationItem.Delta
+        BottomNavigationItem.Features,
+        BottomNavigationItem.Profile
     )
 
     NavigationBar {
@@ -223,7 +224,7 @@ fun NavigationGraph(
 ) {
     NavHost(
         navController,
-        startDestination = BottomNavigationItem.Alpha.screenRoute,
+        startDestination = BottomNavigationItem.Features.screenRoute,
         enterTransition = {
             if (BOTTOM_NAVIGATION_ROUTES.contains(currentRoute)) {
                 EnterTransition.None
@@ -245,7 +246,6 @@ fun NavigationGraph(
             }
         }
     ) {
-        composable(Screen.Home.route) { HomeScreen(navController) }
         composable(Screen.Features.route) { FeaturesScreen(navController) }
         composable(Screen.Profile.route) { ProfileScreen(navController) }
         composable(Screen.LoginAndSecurity.route) { LoginAndSecurityScreen(navController) }
@@ -405,6 +405,30 @@ fun NavigationGraph(
         }
         composable(Screen.Availability.route) {
             AvailabilityScreen(navController)
+        }
+        composable(Screen.TabbedList.route) {
+            TabbedListScreen(navController = navController)
+        }
+        composable(Screen.SendPaymentHub.route) {
+            SendPaymentHubScreen(navController = navController)
+        }
+        composable(
+            Screen.PaymentAmount.route,
+            arguments = listOf(navArgument("accountId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            PaymentAmountScreen(
+                navController,
+                backStackEntry.arguments?.getString("accountId").toString()
+            )
+        }
+        composable(Screen.ProxyCallHub.route) {
+            ProxyCallHubScreen(navController = navController)
+        }
+        composable(Screen.VideoCallHub.route) {
+            VideoCallHubScreen(navController = navController)
+        }
+        composable(Screen.ChatHub.route) {
+            ChatHubScreen(navController = navController)
         }
     }
 }

@@ -68,11 +68,11 @@ class PersonalInfoViewModel @Inject constructor(
                 _firstName.value = user?.user?.firstName ?: ""
                 _lastName.value = user?.user?.lastName ?: ""
                 _preferredName.value = user?.user?.preferredName ?: ""
-//                _countryCode.value = Constants.COUNTRY_CODES.find { it.contains(user?.countryCode ?: "") }
-//                    ?: Constants.COUNTRY_CODES.first()
-//                _phoneNumber.value = (user?.phoneNumber ?: "").replace(user?.countryCode ?: "", "")
-//                _phoneNumberToDisplay.value =
-//                    (user?.countryCode ?: "") + " " + (user?.phoneNumber ?: "")
+                _countryCode.value = Constants.COUNTRY_CODES.find { it.contains(user?.user?.countryCode ?: "") }
+                    ?: Constants.COUNTRY_CODES.first()
+                _phoneNumber.value = (user?.user?.phoneNumber ?: "").replace(user?.user?.countryCode ?: "", "")
+                _phoneNumberToDisplay.value =
+                    (user?.user?.countryCode ?: "") + " " + (user?.user?.phoneNumber ?: "")
                 _email.value = userRepository.username ?: ""
             } else {
                 // Handle the error

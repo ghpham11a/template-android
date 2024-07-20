@@ -36,6 +36,11 @@ class EditProfileViewModel @Inject constructor(
     private val _schoolName = MutableStateFlow("")
     val schoolName: StateFlow<String> = _schoolName
 
+    private val _tags = MutableStateFlow(listOf("Kotlin", "Compose", "Android", "Jetpack", "UI", "Development"))
+    val tags: StateFlow<List<String>> = _tags
+
+
+
     init {
         userRepository.isLoggedIn()
         _userSub.value = userRepository.userId ?: ""
