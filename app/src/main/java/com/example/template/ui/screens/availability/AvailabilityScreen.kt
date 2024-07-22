@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -51,7 +52,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.template.ui.components.misc.DayOfWeekSelector
 import com.example.template.ui.screens.auth.CodeVerificationViewModel
+import com.example.template.ui.screens.proxycallhub.ProxyCallHubViewModel
 import com.example.template.utils.Constants
+import com.example.template.utils.toHourMinuteString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -61,9 +64,12 @@ import java.time.LocalDate
 @Composable
 fun AvailabilityScreen(navController: NavController) {
 
+    val viewModel = hiltViewModel<AvailabilityScreenViewModel>()
+
     val selectedDay = remember { mutableStateOf(LocalDate.now()) }
 
     var isAvailabilityTypeSelectorExpanded by remember { mutableStateOf(false) }
+    var displayedBlocks = viewModel.displayedBlocks.collectAsState()
 
     Scaffold(
         topBar = {
@@ -76,65 +82,89 @@ fun AvailabilityScreen(navController: NavController) {
             }
         }
     ) {
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            Spacer(modifier = Modifier.height(32.dp))
-            Text("Next two weeks")
-            DayOfWeekSelector(
-                selectedDay = selectedDay.value,
-                days = listOf(
-                    LocalDate.parse("2022-12-01"),
-                    LocalDate.parse("2022-12-02"),
-                    LocalDate.parse("2022-12-03"),
-                    LocalDate.parse("2022-12-04"),
-                    LocalDate.parse("2022-12-05"),
-                    LocalDate.parse("2022-12-06")
-                ),
-                onDaySelected = {
-                    selectedDay.value = it
-                }
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(selectedDay.value.toString())
+            item {
+                Spacer(modifier = Modifier.height(32.dp))
 
-            ExposedDropdownMenuBox(
-                expanded = isAvailabilityTypeSelectorExpanded,
-                onExpandedChange = { isAvailabilityTypeSelectorExpanded = it },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = "selectedCountryCode",
-                    onValueChange = {
+                Text("Next two weeks")
 
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .menuAnchor()
-                        .clickable { isAvailabilityTypeSelectorExpanded = !isAvailabilityTypeSelectorExpanded },
-                    label = { Text("Availability Type") },
-                    trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowDropDown,
-                            contentDescription = null
-                        )
-                    },
-                    readOnly = true
+                DayOfWeekSelector(
+                    selectedDay = selectedDay.value,
+                    days = listOf(
+                        LocalDate.parse("2022-12-01"),
+                        LocalDate.parse("2022-12-02"),
+                        LocalDate.parse("2022-12-03"),
+                        LocalDate.parse("2022-12-04"),
+                        LocalDate.parse("2022-12-05"),
+                        LocalDate.parse("2022-12-06")
+                    ),
+                    onDaySelected = {
+                        selectedDay.value = it
+                    }
                 )
 
-                ExposedDropdownMenu(
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(selectedDay.value.toString())
+
+                ExposedDropdownMenuBox(
                     expanded = isAvailabilityTypeSelectorExpanded,
-                    onDismissRequest = { isAvailabilityTypeSelectorExpanded = false }
+                    onExpandedChange = { isAvailabilityTypeSelectorExpanded = it },
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Constants.COUNTRY_CODES.forEach { selectionOption ->
-                        DropdownMenuItem(
-                            text = { Text(text = selectionOption) },
-                            onClick = {
-                                // onCountryCodeChange(selectionOption)
-                                isAvailabilityTypeSelectorExpanded = false
-                            }
-                        )
+                    OutlinedTextField(
+                        value = "selectedCountryCode",
+                        onValueChange = {
+
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor()
+                            .clickable {
+                                isAvailabilityTypeSelectorExpanded = !isAvailabilityTypeSelectorExpanded
+                            },
+                        label = { Text("Availability Type") },
+                        trailingIcon = {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowDropDown,
+                                contentDescription = null
+                            )
+                        },
+                        readOnly = true
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = isAvailabilityTypeSelectorExpanded,
+                        onDismissRequest = { isAvailabilityTypeSelectorExpanded = false }
+                    ) {
+                        Constants.COUNTRY_CODES.forEach { selectionOption ->
+                            DropdownMenuItem(
+                                text = { Text(text = selectionOption) },
+                                onClick = {
+                                    // onCountryCodeChange(selectionOption)
+                                    isAvailabilityTypeSelectorExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                displayedBlocks.value.forEach {
+                    AvailabilityBlock(it.startTime.toHourMinuteString(), it.endTime.toHourMinuteString())
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Button(onClick = {
+                        viewModel.addBlock()
+                    }) {
+                        Text("Add")
                     }
                 }
             }
