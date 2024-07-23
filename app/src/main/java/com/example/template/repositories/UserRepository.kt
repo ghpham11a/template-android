@@ -112,37 +112,6 @@ class UserRepository @Inject constructor(
         }
     }
 
-    suspend fun getAZCSAccessToken(refresh: Boolean = false): Response<CreateAZCSAccessTokenResponse>? {
-
-        if (userPublic != null && !refresh) {
-            return Response.success(CreateAZCSAccessTokenResponse("token", "type", "expires_in"))
-        }
-
-        return withContext(Dispatchers.IO) {
-            try {
-                val response = APIGateway.api.azcsCreateAccessToken(
-                    APIGateway.buildAuthorizedHeaders(idToken ?: "")
-                )
-                if (response.isSuccessful) {
-                    Response.success(response.body())
-                } else {
-                    null
-                }
-            } catch (e: Exception) {
-                // Handle the exception
-                null
-            }
-        }
-    }
-
-//    fun checkIfTokenIsExpired(): Boolean {
-//        val expirationDate = sharedPreferences.getString(SHARED_PREFERENCES_KEY_EXPIRATION_DATE, null)
-//        val format = SimpleDateFormat(INTERNAL_DATE_PATTERN, Locale.getDefault())
-//        val expiration = format.parse(expirationDate ?: "")
-//        val now = System.currentTimeMillis()
-//        return (expiration?.time ?: 0) < now
-//    }
-
     fun isLoggedIn(): Boolean {
         _isAuthenticated.value = sharedPreferences.contains(SHARED_PREFERENCES_KEY_ID_TOKEN)
         return sharedPreferences.contains(SHARED_PREFERENCES_KEY_ID_TOKEN)

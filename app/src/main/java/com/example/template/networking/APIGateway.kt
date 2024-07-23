@@ -143,28 +143,6 @@ interface APIGatewayService {
         @Path("userId") userId: String,
         @Body body: DeletePayoutMethodRequest
     ): Response<DeletePayoutMethodResponse>
-
-    @POST("proxy-calls")
-    suspend fun createProxyCall(
-        @HeaderMap headers: Map<String, String>,
-        @Body body: CreateProxyCallRequest
-    ): Response<CreateProxyCallResponse>
-
-    @GET("proxy-calls/{userId}")
-    suspend fun readProxyCalls(
-        @HeaderMap headers: Map<String, String>,
-        @Path("userId") userId: String,
-    ): Response<ReadProxyCallsResponse>
-
-    @GET("users")
-    suspend fun readUsers(
-        @HeaderMap headers: Map<String, String>
-    ): Response<ReadUsersResponse>
-
-    @POST("azcs/access-tokens")
-    suspend fun azcsCreateAccessToken(
-        @HeaderMap headers: Map<String, String>
-    ): Response<CreateAZCSAccessTokenResponse>
 }
 
 // Create Retrofit instance

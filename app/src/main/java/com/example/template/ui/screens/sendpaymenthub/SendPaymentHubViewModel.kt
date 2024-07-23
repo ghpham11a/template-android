@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.example.template.models.DynamoDBUser
 import com.example.template.models.PaymentReceiver
 import com.example.template.networking.APIGateway
+import com.example.template.networking.APIGatewayUsers
 import com.example.template.repositories.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +20,7 @@ class SendPaymentHubViewModel @Inject constructor(
     val users: StateFlow<List<DynamoDBUser>> = _users
 
     suspend fun fetchStripeAccounts() {
-        val response = APIGateway.api.readUsers(
+        val response = APIGatewayUsers.api.readUsers(
             APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: "")
         )
         if (response.isSuccessful) {

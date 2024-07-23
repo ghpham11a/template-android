@@ -69,6 +69,7 @@ import com.example.template.ui.screens.thing.ThingBuilderScreen
 import com.example.template.ui.screens.thing.ThingIntroScreen
 import com.example.template.ui.screens.thinglist.ThingListScreen
 import com.example.template.ui.screens.videocallhub.VideoCallHubScreen
+import com.example.template.ui.screens.videocallhub.VideoCallScreen
 import com.example.template.ui.screens.xmlview.XMLViewScreen
 import com.example.template.utils.Constants
 import com.example.template.utils.Constants.BOTTOM_NAVIGATION_ROUTES
@@ -429,6 +430,15 @@ fun NavigationGraph(
         }
         composable(Screen.ChatHub.route) {
             ChatHubScreen(navController = navController)
+        }
+        composable(
+            Screen.VideoCall.route,
+            arguments = listOf(navArgument("id") { type = NavType.StringType })
+        ) { backStackEntry ->
+            VideoCallScreen(
+                navController,
+                backStackEntry.arguments?.getString("id").toString()
+            )
         }
     }
 }

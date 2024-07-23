@@ -2,9 +2,15 @@ package com.example.template.ui.screens.videocallhub
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.example.template.models.CreateProxyCallRequest
+import com.example.template.models.CreateVideoCallRequest
 import com.example.template.models.DynamoDBUser
+import com.example.template.models.ProxyCallEvent
 import com.example.template.models.VideoCallEvent
 import com.example.template.networking.APIGateway
+import com.example.template.networking.APIGatewayEvents
+import com.example.template.networking.APIGatewayUsers
+import com.example.template.repositories.EventsRepository
 import com.example.template.repositories.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,33 +19,59 @@ import javax.inject.Inject
 
 @HiltViewModel
 class VideoCallHubViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val eventsRepository: EventsRepository
 ): ViewModel() {
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    private val _event = MutableStateFlow<List<VideoCallEvent>>(emptyList())
-    val event: StateFlow<List<VideoCallEvent>> = _event
+    private val _events = MutableStateFlow<List<VideoCallEvent>>(emptyList())
+    val event: StateFlow<List<VideoCallEvent>> = _events
 
-    suspend fun fetchUsers() {
-        val response = APIGateway.api.readUsers(
+
+
+    suspend fun fetchUsers(refresh: Boolean = false) {
+        val response = APIGatewayUsers.api.readUsers(
             APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: "")
         )
         if (response.isSuccessful) {
-            _event.value = response.body()?.users?.map { VideoCallEvent(user = it) } ?: emptyList()
+            val users = mutableListOf<DynamoDBUser>()
+            response.body()?.users?.forEach {
+                if (it.userId != userRepository.userId) {
+                    users.add(it)
+                }
+            }
+            _events.value = users.map { VideoCallEvent(user = it) }
+            fetchVideoCalls(refresh)
         } else {
 
         }
     }
 
-    suspend fun fetchAccessToken() {
-        val response = userRepository.getAZCSAccessToken(true)
-        if (response?.isSuccessful == true) {
-            var createAZCSAccessTokenResponse = response.body()
-            Log.d("fetchAccessToken", "${createAZCSAccessTokenResponse?.token}")
+    suspend fun fetchVideoCalls(refresh: Boolean = false) {
+        val response = eventsRepository.fetchVideoCalls(refresh)
+        response?.let { videoCalls ->
+            val newEvents = mutableListOf<VideoCallEvent>()
+            for (event in _events.value) {
+                (videoCalls.find { it.receiverId == event.user?.userId || it.senderId == event.user?.userId  })?.let {
+                    newEvents.add(event.copy(videoCall = it))
+                } ?: run {
+                    newEvents.add(event.copy())
+                }
+            }
+            _events.value = newEvents
+        }
+    }
+
+    suspend fun createVideoCall(receiverId: String) {
+        val response = APIGatewayEvents.api.createVideoCall(
+            APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
+            CreateVideoCallRequest(senderId = userRepository.userId, receiverId = receiverId)
+        )
+        if (response.isSuccessful) {
+            fetchUsers(true)
         } else {
-            Log.d("fetchAccessToken", "fail bitch")
         }
     }
 }

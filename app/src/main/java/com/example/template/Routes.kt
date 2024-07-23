@@ -55,8 +55,11 @@ sealed class Screen(val route: String) {
     object PaymentAmount: Screen("payment-amount/{accountId}") {
         fun build(accountId: String) = "payment-amount/$accountId"
     }
-    object ProxyCallHub: Screen("proxy-call-hub")
+    object ProxyCallHub: Screen("proxy-calls")
 
-    object VideoCallHub: Screen("video-call-hub")
+    object VideoCallHub: Screen("video-calls")
+    object VideoCall: Screen("video-calls/rooms/{id}") {
+        fun build(id: String) = "video-calls/rooms/$id"
+    }
     object ChatHub: Screen("chat-hub")
 }

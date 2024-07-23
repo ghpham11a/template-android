@@ -6,6 +6,9 @@ import com.example.template.models.CreateProxyCallRequest
 import com.example.template.models.DynamoDBUser
 import com.example.template.models.ProxyCallEvent
 import com.example.template.networking.APIGateway
+import com.example.template.networking.APIGatewayEvents
+import com.example.template.networking.APIGatewayUsers
+import com.example.template.repositories.EventsRepository
 import com.example.template.repositories.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProxyCallHubViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val eventsRepository: EventsRepository
 ): ViewModel() {
 
     private val _isLoading = MutableStateFlow(false)
@@ -34,8 +38,8 @@ class ProxyCallHubViewModel @Inject constructor(
         return ""
     }
 
-    suspend fun fetchUsers() {
-        val response = APIGateway.api.readUsers(
+    suspend fun fetchUsers(refresh: Boolean = false) {
+        val response = APIGatewayUsers.api.readUsers(
             APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: "")
         )
         if (response.isSuccessful) {
@@ -46,40 +50,34 @@ class ProxyCallHubViewModel @Inject constructor(
                 }
             }
             _events.value = users.map { ProxyCallEvent(user = it) }
-            fetchProxyCalls()
+            fetchProxyCalls(refresh)
         } else {
 
         }
     }
 
-    suspend fun fetchProxyCalls() {
-        val response = APIGateway.api.readProxyCalls(
-            APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
-            userRepository.userId ?: ""
-        )
-        if (response.isSuccessful) {
+    suspend fun fetchProxyCalls(refresh: Boolean = false) {
+        val response = eventsRepository.fetchProxyCalls(refresh)
+        response?.let { proxyCalls ->
             val newEvents = mutableListOf<ProxyCallEvent>()
-            val proxyCalls = response.body()
             for (event in _events.value) {
-                (proxyCalls?.calls?.find { it.receiverId == event.user?.userId || it.senderId == event.user?.userId  })?.let {
+                (proxyCalls.find { it.receiverId == event.user?.userId || it.senderId == event.user?.userId  })?.let {
                     newEvents.add(event.copy(proxyCall = it))
                 } ?: run {
                     newEvents.add(event.copy())
                 }
             }
             _events.value = newEvents
-        } else {
-
         }
     }
 
     suspend fun createProxyCall(receiverId: String) {
-        val response = APIGateway.api.createProxyCall(
+        val response = APIGatewayEvents.api.createProxyCall(
             APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
             CreateProxyCallRequest(senderId = userRepository.userId, receiverId = receiverId)
         )
         if (response.isSuccessful) {
-            fetchUsers()
+            fetchUsers(true)
         } else {
 
         }

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.example.template.models.ChatEvent
 import com.example.template.models.VideoCallEvent
 import com.example.template.networking.APIGateway
+import com.example.template.networking.APIGatewayUsers
 import com.example.template.repositories.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +23,7 @@ class ChatHubViewModel @Inject constructor(
     val event: StateFlow<List<ChatEvent>> = _event
 
     suspend fun fetchUsers() {
-        val response = APIGateway.api.readUsers(
+        val response = APIGatewayUsers.api.readUsers(
             APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: "")
         )
         if (response.isSuccessful) {

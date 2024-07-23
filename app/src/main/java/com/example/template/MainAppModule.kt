@@ -2,6 +2,7 @@ package com.example.template
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.example.template.repositories.EventsRepository
 import com.example.template.repositories.UserRepository
 import com.example.template.utils.Constants.SHARED_PREFERENCES_NAME
 import com.google.android.libraries.places.api.Places
@@ -27,6 +28,12 @@ object MainAppModule {
     @Singleton
     fun provideUserRepository(sharedPreferences: SharedPreferences): UserRepository {
         return UserRepository(sharedPreferences)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEventsRepository(sharedPreferences: SharedPreferences): EventsRepository {
+        return EventsRepository(sharedPreferences)
     }
 
     @Provides
