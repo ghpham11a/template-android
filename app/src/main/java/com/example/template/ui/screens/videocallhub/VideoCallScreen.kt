@@ -51,7 +51,7 @@ internal class StreamData(
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun VideoCallScreen(navController: NavController, callee: String) {
+fun VideoCallScreen(navController: NavController, id: String) {
 
     val viewModel = hiltViewModel<VideoCallViewModel>()
     val couroutineScope = rememberCoroutineScope()
@@ -99,7 +99,7 @@ fun VideoCallScreen(navController: NavController, callee: String) {
     }
 
     fun createAgent() {
-        val userToken = ""
+        val userToken = viewModel.getAccessToken(id) ?: return
         try {
             val credential = CommunicationTokenCredential(userToken)
             val callClient = CallClient()
@@ -117,7 +117,6 @@ fun VideoCallScreen(navController: NavController, callee: String) {
             }
         }
     }
-
 
     fun setDeviceManager() {
         try {
