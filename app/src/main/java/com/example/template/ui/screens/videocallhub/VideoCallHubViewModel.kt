@@ -74,4 +74,15 @@ class VideoCallHubViewModel @Inject constructor(
         } else {
         }
     }
+
+    suspend fun deleteVideoCall(videoCallId: String) {
+        val response = APIGatewayEvents.api.deleteVideoCall(
+            APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
+            videoCallId
+        )
+        if (response.isSuccessful) {
+            fetchUsers(true)
+        } else {
+        }
+    }
 }

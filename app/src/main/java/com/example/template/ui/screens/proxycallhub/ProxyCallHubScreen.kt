@@ -115,7 +115,9 @@ fun ProxyCallHubScreen(navController: NavController) {
                                     }
                                     Button(
                                         onClick = {
-                                            // End call
+                                            coroutineScope.launch {
+                                                viewModel.deleteProxyCall(event.proxyCall?.id ?: "")
+                                            }
                                         }
                                     ) {
                                         Text("Delete")

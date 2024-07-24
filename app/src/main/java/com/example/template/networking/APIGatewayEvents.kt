@@ -10,10 +10,12 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.HeaderMap
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface APIGatewayEventsService {
     @POST("events/proxy-calls")
@@ -22,11 +24,17 @@ interface APIGatewayEventsService {
         @Body body: CreateProxyCallRequest
     ): Response<CreateProxyCallResponse>
 
-    @GET("events/proxy-calls/{userId}")
+    @GET("events/proxy-calls")
     suspend fun readProxyCalls(
         @HeaderMap headers: Map<String, String>,
-        @Path("userId") userId: String,
+        @Query("userId") userId: String,
     ): Response<ReadProxyCallsResponse>
+
+    @DELETE("events/proxy-calls/{id}")
+    suspend fun deleteProxyCall(
+        @HeaderMap headers: Map<String, String>,
+        @Path("id") id: String,
+    ): Response<CreateProxyCallResponse>
 
     @POST("events/video-calls")
     suspend fun createVideoCall(
@@ -34,11 +42,17 @@ interface APIGatewayEventsService {
         @Body body: CreateVideoCallRequest
     ): Response<CreateVideoCallResponse>
 
-    @GET("events/video-calls/{userId}")
+    @GET("events/video-calls")
     suspend fun readVideoCalls(
         @HeaderMap headers: Map<String, String>,
-        @Path("userId") userId: String,
+        @Query("userId") userId: String,
     ): Response<ReadVideoCallsResponse>
+
+    @DELETE("events/video-calls/{id}")
+    suspend fun deleteVideoCall(
+        @HeaderMap headers: Map<String, String>,
+        @Path("id") id: String,
+    ): Response<CreateVideoCallResponse>
 }
 
 // Create Retrofit instance

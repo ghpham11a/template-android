@@ -118,7 +118,8 @@ dependencies {
     implementation("com.google.android.libraries.places:places:3.5.0")
 
     // Azure communication services
-    implementation ("com.azure.android:azure-communication-calling:2.6.0")
+    implementation("com.azure.android:azure-communication-calling:2.8.0")
+
 
 }
 

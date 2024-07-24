@@ -82,4 +82,16 @@ class ProxyCallHubViewModel @Inject constructor(
 
         }
     }
+
+    suspend fun deleteProxyCall(proxyCallId: String) {
+        val response = APIGatewayEvents.api.deleteProxyCall(
+            APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
+            proxyCallId
+        )
+        if (response.isSuccessful) {
+            fetchUsers(true)
+        } else {
+
+        }
+    }
 }

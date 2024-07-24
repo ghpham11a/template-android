@@ -74,7 +74,6 @@ class EnterPasswordViewModel @Inject constructor(
         AWSMobileClient.getInstance().signIn(username, password, null, object : Callback<SignInResult> {
             override fun onResult(signInResult: SignInResult) {
                 _isLoading.value = false
-                var analTits = AWSMobileClient.getInstance().userAttributes
                 if (signInResult.signInState == SignInState.DONE) {
                     userRepository.setLoggedIn(AWSMobileClient.getInstance().tokens, username, AWSMobileClient.getInstance().userAttributes ?: emptyMap())
                 }
