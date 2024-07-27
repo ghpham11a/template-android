@@ -29,7 +29,8 @@ class VideoCallHubViewModel @Inject constructor(
     private val _events = MutableStateFlow<List<VideoCallEvent>>(emptyList())
     val event: StateFlow<List<VideoCallEvent>> = _events
 
-
+    private val _isLoadingStates = MutableStateFlow(emptyList<Boolean>())
+    val isLoadingStates: StateFlow<List<Boolean>> = _isLoadingStates
 
     suspend fun fetchUsers(refresh: Boolean = false) {
         val response = APIGatewayUsers.api.readUsers(
@@ -37,12 +38,15 @@ class VideoCallHubViewModel @Inject constructor(
         )
         if (response.isSuccessful) {
             val users = mutableListOf<DynamoDBUser>()
+            val states = mutableListOf<Boolean>()
             response.body()?.users?.forEach {
                 if (it.userId != userRepository.userId) {
                     users.add(it)
+                    states.add(false)
                 }
             }
             _events.value = users.map { VideoCallEvent(user = it) }
+            _isLoadingStates.value = states
             fetchVideoCalls(refresh)
         } else {
 
@@ -65,10 +69,17 @@ class VideoCallHubViewModel @Inject constructor(
     }
 
     suspend fun createVideoCall(receiverId: String) {
+
+        val index = _events.value.indexOfFirst { it.user?.userId == receiverId }
+        toggleLoadingState(index)
+
         val response = APIGatewayEvents.api.createVideoCall(
             APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
             CreateVideoCallRequest(senderId = userRepository.userId, receiverId = receiverId)
         )
+
+        toggleLoadingState(index)
+
         if (response.isSuccessful) {
             fetchUsers(true)
         } else {
@@ -76,13 +87,26 @@ class VideoCallHubViewModel @Inject constructor(
     }
 
     suspend fun deleteVideoCall(videoCallId: String) {
+
+        val index = _events.value.indexOfFirst { it.videoCall?.id == videoCallId }
+        toggleLoadingState(index)
+
         val response = APIGatewayEvents.api.deleteVideoCall(
             APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
             videoCallId
         )
+
+        toggleLoadingState(index)
+
         if (response.isSuccessful) {
             fetchUsers(true)
         } else {
         }
+    }
+
+    private fun toggleLoadingState(index: Int) {
+        var states = _isLoadingStates.value.toMutableList()
+        states[index] = states[index].not()
+        _isLoadingStates.value = states
     }
 }

@@ -10,11 +10,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.ui.Alignment
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -34,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.template.ui.components.buttons.LoadingButton
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -42,12 +46,10 @@ import kotlinx.coroutines.launch
 fun ProxyCallHubScreen(navController: NavController) {
 
     val viewModel = hiltViewModel<ProxyCallHubViewModel>()
-
     val events by viewModel.events.collectAsState()
-
-    var coroutineScope = rememberCoroutineScope()
-
+    val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+    val isLoadingStates by viewModel.isLoadingStates.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.fetchUsers()
@@ -73,15 +75,16 @@ fun ProxyCallHubScreen(navController: NavController) {
             Spacer(modifier = Modifier.padding(32.dp))
 
             LazyColumn {
-                items(events) { event ->
-                    Row(
+                itemsIndexed(events) { index, event ->
+                    Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                        ) {
                             Text(
                                 text = event.user?.preferredName ?: event.user?.firstName ?: "",
                                 fontSize = 20.sp
@@ -92,36 +95,45 @@ fun ProxyCallHubScreen(navController: NavController) {
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 if (event.proxyCall == null) {
-                                    Button(
+                                    LoadingButton(
+                                        isLoading = isLoadingStates[index],
                                         onClick = {
                                             coroutineScope.launch {
                                                 viewModel.createProxyCall(event.user?.userId ?: "")
                                             }
-                                        }
-                                    ) {
-                                        Text("Create masked phone call")
-                                    }
+                                        },
+                                        buttonText = "Create masked phone call",
+                                        modifier = Modifier.weight(1F)
+                                    )
+                                    Spacer(modifier = Modifier.weight(1F))
                                 } else {
-                                    Button(
+
+                                    LoadingButton(
+                                        isLoading = false,
                                         onClick = {
                                             val proxyPhoneNumber = viewModel.getPhoneNumber(event)
                                             val dialIntent = Intent(Intent.ACTION_DIAL).apply {
                                                 data = Uri.parse("tel:${proxyPhoneNumber}")
                                             }
                                             ContextCompat.startActivity(context, dialIntent, null)
-                                        }
-                                    ) {
-                                        Text("Call")
-                                    }
-                                    Button(
+                                        },
+                                        buttonText = "Call",
+                                        modifier = Modifier.weight(1F)
+                                    )
+
+
+                                    Spacer(modifier = Modifier.width(16.dp))
+
+                                    LoadingButton(
+                                        isLoading = isLoadingStates[index],
                                         onClick = {
                                             coroutineScope.launch {
                                                 viewModel.deleteProxyCall(event.proxyCall?.id ?: "")
                                             }
-                                        }
-                                    ) {
-                                        Text("Delete")
-                                    }
+                                        },
+                                        buttonText = "Delete",
+                                        modifier = Modifier.weight(1F)
+                                    )
                                 }
                             }
                         }

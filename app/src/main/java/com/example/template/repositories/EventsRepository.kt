@@ -1,11 +1,13 @@
 package com.example.template.repositories
 
 import android.content.SharedPreferences
+import com.example.template.models.Chat
 import com.example.template.models.CreateThingResponse
 import com.example.template.models.ProxyCall
 import com.example.template.models.ProxyCallEvent
 import com.example.template.models.Thing
 import com.example.template.models.VideoCall
+import com.example.template.models.VoiceCall
 import com.example.template.networking.APIGateway
 import com.example.template.networking.APIGatewayEvents
 import com.example.template.utils.Constants
@@ -28,6 +30,8 @@ class EventsRepository @Inject constructor(
 
     var proxyCalls: List<ProxyCall>? = null
     var videoCalls: List<VideoCall>? = null
+    var voiceCalls: List<VoiceCall>? = null
+    var chats: List<Chat>? = null
 
     suspend fun fetchProxyCalls(refresh: Boolean = false): List<ProxyCall>? {
 
@@ -60,6 +64,42 @@ class EventsRepository @Inject constructor(
         if (response.isSuccessful) {
             videoCalls = response.body()?.calls
             return videoCalls
+        } else {
+            return null
+        }
+    }
+
+    suspend fun fetchVoiceCalls(refresh: Boolean = false): List<VoiceCall>? {
+
+        if (voiceCalls != null && !refresh) {
+            return voiceCalls ?: emptyList()
+        }
+
+        val response = APIGatewayEvents.api.readVoiceCalls(
+            APIGateway.buildAuthorizedHeaders(idToken ?: ""),
+            userId ?: ""
+        )
+        if (response.isSuccessful) {
+            voiceCalls = response.body()?.calls
+            return voiceCalls
+        } else {
+            return null
+        }
+    }
+
+    suspend fun fetchChats(refresh: Boolean = false): List<Chat>? {
+
+        if (chats != null && !refresh) {
+            return chats ?: emptyList()
+        }
+
+        val response = APIGatewayEvents.api.readChats(
+            APIGateway.buildAuthorizedHeaders(idToken ?: ""),
+            userId ?: ""
+        )
+        if (response.isSuccessful) {
+            chats = response.body()?.chats
+            return chats
         } else {
             return null
         }

@@ -1,4 +1,4 @@
-package com.example.template.ui.screens.videocallhub
+package com.example.template.ui.screens.voicecallhub
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -36,12 +36,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.amazonaws.mobile.auth.core.internal.util.ThreadUtils.runOnUiThread
 import com.azure.android.communication.calling.AcceptCallOptions
-import com.azure.android.communication.calling.Call
-import com.azure.android.communication.calling.CallAgent
 import com.azure.android.communication.calling.CallClient
 import com.azure.android.communication.calling.CallState
 import com.azure.android.communication.calling.CreateViewOptions
-import com.azure.android.communication.calling.DeviceManager
 import com.azure.android.communication.calling.IncomingCall
 import com.azure.android.communication.calling.LocalVideoStream
 import com.azure.android.communication.calling.ParticipantsUpdatedEvent
@@ -77,9 +74,9 @@ internal class StreamData(
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun VideoCallScreen(navController: NavController, id: String) {
+fun VoiceCallScreen(navController: NavController, id: String) {
 
-    val viewModel = hiltViewModel<VideoCallViewModel>()
+    val viewModel = hiltViewModel<VoiceCallViewModel>()
     val couroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 

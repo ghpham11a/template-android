@@ -1,10 +1,11 @@
-package com.example.template.ui.screens.proxycallhub
+package com.example.template.ui.screens.voicecallhub
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.example.template.models.CreateProxyCallRequest
+import com.example.template.models.CreateVideoCallRequest
+import com.example.template.models.CreateVoiceCallRequest
 import com.example.template.models.DynamoDBUser
-import com.example.template.models.ProxyCallEvent
+import com.example.template.models.VideoCallEvent
+import com.example.template.models.VoiceCallEvent
 import com.example.template.networking.APIGateway
 import com.example.template.networking.APIGatewayEvents
 import com.example.template.networking.APIGatewayUsers
@@ -13,11 +14,10 @@ import com.example.template.repositories.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import java.lang.reflect.Proxy
 import javax.inject.Inject
 
 @HiltViewModel
-class ProxyCallHubViewModel @Inject constructor(
+class VoiceCallHubViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val eventsRepository: EventsRepository
 ): ViewModel() {
@@ -25,21 +25,11 @@ class ProxyCallHubViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    private val _events = MutableStateFlow<List<ProxyCallEvent>>(emptyList())
-    val events: StateFlow<List<ProxyCallEvent>> = _events
+    private val _events = MutableStateFlow<List<VoiceCallEvent>>(emptyList())
+    val event: StateFlow<List<VoiceCallEvent>> = _events
 
     private val _isLoadingStates = MutableStateFlow(emptyList<Boolean>())
     val isLoadingStates: StateFlow<List<Boolean>> = _isLoadingStates
-
-    fun getPhoneNumber(event: ProxyCallEvent): String {
-        if (event.proxyCall?.senderId == userRepository.userId) {
-            return event.proxyCall?.receiverProxy ?: ""
-        }
-        if (event.proxyCall?.receiverId == userRepository.userId) {
-            return event.proxyCall?.senderProxy ?: ""
-        }
-        return ""
-    }
 
     suspend fun fetchUsers(refresh: Boolean = false) {
         val response = APIGatewayUsers.api.readUsers(
@@ -47,25 +37,28 @@ class ProxyCallHubViewModel @Inject constructor(
         )
         if (response.isSuccessful) {
             val users = mutableListOf<DynamoDBUser>()
+            val states = mutableListOf<Boolean>()
             response.body()?.users?.forEach {
                 if (it.userId != userRepository.userId) {
                     users.add(it)
+                    states.add(false)
                 }
             }
-            _events.value = users.map { ProxyCallEvent(user = it) }
-            fetchProxyCalls(refresh)
+            _events.value = users.map { VoiceCallEvent(user = it) }
+            _isLoadingStates.value = states
+            fetchVoiceCalls(refresh)
         } else {
 
         }
     }
 
-    suspend fun fetchProxyCalls(refresh: Boolean = false) {
-        val response = eventsRepository.fetchProxyCalls(refresh)
-        response?.let { proxyCalls ->
-            val newEvents = mutableListOf<ProxyCallEvent>()
+    suspend fun fetchVoiceCalls(refresh: Boolean = false) {
+        val response = eventsRepository.fetchVoiceCalls(refresh)
+        response?.let { videoCalls ->
+            val newEvents = mutableListOf<VoiceCallEvent>()
             for (event in _events.value) {
-                (proxyCalls.find { it.receiverId == event.user?.userId || it.senderId == event.user?.userId  })?.let {
-                    newEvents.add(event.copy(proxyCall = it))
+                (videoCalls.find { it.receiverId == event.user?.userId || it.senderId == event.user?.userId  })?.let {
+                    newEvents.add(event.copy(voiceCall = it))
                 } ?: run {
                     newEvents.add(event.copy())
                 }
@@ -74,27 +67,39 @@ class ProxyCallHubViewModel @Inject constructor(
         }
     }
 
-    suspend fun createProxyCall(receiverId: String) {
-        val response = APIGatewayEvents.api.createProxyCall(
+    suspend fun createVoiceCall(receiverId: String) {
+
+        val index = _events.value.indexOfFirst { it.user?.userId == receiverId }
+        toggleLoadingState(index)
+
+        val response = APIGatewayEvents.api.createVoiceCall(
             APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
-            CreateProxyCallRequest(senderId = userRepository.userId, receiverId = receiverId)
+            CreateVoiceCallRequest(senderId = userRepository.userId, receiverId = receiverId)
         )
+
+        toggleLoadingState(index)
+
         if (response.isSuccessful) {
             fetchUsers(true)
         } else {
-
         }
     }
 
-    suspend fun deleteProxyCall(proxyCallId: String) {
-        val response = APIGatewayEvents.api.deleteProxyCall(
+    suspend fun deleteVoiceCall(voiceCallId: String) {
+
+        val index = _events.value.indexOfFirst { it.voiceCall?.id == voiceCallId }
+        toggleLoadingState(index)
+
+        val response = APIGatewayEvents.api.deleteVoiceCall(
             APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
-            proxyCallId
+            voiceCallId
         )
+
+        toggleLoadingState(index)
+
         if (response.isSuccessful) {
             fetchUsers(true)
         } else {
-
         }
     }
 

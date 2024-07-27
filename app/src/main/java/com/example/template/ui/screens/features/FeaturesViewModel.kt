@@ -48,6 +48,7 @@ class FeaturesViewModel @Inject constructor(
             Feature("Send Payment", "Send a payment to another account via Stripe", Screen.SendPaymentHub.route),
             Feature("Masked Phone Call", "Call another number while masking your phone number using Twilio", Screen.ProxyCallHub.route),
             Feature("Video calls", "Make a video call using Azure Communication Service", Screen.VideoCallHub.route),
+            Feature("Voice calls", "Make a voice call using Azure Communication Service", Screen.VoiceCallHub.route),
             Feature("Chat", "Chat using Azure Communication Service", Screen.ChatHub.route),
         )
 

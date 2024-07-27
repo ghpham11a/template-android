@@ -1,6 +1,6 @@
 package com.example.template.models
 
-data class ChatEvent(
+data class VoiceCallEvent(
     var user: DynamoDBUser? = null,
-    var chat: Chat? = null
+    var voiceCall: VoiceCall? = null
 )

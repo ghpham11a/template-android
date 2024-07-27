@@ -61,14 +61,14 @@ fun FeaturesScreen(navController: NavController) {
                 Text(text = "Log in")
             }
         } else {
-            LazyColumn(modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp)) {
+            LazyColumn(modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 84.dp)) {
                 items(newItems) { item ->
                     FeatureCard(title = item.title, description = item.description, onClick = {
                         navController.navigate(item.route)
                     })
-                    if (item != newItems.last()) {
-                        HorizontalDivider()
-                    }
+                    Spacer(modifier = Modifier.padding(8.dp))
                 }
             }
         }

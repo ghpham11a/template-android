@@ -71,6 +71,8 @@ import com.example.template.ui.screens.thing.ThingIntroScreen
 import com.example.template.ui.screens.thinglist.ThingListScreen
 import com.example.template.ui.screens.videocallhub.VideoCallHubScreen
 import com.example.template.ui.screens.videocallhub.VideoCallScreen
+import com.example.template.ui.screens.voicecallhub.VoiceCallHubScreen
+import com.example.template.ui.screens.voicecallhub.VoiceCallScreen
 import com.example.template.ui.screens.xmlview.XMLViewScreen
 import com.example.template.utils.Constants
 import com.example.template.utils.Constants.BOTTOM_NAVIGATION_ROUTES
@@ -426,11 +428,23 @@ fun NavigationGraph(
         composable(Screen.ProxyCallHub.route) {
             ProxyCallHubScreen(navController = navController)
         }
-        composable(Screen.VideoCallHub.route) {
-            VideoCallHubScreen(navController = navController)
-        }
         composable(Screen.ChatHub.route) {
             ChatHubScreen(navController = navController)
+        }
+        composable(Screen.VoiceCallHub.route) {
+            VoiceCallHubScreen(navController = navController)
+        }
+        composable(
+            Screen.VoiceCall.route,
+            arguments = listOf(navArgument("id") { type = NavType.StringType })
+        ) { backStackEntry ->
+            VoiceCallScreen(
+                navController,
+                backStackEntry.arguments?.getString("id").toString()
+            )
+        }
+        composable(Screen.VideoCallHub.route) {
+            VideoCallHubScreen(navController = navController)
         }
         composable(
             Screen.VideoCall.route,
@@ -441,6 +455,7 @@ fun NavigationGraph(
                 backStackEntry.arguments?.getString("id").toString()
             )
         }
+
     }
 }
 

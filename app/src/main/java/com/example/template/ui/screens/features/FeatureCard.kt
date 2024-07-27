@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
@@ -32,16 +34,20 @@ fun FeatureCard(
     description: String,
     onClick: () -> Unit,
 ) {
-    Button(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth().padding(0.dp).background(Color.Transparent),
-        shape = MaterialTheme.shapes.large,
-        colors = ButtonDefaults.buttonColors(Color.Transparent)
+    Card(
+
     ) {
-        Column(modifier = Modifier.fillMaxWidth().padding(0.dp)) {
-            Text(title, color = Color.Black)
-            Spacer(modifier = Modifier.padding(8.dp))
-            Text(description, color = Color.Black)
+        Button(
+            onClick = onClick,
+            modifier = Modifier.fillMaxWidth().padding(0.dp).background(Color.Transparent),
+            shape = MaterialTheme.shapes.large,
+            colors = ButtonDefaults.buttonColors(Color.Transparent)
+        ) {
+            Column(modifier = Modifier.fillMaxWidth().padding(0.dp)) {
+                Text(title, color = Color.Black)
+                Spacer(modifier = Modifier.padding(8.dp))
+                Text(description, color = Color.Black)
+            }
         }
     }
 }

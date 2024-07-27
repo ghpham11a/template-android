@@ -13,9 +13,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.ui.Alignment
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -35,6 +37,7 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.template.Screen
+import com.example.template.ui.components.buttons.LoadingButton
 import kotlinx.coroutines.launch
 import okhttp3.Route
 
@@ -46,6 +49,7 @@ fun VideoCallHubScreen(navController: NavController) {
     val viewModel = hiltViewModel<VideoCallHubViewModel>()
     val events by viewModel.event.collectAsState()
     var coroutineScope = rememberCoroutineScope()
+    val isLoadingStates by viewModel.isLoadingStates.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.fetchUsers()
@@ -71,52 +75,62 @@ fun VideoCallHubScreen(navController: NavController) {
             Spacer(modifier = Modifier.padding(32.dp))
 
             LazyColumn {
-                items(events) { event ->
-                    Row(
+                itemsIndexed(events) { index, event ->
+                    Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                        ) {
                             Text(
                                 text = event.user?.preferredName ?: event.user?.firstName ?: "",
                                 fontSize = 20.sp
                             )
+
+                            Spacer(modifier = Modifier.padding(4.dp))
+
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
 
                                 if (event.videoCall == null) {
-                                    Button(
+                                    LoadingButton(
+                                        isLoading = isLoadingStates[index],
                                         onClick = {
                                             coroutineScope.launch {
                                                 viewModel.createVideoCall(event.user?.userId ?: "")
                                             }
-                                        }
-                                    ) {
-                                        Text("Create video call")
-                                    }
+                                        },
+                                        buttonText = "Create video call",
+                                        modifier = Modifier.weight(1F)
+                                    )
+                                    Spacer(modifier = Modifier.weight(1F))
                                 } else {
-                                    Button(
+                                    LoadingButton(
+                                        isLoading = false,
                                         onClick = {
                                             navController.navigate(Screen.VideoCall.build(event.videoCall?.id ?: ""))
-                                        }
-                                    ) {
-                                        Text("Enter video call")
-                                    }
+                                        },
+                                        buttonText = "Enter video call",
+                                        modifier = Modifier.weight(1F)
+                                    )
 
-                                    Button(
+                                    Spacer(modifier = Modifier.width(16.dp))
+
+                                    LoadingButton(
+                                        isLoading = isLoadingStates[index],
                                         onClick = {
                                             coroutineScope.launch {
                                                 viewModel.deleteVideoCall(event.videoCall?.id ?: "")
                                             }
-                                        }
-                                    ) {
-                                        Text("Delete")
-                                    }
+                                        },
+                                        buttonText = "Delete",
+                                        modifier = Modifier.weight(1F)
+                                    )
                                 }
                             }
                         }

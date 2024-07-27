@@ -1,4 +1,4 @@
-package com.example.template.ui.screens.chathub
+package com.example.template.ui.screens.voicecallhub
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
@@ -10,13 +10,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.ui.Alignment
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -35,16 +32,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.template.Screen
 import com.example.template.ui.components.buttons.LoadingButton
-import com.example.template.ui.screens.videocallhub.VideoCallHubViewModel
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatHubScreen(navController: NavController) {
+fun VoiceCallHubScreen(navController: NavController) {
 
-    val viewModel = hiltViewModel<ChatHubViewModel>()
-    val events by viewModel.events.collectAsState()
+    val viewModel = hiltViewModel<VoiceCallHubViewModel>()
+    val events by viewModel.event.collectAsState()
     var coroutineScope = rememberCoroutineScope()
     val isLoadingStates by viewModel.isLoadingStates.collectAsState()
 
@@ -94,12 +90,12 @@ fun ChatHubScreen(navController: NavController) {
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
 
-                                if (event.chat == null) {
+                                if (event.voiceCall == null) {
                                     LoadingButton(
                                         isLoading = isLoadingStates[index],
                                         onClick = {
                                             coroutineScope.launch {
-                                                viewModel.createChat(event.user?.userId ?: "")
+                                                viewModel.createVoiceCall(event.user?.userId ?: "")
                                             }
                                         },
                                         buttonText = "Create video call",
@@ -110,7 +106,7 @@ fun ChatHubScreen(navController: NavController) {
                                     LoadingButton(
                                         isLoading = false,
                                         onClick = {
-                                            navController.navigate(Screen.VideoCall.build(event.chat?.id ?: ""))
+                                            navController.navigate(Screen.VideoCall.build(event.voiceCall?.id ?: ""))
                                         },
                                         buttonText = "Enter video call",
                                         modifier = Modifier.weight(1F)
@@ -122,7 +118,7 @@ fun ChatHubScreen(navController: NavController) {
                                         isLoading = isLoadingStates[index],
                                         onClick = {
                                             coroutineScope.launch {
-                                                viewModel.deleteChat(event.chat?.id ?: "")
+                                                viewModel.deleteVoiceCall(event.voiceCall?.id ?: "")
                                             }
                                         },
                                         buttonText = "Delete",
