@@ -5,4 +5,10 @@
     <string name="profile_paymentshub_button">Paymentso &amp; payoutso</string>
     <string name="profile_loginandsecurity_button">Logino &amp; securityo</string>
     <string name="profile_availability_button">Availabilityo</string>
+
+    <string name="tag_alpha">Alpha-o</string>
+    <string name="tag_bravo">Bravo-o</string>
+    <string name="tag_charlie">Charlie-o</string>
+    <string name="tag_delta">Delta-o</string>
+    <string name="tag_echo">Echo-o</string>
 </resources>

@@ -6,4 +6,6 @@ import java.io.Serializable
 data class ReadUserPublicResponse(
     @SerializedName("schoolName")
     val schoolName: String,
+    @SerializedName("tags")
+    var tags: List<Int>? = null
 ): Serializable

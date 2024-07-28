@@ -15,7 +15,11 @@ data class UpdateUserBody(
     @SerializedName("updateSchool")
     val updateSchool: UpdateSchool? = null,
     @SerializedName("updateEmail")
-    val updateEmail: UpdateEmail? = null
+    val updateEmail: UpdateEmail? = null,
+    @SerializedName("updateAvailability")
+    val updateAvailability: UpdateAvailability? = null,
+    @SerializedName("updateTags")
+    val updateTags: UpdateTags? = null
 ): Serializable
 
 
@@ -53,4 +57,16 @@ data class UpdateEmail(
 data class UpdateSchool(
     @SerializedName("schoolName")
     val schoolName: String
+): Serializable
+
+data class UpdateAvailability(
+    @SerializedName("availabilityType")
+    var availabilityType: Int? = null,
+    @SerializedName("availability")
+    var availability: List<String>? = null,
+): Serializable
+
+data class UpdateTags(
+    @SerializedName("tags")
+    val tags: List<Int>? = null
 ): Serializable

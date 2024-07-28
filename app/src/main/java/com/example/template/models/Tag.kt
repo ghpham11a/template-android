@@ -5,7 +5,7 @@ import java.io.Serializable
 
 data class Tag(
     @SerializedName("id")
-    val id: String? = null,
+    val id: Int? = null,
     @SerializedName("title")
     val title: String? = null
 ): Serializable

@@ -1,11 +1,16 @@
 package com.example.template.ui.screens.editprofile
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.util.Base64
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.template.R
+import com.example.template.models.Tag
 import com.example.template.models.UpdateImage
 import com.example.template.models.UpdateSchool
+import com.example.template.models.UpdateTags
 import com.example.template.models.UpdateUserBody
 import com.example.template.networking.APIGateway
 import com.example.template.repositories.UserRepository
@@ -36,10 +41,11 @@ class EditProfileViewModel @Inject constructor(
     private val _schoolName = MutableStateFlow("")
     val schoolName: StateFlow<String> = _schoolName
 
-    private val _tags = MutableStateFlow(listOf("Kotlin", "Compose", "Android", "Jetpack", "UI", "Development"))
-    val tags: StateFlow<List<String>> = _tags
+    private val _userTags = MutableStateFlow(emptyList<Tag>())
+    val userTags: StateFlow<List<Tag>> = _userTags
 
-
+    private val _selectedTags = MutableStateFlow(emptyList<Tag>())
+    val selectedTags: StateFlow<List<Tag>> = _selectedTags
 
     init {
         userRepository.isLoggedIn()
@@ -50,13 +56,15 @@ class EditProfileViewModel @Inject constructor(
         _schoolName.value = schoolName
     }
 
-    fun fetchUser() {
+    fun fetchUser(context: Context) {
         viewModelScope.launch {
             val response = userRepository.publicReadUser(userRepository.userId ?: "")
             if (response != null && response.isSuccessful) {
                 // Handle the successful response
                 val user = response.body()
                 _schoolName.value = user?.schoolName ?: ""
+                _userTags.value = user?.tags?.map { Tag(id = it, title = context.getString(tagTitleFromId(it ?: -1))) } ?: emptyList()
+                _selectedTags.value = _userTags.value
 
             } else {
                 // Handle the error
@@ -65,6 +73,17 @@ class EditProfileViewModel @Inject constructor(
             _isScreenLoading.value = false
         }
     }
+    private fun tagTitleFromId(id: Int): Int {
+        return when (id) {
+            1 -> R.string.tag_alpha
+            2 ->  R.string.tag_bravo
+            3 ->  R.string.tag_charlie
+            4 ->  R.string.tag_delta
+            5 -> R.string.tag_echo
+            else ->  -1
+        }
+    }
+
 
     private fun encodeImageToBase64(bitmap: Bitmap): String {
         val outputStream = ByteArrayOutputStream()
@@ -108,6 +127,31 @@ class EditProfileViewModel @Inject constructor(
         _isLoading.value = true
         return try {
             executeUpdate(UpdateUserBody(updateSchool = UpdateSchool(schoolName)))
+        } catch (e: Exception) {
+            // Handle exception
+            _isLoading.value = false
+            false
+        }
+    }
+
+    fun selectOrDeselectTag(tag: Tag) {
+        val newSelectedTags = if (_selectedTags.value.contains(tag)) {
+            _selectedTags.value.filter { it.id != tag.id }
+        } else {
+            _selectedTags.value + tag
+        }
+        _selectedTags.value = newSelectedTags
+    }
+
+    suspend fun updateTags(newTags: List<Tag>): Boolean {
+        _isLoading.value = true
+        return try {
+            if (executeUpdate(UpdateUserBody(updateTags = UpdateTags(newTags.map { it.id ?: -1 })))) {
+                _userTags.value = newTags
+                true
+            } else {
+                false
+            }
         } catch (e: Exception) {
             // Handle exception
             _isLoading.value = false

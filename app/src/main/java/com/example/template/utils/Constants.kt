@@ -1,5 +1,6 @@
 package com.example.template.utils
 
+import com.example.template.R
 import com.example.template.Screen
 import com.google.gson.annotations.SerializedName
 
@@ -55,6 +56,14 @@ object Constants {
     val COUNTRIES = listOf(
         "United States",
         "United Kingdom"
+    )
+
+    val TAGS = listOf<Pair<Int, Int>>(
+        Pair(1, R.string.tag_alpha),
+        Pair(2, R.string.tag_bravo),
+        Pair(3, R.string.tag_charlie),
+        Pair(4, R.string.tag_delta),
+        Pair(5, R.string.tag_echo),
     )
 
 }

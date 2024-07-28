@@ -20,5 +20,7 @@ data class DynamoDBUser(
     @SerializedName("stripeCustomerId")
     var stripeCustomerId: String? = null,
     @SerializedName("stripeAccountId")
-    var stripeAccountId: String? = null
+    var stripeAccountId: String? = null,
+    @SerializedName("tags")
+    var tags: List<Int>? = null
 ): Serializable

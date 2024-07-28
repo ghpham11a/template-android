@@ -23,12 +23,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -54,16 +52,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.template.Screen
 import com.example.template.models.Tag
-import com.example.template.ui.components.buttons.HorizontalIconButton
 import com.example.template.ui.components.buttons.LoadingButton
 import com.example.template.ui.components.images.GlideImage
-import com.example.template.ui.components.images.UploadImage
 import com.example.template.ui.components.inputs.BottomsheetField
+import com.example.template.ui.components.inputs.CheckboxRow
 import com.example.template.ui.components.misc.LoadingScreen
 import com.example.template.ui.components.misc.TagList
 import com.example.template.ui.components.texts.HeadingText
-import com.example.template.ui.screens.profile.ProfileViewModel
-import com.example.template.ui.screens.publicprofile.PublicProfileViewModel
 import com.example.template.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -87,10 +82,17 @@ fun EditProfileScreen(navController: NavController) {
     var isSchoolExpanded by remember { mutableStateOf(false) }
     var isSchoolEnabled by remember { mutableStateOf(true) }
 
-    val tags by viewModel.tags.collectAsState()
+    val tags by viewModel.userTags.collectAsState()
+    val selectedTags by viewModel.selectedTags.collectAsState()
     var isTagListExpanded by remember { mutableStateOf(false) }
 
-    val selectableTags = listOf<Tag>(Tag("1", "Alpha"), Tag("2", "Alpha"), Tag("3", "Alpha"), Tag("4", "Alpha"))
+    var selectableTags = listOf<Tag>(
+        Tag(1, "Alpha"),
+        Tag(2, "Bravo"),
+        Tag(3, "Charlie"),
+        Tag(4, "Delta"),
+        Tag(5, "Echo")
+    )
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -115,7 +117,10 @@ fun EditProfileScreen(navController: NavController) {
     }
 
     LaunchedEffect(Unit) {
-        viewModel.fetchUser()
+        viewModel.fetchUser(context)
+        selectableTags = Constants.TAGS.map {
+            Tag(it.first, context.getString(it.second))
+        }
     }
 
     if (isScreenLoading) {
@@ -133,25 +138,45 @@ fun EditProfileScreen(navController: NavController) {
                 isTagListExpanded = false
             },
             sheetState = sheetState,
-            modifier =  Modifier.height(LocalConfiguration.current.screenHeightDp.dp * 0.5f),
+            modifier =  Modifier.height(LocalConfiguration.current.screenHeightDp.dp * 0.9f),
         ) {
-            LazyColumn(modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp)) {
-                items(selectableTags) { item ->
-                    Button(
-                        onClick = {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                LazyColumn(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp)) {
+                    items(selectableTags) { item ->
 
-                        },
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Text(item.title ?: "")
-                    }
-                    if (item != selectableTags.last()) {
-                        HorizontalDivider()
+                        CheckboxRow(
+                            title = item.title ?: "",
+                            isChecked = selectedTags.contains(item),
+                            onCheckedChange = {
+                                viewModel.selectOrDeselectTag(item)
+                            }
+                        )
+
+                        if (item != selectableTags.last()) {
+                            HorizontalDivider()
+                        }
                     }
                 }
+                LoadingButton(
+                    isLoading = isLoading,
+                    onClick = {
+                        coroutineScope.launch {
+                            if (viewModel.updateTags(selectedTags)) {
+                                isTagListExpanded = false
+                            }
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    buttonText = "Save"
+                )
             }
+
         }
     }
 

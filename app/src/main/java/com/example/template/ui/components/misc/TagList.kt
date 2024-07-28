@@ -12,16 +12,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.template.models.Tag
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun TagList(tags: List<String>) {
+fun TagList(tags: List<Tag>) {
     FlowRow(
         modifier = Modifier.padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         tags.forEach { tag ->
-            Tag(tag)
+            Tag(tag.title ?: "")
         }
     }
 }

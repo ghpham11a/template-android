@@ -66,10 +66,12 @@ fun AvailabilityScreen(navController: NavController) {
 
     val viewModel = hiltViewModel<AvailabilityScreenViewModel>()
 
-    val selectedDay = remember { mutableStateOf(LocalDate.now()) }
-
     var isAvailabilityTypeSelectorExpanded by remember { mutableStateOf(false) }
     var displayedBlocks = viewModel.displayedBlocks.collectAsState()
+    var availabilityType = viewModel.availabilityType.collectAsState()
+    var days = viewModel.days.collectAsState()
+
+    var selectedDay = viewModel.selectedDay.collectAsState()
 
     Scaffold(
         topBar = {
@@ -93,22 +95,14 @@ fun AvailabilityScreen(navController: NavController) {
 
                 DayOfWeekSelector(
                     selectedDay = selectedDay.value,
-                    days = listOf(
-                        LocalDate.parse("2022-12-01"),
-                        LocalDate.parse("2022-12-02"),
-                        LocalDate.parse("2022-12-03"),
-                        LocalDate.parse("2022-12-04"),
-                        LocalDate.parse("2022-12-05"),
-                        LocalDate.parse("2022-12-06")
-                    ),
+                    dates = days.value,
+                    selectedIndex = 0,
                     onDaySelected = {
-                        selectedDay.value = it
+                        viewModel.updateSelectedDay(it)
                     }
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
-
-                Text(selectedDay.value.toString())
 
                 ExposedDropdownMenuBox(
                     expanded = isAvailabilityTypeSelectorExpanded,
@@ -116,7 +110,7 @@ fun AvailabilityScreen(navController: NavController) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     OutlinedTextField(
-                        value = "selectedCountryCode",
+                        value = availabilityType.value,
                         onValueChange = {
 
                         },
@@ -124,7 +118,8 @@ fun AvailabilityScreen(navController: NavController) {
                             .fillMaxWidth()
                             .menuAnchor()
                             .clickable {
-                                isAvailabilityTypeSelectorExpanded = !isAvailabilityTypeSelectorExpanded
+                                isAvailabilityTypeSelectorExpanded =
+                                    !isAvailabilityTypeSelectorExpanded
                             },
                         label = { Text("Availability Type") },
                         trailingIcon = {
@@ -140,11 +135,11 @@ fun AvailabilityScreen(navController: NavController) {
                         expanded = isAvailabilityTypeSelectorExpanded,
                         onDismissRequest = { isAvailabilityTypeSelectorExpanded = false }
                     ) {
-                        Constants.COUNTRY_CODES.forEach { selectionOption ->
+                        listOf<String>("1", "2", "3", "4").forEach { selectionOption ->
                             DropdownMenuItem(
                                 text = { Text(text = selectionOption) },
                                 onClick = {
-                                    // onCountryCodeChange(selectionOption)
+                                    viewModel.updateAvailabilityType(selectionOption)
                                     isAvailabilityTypeSelectorExpanded = false
                                 }
                             )

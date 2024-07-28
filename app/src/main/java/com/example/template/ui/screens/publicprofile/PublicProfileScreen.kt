@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -36,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -45,6 +47,8 @@ import com.example.template.ui.components.buttons.LoadingButton
 import com.example.template.ui.components.images.GlideImage
 import com.example.template.ui.components.images.UploadImage
 import com.example.template.ui.components.misc.LoadingScreen
+import com.example.template.ui.components.misc.TagList
+import com.example.template.ui.components.texts.HeadingText
 import com.example.template.ui.screens.profile.ProfileViewModel
 import com.example.template.utils.Constants
 import kotlinx.coroutines.Dispatchers
@@ -57,10 +61,14 @@ fun PublicProfileScreen(navController: NavController, userId: String) {
     val viewModel = hiltViewModel<PublicProfileViewModel>()
     val isEditable by viewModel.isEditable.collectAsState()
     val schoolName by viewModel.schoolName.collectAsState()
+    val userTags by viewModel.userTags.collectAsState()
     val isScreenLoading by viewModel.isScreenLoading.collectAsState()
+    val context = LocalContext.current
 
-    viewModel.checkIfEditable(userId)
-    viewModel.fetchUser(userId)
+    LaunchedEffect(Unit) {
+        viewModel.checkIfEditable(userId)
+        viewModel.fetchUser(context, userId)
+    }
 
     if (isScreenLoading) {
         LoadingScreen()
@@ -148,6 +156,14 @@ fun PublicProfileScreen(navController: NavController, userId: String) {
                 },
                 isLabelOnly = true
             )
+
+            Spacer(modifier = Modifier.size(32.dp))
+
+            HeadingText(text = "Tags")
+
+            Spacer(modifier = Modifier.size(16.dp))
+
+            TagList(tags = userTags)
         }
     }
 }

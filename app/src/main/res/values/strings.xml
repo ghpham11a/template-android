@@ -5,4 +5,10 @@
 
     <string name="profile_loginandsecurity_button">Login &amp; security</string>
     <string name="profile_availability_button">Availability</string>
+
+    <string name="tag_alpha">Alpha</string>
+    <string name="tag_bravo">Bravo</string>
+    <string name="tag_charlie">Charlie</string>
+    <string name="tag_delta">Delta</string>
+    <string name="tag_echo">Echo</string>
 </resources>
