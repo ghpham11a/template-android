@@ -22,5 +22,13 @@ data class DynamoDBUser(
     @SerializedName("stripeAccountId")
     var stripeAccountId: String? = null,
     @SerializedName("tags")
-    var tags: List<Int>? = null
+    var tags: List<Int>? = null,
+    @SerializedName("availabilityType1")
+    var availabilityType1: List<String>? = null,
+    @SerializedName("availabilityType2")
+    var availabilityType2: List<String>? = null,
+    @SerializedName("availabilityType3")
+    var availabilityType3: List<String>? = null,
+    @SerializedName("availabilityType4")
+    var availabilityType4: List<String>? = null,
 ): Serializable
