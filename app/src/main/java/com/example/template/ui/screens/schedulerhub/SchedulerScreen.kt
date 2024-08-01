@@ -1,8 +1,11 @@
 package com.example.template.ui.screens.schedulerhub
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,7 +15,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -29,23 +34,34 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.template.Screen
 import com.example.template.ui.components.buttons.LoadingButton
+import com.example.template.ui.components.misc.Tag
 import com.example.template.ui.screens.chathub.ChatHubViewModel
+import com.example.template.ui.screens.features.FeatureCard
 import com.example.template.ui.screens.videocallhub.VideoCallHubViewModel
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun SchedulerScreen(navController: NavController, userId: String, availabilityType: String) {
 
     val viewModel = hiltViewModel<SchedulerViewModel>()
     var coroutineScope = rememberCoroutineScope()
+
+    val durationOptions by viewModel.durationOptions.collectAsState()
+    val duration by viewModel.duration.collectAsState()
+
+    val schedulingOptions by viewModel.schedulingOptions.collectAsState()
+    val schedulingMethod by viewModel.schedulingMethod.collectAsState()
+
+    val timeOptions by viewModel.timeOptions.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.fetchUser(userId, availabilityType)
@@ -53,12 +69,24 @@ fun SchedulerScreen(navController: NavController, userId: String, availabilityTy
 
     Scaffold(
         topBar = {
-            TextButton(
-                onClick = {
-                    navController.navigateUp()
-                },
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Icon(Icons.Filled.Close, contentDescription = "Close")
+                TextButton(
+                    onClick = {
+                        navController.navigateUp()
+                    },
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Close")
+                }
+                TextButton(
+                    onClick = {
+                        navController.navigate(Screen.EditProfile.route)
+                    },
+                ) {
+                    Text(text = "Add conflicts")
+                }
             }
         }
     ) {
@@ -70,7 +98,62 @@ fun SchedulerScreen(navController: NavController, userId: String, availabilityTy
 
             Spacer(modifier = Modifier.padding(32.dp))
 
-            Text(userId)
+            Text(text = "How long?")
+
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                durationOptions.forEach { tag ->
+                    Button(
+                        onClick = {
+                            viewModel.onDurationChange(tag)
+                        }
+                    ) {
+                        Text(text = "${tag.toString()} Minutes")
+                    }
+                }
+            }
+
+            Text(text = "What type?")
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                schedulingOptions.forEach { tag ->
+                    Button(
+                        onClick = {
+                            viewModel.onSchedulingMethodChange(tag)
+                        }
+                    ) {
+                        Text(text = tag.toString())
+                    }
+                }
+            }
+
+            HorizontalDivider()
+
+            LazyColumn(modifier = Modifier
+                .fillMaxWidth()) {
+                items(timeOptions) { item ->
+                    Text(text = item.date.toString())
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        item.times.forEach { timesBlock ->
+                            timesBlock.forEach { time ->
+                                Button(
+                                    onClick = {
+
+                                    }
+                                ) {
+                                    Text(text = "${time}")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
         }
     }
 }
