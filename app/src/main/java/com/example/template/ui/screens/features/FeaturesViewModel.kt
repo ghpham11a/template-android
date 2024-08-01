@@ -50,6 +50,7 @@ class FeaturesViewModel @Inject constructor(
             Feature("Video calls", "Make a video call using Azure Communication Service", Screen.VideoCallHub.route),
             Feature("Voice calls", "Make a voice call using Azure Communication Service", Screen.VoiceCallHub.route),
             Feature("Chat", "Chat using Azure Communication Service", Screen.ChatHub.route),
+            Feature("Scheduler Hub", "Choose an available time on another user's schedule", Screen.SchedulerHub.route),
         )
 
         _oldItems.value = listOf(

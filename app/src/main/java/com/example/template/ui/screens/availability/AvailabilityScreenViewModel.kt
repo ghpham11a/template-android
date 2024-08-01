@@ -90,7 +90,7 @@ class AvailabilityScreenViewModel @Inject constructor(
         val (typeBlocks, blockIndex) = findBlocksAndIndex()
 
         return when {
-            typeBlocks.size == 1 -> {
+            typeBlocks.size == 1 || blockIndex == (typeBlocks.size - 1) -> {
                 val endTime = typeBlocks[blockIndex].endTime.toHourMinuteString()
                 createRange(end = endTime)
             }
@@ -115,7 +115,7 @@ class AvailabilityScreenViewModel @Inject constructor(
         val (typeBlocks, blockIndex) = findBlocksAndIndex()
 
         return when {
-            typeBlocks.size == 1 -> {
+            typeBlocks.size == 1 || blockIndex == (typeBlocks.size - 1) -> {
                 val startTime = typeBlocks[blockIndex].startTime.toHourMinuteString()
                 createRange(start = startTime)
             }

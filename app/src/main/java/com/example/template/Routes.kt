@@ -66,4 +66,8 @@ sealed class Screen(val route: String) {
     object VoiceCall: Screen("voice-calls/rooms/{id}") {
         fun build(id: String) = "voice-calls/rooms/$id"
     }
+    object SchedulerHub: Screen("scheduler-hub")
+    object Scheduler: Screen("scheduler/{userId}/{availabilityType}") {
+        fun build(userId: String, availabilityType: String) = "scheduler/${userId}/${availabilityType}"
+    }
 }

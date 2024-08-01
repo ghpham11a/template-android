@@ -61,6 +61,8 @@ import com.example.template.ui.screens.paymentshub.YourPaymentsScreen
 import com.example.template.ui.screens.personalinfo.PersonalInfoScreen
 import com.example.template.ui.screens.proxycallhub.ProxyCallHubScreen
 import com.example.template.ui.screens.publicprofile.PublicProfileScreen
+import com.example.template.ui.screens.schedulerhub.SchedulerHubScreen
+import com.example.template.ui.screens.schedulerhub.SchedulerScreen
 import com.example.template.ui.screens.sendpaymenthub.PaymentAmountScreen
 import com.example.template.ui.screens.sendpaymenthub.SendPaymentHubScreen
 import com.example.template.ui.screens.snag.SnagScreen
@@ -455,7 +457,22 @@ fun NavigationGraph(
                 backStackEntry.arguments?.getString("id").toString()
             )
         }
-
+        composable(Screen.SchedulerHub.route) {
+            SchedulerHubScreen(navController = navController)
+        }
+        composable(
+            Screen.Scheduler.route,
+            arguments = listOf(
+                navArgument("userId") { type = NavType.StringType },
+                navArgument("availabilityType") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            SchedulerScreen(
+                navController,
+                backStackEntry.arguments?.getString("userId").toString(),
+                backStackEntry.arguments?.getString("availabilityType").toString()
+            )
+        }
     }
 }
 
