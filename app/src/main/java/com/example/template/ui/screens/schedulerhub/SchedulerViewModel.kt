@@ -1,5 +1,6 @@
 package com.example.template.ui.screens.schedulerhub
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.template.models.Block
@@ -10,6 +11,7 @@ import com.example.template.ui.screens.schedulerhub.models.DATE_FORMAT
 import com.example.template.ui.screens.schedulerhub.models.StartTimeBlock
 import com.example.template.ui.screens.schedulerhub.models.StartTimeBlockSection
 import com.example.template.utils.toDate
+import com.example.template.utils.toDateTime
 import com.example.template.utils.toLocalDateTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,16 +46,16 @@ class SchedulerViewModel @Inject constructor(
     private val _timeOptions = MutableStateFlow(emptyList<StartTimeBlockSection>())
     val timeOptions: StateFlow<List<StartTimeBlockSection>> = _timeOptions
 
-    private val _time = MutableStateFlow("")
-    val time: StateFlow<String> = _time
+    private val _time = MutableStateFlow(StartTimeBlock())
+    val time: StateFlow<StartTimeBlock> = _time
 
     private val _conflict = MutableStateFlow(Block("IGNORE", "IGNORE", LocalDateTime.now(), LocalDateTime.now()))
     val conflict: StateFlow<Block> = _conflict
 
-    private var availabilityType1Blocks: MutableList<Block> = mutableListOf<Block>()
-    private var availabilityType2Blocks: MutableList<Block> = mutableListOf<Block>()
-    private var availabilityType3Blocks: MutableList<Block> = mutableListOf<Block>()
-    private var availabilityType4Blocks: MutableList<Block> = mutableListOf<Block>()
+    private var availabilityType1Blocks: List<Block> = emptyList<Block>()
+    private var availabilityType2Blocks: List<Block> = emptyList<Block>()
+    private var availabilityType3Blocks: List<Block> = emptyList<Block>()
+    private var availabilityType4Blocks: List<Block> = emptyList<Block>()
 
     var selectedAvailabilityType = ""
 
@@ -77,6 +79,10 @@ class SchedulerViewModel @Inject constructor(
 
         setupDurationAndSchedulingMethods()
 
+        if (userId == schedulesRepository.userId) {
+            return
+        }
+
         val response = APIGateway.api.publicReadUser(
             APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
             userId
@@ -85,15 +91,17 @@ class SchedulerViewModel @Inject constructor(
 
             schedulesRepository.user = response.body()
 
+            val updatedAvailabilityType1Blocks = mutableListOf<Block>()
             response.body()?.availabilityType1.let {
                 for (block in it ?: emptyList()) {
                     val startAndEnd = block.split("->")
                     val start = startAndEnd.getOrNull(0) ?: continue
                     val end = startAndEnd.getOrNull(1)?: continue
-                    availabilityType1Blocks.add(
+                    updatedAvailabilityType1Blocks.add(
                         Block(UUID.randomUUID().toString(), start.toLocalDateTime().toDate(), start.toLocalDateTime(), end.toLocalDateTime())
                     )
                 }
+                availabilityType1Blocks = updatedAvailabilityType1Blocks
             }
         } else {
 
@@ -135,7 +143,7 @@ class SchedulerViewModel @Inject constructor(
                 while (start.isBefore(end) || start.isEqual(end)) {
                     val projection = start.plusMinutes(adjustedDuration.toLong())
                     if (projection.isBefore(end) || projection.isEqual(end)) {
-                        blockResult.add(StartTimeBlock(UUID.randomUUID().toString(), start, projection))
+                        blockResult.add(StartTimeBlock(start.toDateTime(), start, projection))
                     }
                     start = projection
                 }
@@ -166,7 +174,9 @@ class SchedulerViewModel @Inject constructor(
 
         for (date in sortedDates) {
             val times = resultMap[date] ?: emptyList()
-            results = results + StartTimeBlockSection(date, times)
+            if (times.isNotEmpty()) {
+                results = results + StartTimeBlockSection(date, times)
+            }
         }
 
         return results
@@ -180,6 +190,10 @@ class SchedulerViewModel @Inject constructor(
     fun onSchedulingMethodChange(schedulingMethod: Int) {
         _schedulingMethod.value = schedulingMethod
         updateTimeOptions()
+    }
+
+    fun onTimeChange(time: StartTimeBlock) {
+        _time.value = time
     }
 
     fun updateTimeOptions() {

@@ -46,6 +46,7 @@ import com.example.template.ui.components.misc.Tag
 import com.example.template.ui.screens.chathub.ChatHubViewModel
 import com.example.template.ui.screens.features.FeatureCard
 import com.example.template.ui.screens.videocallhub.VideoCallHubViewModel
+import com.example.template.utils.toHourMinuteString
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -54,7 +55,6 @@ import kotlinx.coroutines.launch
 fun SchedulerScreen(navController: NavController, userId: String, availabilityType: String) {
 
     val viewModel = hiltViewModel<SchedulerViewModel>()
-    var coroutineScope = rememberCoroutineScope()
 
     val durationOptions by viewModel.durationOptions.collectAsState()
     val duration by viewModel.duration.collectAsState()
@@ -63,6 +63,7 @@ fun SchedulerScreen(navController: NavController, userId: String, availabilityTy
     val schedulingMethod by viewModel.schedulingMethod.collectAsState()
 
     val timeOptions by viewModel.timeOptions.collectAsState()
+    val selectedTime by viewModel.time.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.fetchUser(userId, availabilityType)
@@ -101,6 +102,8 @@ fun SchedulerScreen(navController: NavController, userId: String, availabilityTy
 
             Text(text = "How long?")
 
+            Spacer(modifier = Modifier.padding(8.dp))
+
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -108,6 +111,11 @@ fun SchedulerScreen(navController: NavController, userId: String, availabilityTy
                     Button(
                         onClick = {
                             viewModel.onDurationChange(tag)
+                        },
+                        colors = if (duration == tag) {
+                            ButtonDefaults.buttonColors(Color.Green)
+                        } else {
+                            ButtonDefaults.buttonColors(Color.Blue)
                         }
                     ) {
                         Text(text = "${tag.toString()} Minutes")
@@ -115,7 +123,11 @@ fun SchedulerScreen(navController: NavController, userId: String, availabilityTy
                 }
             }
 
+            Spacer(modifier = Modifier.padding(16.dp))
+
             Text(text = "What type?")
+
+            Spacer(modifier = Modifier.padding(8.dp))
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -125,6 +137,11 @@ fun SchedulerScreen(navController: NavController, userId: String, availabilityTy
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
                             viewModel.onSchedulingMethodChange(tag)
+                        },
+                        colors = if (schedulingMethod == tag) {
+                            ButtonDefaults.buttonColors(Color.Green)
+                        } else {
+                            ButtonDefaults.buttonColors(Color.Blue)
                         }
                     ) {
                         Text(text = tag.toString())
@@ -132,12 +149,19 @@ fun SchedulerScreen(navController: NavController, userId: String, availabilityTy
                 }
             }
 
-            HorizontalDivider()
+            Spacer(modifier = Modifier.padding(16.dp))
+
+            Text(text = "What time?")
+
+            Spacer(modifier = Modifier.padding(8.dp))
 
             LazyColumn(modifier = Modifier
                 .fillMaxWidth()) {
                 items(timeOptions) { item ->
-                    Text(text = item.date.toString())
+                    Text(text = item.date)
+
+                    Spacer(modifier = Modifier.padding(8.dp))
+
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
@@ -145,15 +169,24 @@ fun SchedulerScreen(navController: NavController, userId: String, availabilityTy
                             timesBlock.forEach { time ->
                                 Button(
                                     onClick = {
-
+                                        viewModel.onTimeChange(time)
                                     },
-                                    colors = if (time.isSelectable) ButtonDefaults.buttonColors(Color.Blue) else ButtonDefaults.buttonColors(Color.Gray)
+                                    enabled = time.isSelectable,
+                                    colors = if (!time.isSelectable) {
+                                        ButtonDefaults.buttonColors(Color.Gray)
+                                    } else if (time.start.toHourMinuteString() == selectedTime.start.toHourMinuteString()) {
+                                        ButtonDefaults.buttonColors(Color.Green)
+                                    } else {
+                                        ButtonDefaults.buttonColors(Color.Blue)
+                                    }
                                 ) {
                                     Text(text = "${time}")
                                 }
                             }
                         }
                     }
+
+                    Spacer(modifier = Modifier.padding(8.dp))
                 }
             }
 

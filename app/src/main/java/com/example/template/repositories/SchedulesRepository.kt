@@ -21,6 +21,7 @@ class SchedulesRepository @Inject constructor(
 
     var duration: Int = 0
     var user: ReadUserPublicResponse? = null
+    var userId: String? = null
 
     fun selectTime(time: StartTimeBlock) {
         _conflict.value = Block(id = UUID.randomUUID().toString(), time.start.toDate(), time.start, time.end)
