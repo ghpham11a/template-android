@@ -46,23 +46,21 @@ import com.example.template.ui.components.misc.Tag
 import com.example.template.ui.screens.chathub.ChatHubViewModel
 import com.example.template.ui.screens.features.FeatureCard
 import com.example.template.ui.screens.videocallhub.VideoCallHubViewModel
+import com.example.template.utils.toDate
+import com.example.template.utils.toHourMinuteString
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun SchedulerScreen(navController: NavController, userId: String, availabilityType: String) {
+fun ConflictsScreen(navController: NavController, userId: String, availabilityType: String) {
 
-    val viewModel = hiltViewModel<SchedulerViewModel>()
-    var coroutineScope = rememberCoroutineScope()
-
+    val viewModel = hiltViewModel<ConflictsViewModel>()
+    val coroutineScope = rememberCoroutineScope()
     val durationOptions by viewModel.durationOptions.collectAsState()
     val duration by viewModel.duration.collectAsState()
-
-    val schedulingOptions by viewModel.schedulingOptions.collectAsState()
-    val schedulingMethod by viewModel.schedulingMethod.collectAsState()
-
     val timeOptions by viewModel.timeOptions.collectAsState()
+    val selectedStartTimeBlock by viewModel.selectedStartTimeBlock.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.fetchUser(userId, availabilityType)
@@ -70,24 +68,12 @@ fun SchedulerScreen(navController: NavController, userId: String, availabilityTy
 
     Scaffold(
         topBar = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+            TextButton(
+                onClick = {
+                    navController.navigateUp()
+                },
             ) {
-                TextButton(
-                    onClick = {
-                        navController.navigateUp()
-                    },
-                ) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Close")
-                }
-                TextButton(
-                    onClick = {
-                        navController.navigate(Screen.Conflicts.build(userId, availabilityType))
-                    },
-                ) {
-                    Text(text = "Add conflicts")
-                }
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Close")
             }
         }
     ) {
@@ -108,26 +94,14 @@ fun SchedulerScreen(navController: NavController, userId: String, availabilityTy
                     Button(
                         onClick = {
                             viewModel.onDurationChange(tag)
+                        },
+                        colors = if (tag == duration) {
+                            ButtonDefaults.buttonColors(Color.Green)
+                        } else {
+                            ButtonDefaults.buttonColors(Color.Blue)
                         }
                     ) {
                         Text(text = "${tag.toString()} Minutes")
-                    }
-                }
-            }
-
-            Text(text = "What type?")
-
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                schedulingOptions.forEach { tag ->
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            viewModel.onSchedulingMethodChange(tag)
-                        }
-                    ) {
-                        Text(text = tag.toString())
                     }
                 }
             }
@@ -145,9 +119,15 @@ fun SchedulerScreen(navController: NavController, userId: String, availabilityTy
                             timesBlock.forEach { time ->
                                 Button(
                                     onClick = {
-
+                                        coroutineScope.launch {
+                                            viewModel.selectTime(time)
+                                        }
                                     },
-                                    colors = if (time.isSelectable) ButtonDefaults.buttonColors(Color.Blue) else ButtonDefaults.buttonColors(Color.Gray)
+                                    colors = if (selectedStartTimeBlock.id != null && time.start.toHourMinuteString() == selectedStartTimeBlock.start.toHourMinuteString()) {
+                                        ButtonDefaults.buttonColors(Color.Green)
+                                    } else {
+                                        ButtonDefaults.buttonColors(Color.Blue)
+                                    }
                                 ) {
                                     Text(text = "${time}")
                                 }

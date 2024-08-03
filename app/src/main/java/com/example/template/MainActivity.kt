@@ -61,6 +61,7 @@ import com.example.template.ui.screens.paymentshub.YourPaymentsScreen
 import com.example.template.ui.screens.personalinfo.PersonalInfoScreen
 import com.example.template.ui.screens.proxycallhub.ProxyCallHubScreen
 import com.example.template.ui.screens.publicprofile.PublicProfileScreen
+import com.example.template.ui.screens.schedulerhub.ConflictsScreen
 import com.example.template.ui.screens.schedulerhub.SchedulerHubScreen
 import com.example.template.ui.screens.schedulerhub.SchedulerScreen
 import com.example.template.ui.screens.sendpaymenthub.PaymentAmountScreen
@@ -468,6 +469,19 @@ fun NavigationGraph(
             )
         ) { backStackEntry ->
             SchedulerScreen(
+                navController,
+                backStackEntry.arguments?.getString("userId").toString(),
+                backStackEntry.arguments?.getString("availabilityType").toString()
+            )
+        }
+        composable(
+            Screen.Conflicts.route,
+            arguments = listOf(
+                navArgument("userId") { type = NavType.StringType },
+                navArgument("availabilityType") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            ConflictsScreen(
                 navController,
                 backStackEntry.arguments?.getString("userId").toString(),
                 backStackEntry.arguments?.getString("availabilityType").toString()

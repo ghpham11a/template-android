@@ -12,16 +12,16 @@ import com.example.template.ui.screens.schedulerhub.models.StartTimeBlockSection
 import com.example.template.utils.toDate
 import com.example.template.utils.toLocalDateTime
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import java.util.*
 
 @HiltViewModel
-class SchedulerViewModel @Inject constructor(
+class ConflictsViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val schedulesRepository: SchedulesRepository
 ): ViewModel() {
@@ -35,40 +35,37 @@ class SchedulerViewModel @Inject constructor(
     private val _duration = MutableStateFlow(0)
     val duration: StateFlow<Int> = _duration
 
-    private val _schedulingOptions = MutableStateFlow(emptyList<Int>())
-    val schedulingOptions: StateFlow<List<Int>> = _schedulingOptions
-
-    private val _schedulingMethod = MutableStateFlow(0)
-    val schedulingMethod: StateFlow<Int> = _schedulingMethod
-
     private val _timeOptions = MutableStateFlow(emptyList<StartTimeBlockSection>())
     val timeOptions: StateFlow<List<StartTimeBlockSection>> = _timeOptions
 
     private val _time = MutableStateFlow("")
     val time: StateFlow<String> = _time
 
-    private val _conflict = MutableStateFlow(Block("IGNORE", "IGNORE", LocalDateTime.now(), LocalDateTime.now()))
-    val conflict: StateFlow<Block> = _conflict
+    private val _selectedStartTimeBlock = MutableStateFlow(StartTimeBlock())
+    val selectedStartTimeBlock: StateFlow<StartTimeBlock> = _selectedStartTimeBlock
 
     private var availabilityType1Blocks: MutableList<Block> = mutableListOf<Block>()
     private var availabilityType2Blocks: MutableList<Block> = mutableListOf<Block>()
     private var availabilityType3Blocks: MutableList<Block> = mutableListOf<Block>()
     private var availabilityType4Blocks: MutableList<Block> = mutableListOf<Block>()
 
-    var selectedAvailabilityType = ""
+    private var selectedAvailabilityType = ""
 
     init {
+        _duration.value = schedulesRepository.duration
+        _selectedStartTimeBlock.value = StartTimeBlock(
+            schedulesRepository.conflict.value.id,
+            schedulesRepository.conflict.value.startTime,
+            schedulesRepository.conflict.value.endTime
+        )
         viewModelScope.launch {
-            schedulesRepository.conflict.collect { newValue ->
-                _conflict.value = newValue
-                updateTimeOptions()
-            }
+            delay(1000)
+            updateTimeOptions()
         }
     }
 
     fun setupDurationAndSchedulingMethods() {
         _durationOptions.value = listOf<Int>(30, 45, 60, 90)
-        _schedulingOptions.value = listOf<Int>(1, 2, 3)
     }
 
     suspend fun fetchUser(userId: String, availabilityType: String) {
@@ -77,26 +74,15 @@ class SchedulerViewModel @Inject constructor(
 
         setupDurationAndSchedulingMethods()
 
-        val response = APIGateway.api.publicReadUser(
-            APIGateway.buildAuthorizedHeaders(userRepository.idToken ?: ""),
-            userId
-        )
-        if (response.isSuccessful) {
-
-            schedulesRepository.user = response.body()
-
-            response.body()?.availabilityType1.let {
-                for (block in it ?: emptyList()) {
-                    val startAndEnd = block.split("->")
-                    val start = startAndEnd.getOrNull(0) ?: continue
-                    val end = startAndEnd.getOrNull(1)?: continue
-                    availabilityType1Blocks.add(
-                        Block(UUID.randomUUID().toString(), start.toLocalDateTime().toDate(), start.toLocalDateTime(), end.toLocalDateTime())
-                    )
-                }
+        schedulesRepository.user?.availabilityType1.let {
+            for (block in it ?: emptyList()) {
+                val startAndEnd = block.split("->")
+                val start = startAndEnd.getOrNull(0) ?: continue
+                val end = startAndEnd.getOrNull(1)?: continue
+                availabilityType1Blocks.add(
+                    Block(UUID.randomUUID().toString(), start.toLocalDateTime().toDate(), start.toLocalDateTime(), end.toLocalDateTime())
+                )
             }
-        } else {
-
         }
     }
 
@@ -149,12 +135,12 @@ class SchedulerViewModel @Inject constructor(
                 times.forEach { time ->
                     var isSelectable = true
                     maskGroups[date]?.forEach { mask ->
-                        if (isSelectable && mask.id != "IGNORE") {
-                            val adjustedMaskStart = mask.startTime.minusMinutes(5)
-                            val adjustedMaskEnd = mask.endTime.plusMinutes(5)
-                            if (time.start.isBefore(adjustedMaskEnd) && time.end.isAfter(adjustedMaskStart)) {
-                                isSelectable = false
-                            }
+                        if (!isSelectable) return@forEach
+
+                        val adjustedMaskStart = mask.startTime.minusMinutes(5)
+                        val adjustedMaskEnd = mask.endTime.plusMinutes(5)
+                        if (time.start.isBefore(adjustedMaskEnd) && time.end.isAfter(adjustedMaskStart)) {
+                            isSelectable = false
                         }
                     }
                     time.isSelectable = isSelectable
@@ -174,33 +160,31 @@ class SchedulerViewModel @Inject constructor(
 
     fun onDurationChange(duration: Int) {
         _duration.value = duration
-        updateTimeOptions()
-    }
-
-    fun onSchedulingMethodChange(schedulingMethod: Int) {
-        _schedulingMethod.value = schedulingMethod
+        schedulesRepository.duration = duration
         updateTimeOptions()
     }
 
     fun updateTimeOptions() {
-
-        _timeOptions.value = emptyList()
-
-        if (_duration.value == 0 || _schedulingMethod.value == 0) return
+        if (_duration.value == 0) return
 
         when (selectedAvailabilityType) {
             "1" -> {
-                _timeOptions.value = getOptions(_duration.value, availabilityType1Blocks, listOf(_conflict.value))
+                _timeOptions.value = getOptions(_duration.value, availabilityType1Blocks, emptyList())
             }
             "2" -> {
-                _timeOptions.value = getOptions(_duration.value, availabilityType2Blocks, listOf(_conflict.value))
+                _timeOptions.value = getOptions(_duration.value, availabilityType2Blocks, emptyList())
             }
             "3" -> {
-                _timeOptions.value = getOptions(_duration.value, availabilityType3Blocks, listOf(_conflict.value))
+                _timeOptions.value = getOptions(_duration.value, availabilityType3Blocks, emptyList())
             }
             "4" -> {
-                _timeOptions.value = getOptions(_duration.value, availabilityType4Blocks, listOf(_conflict.value))
+                _timeOptions.value = getOptions(_duration.value, availabilityType4Blocks, emptyList())
             }
         }
+    }
+
+    fun selectTime(time: StartTimeBlock) {
+        schedulesRepository.selectTime(time)
+        _selectedStartTimeBlock.value = time
     }
 }

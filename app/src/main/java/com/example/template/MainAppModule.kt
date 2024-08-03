@@ -3,7 +3,9 @@ package com.example.template
 import android.content.Context
 import android.content.SharedPreferences
 import com.example.template.repositories.EventsRepository
+import com.example.template.repositories.SchedulesRepository
 import com.example.template.repositories.UserRepository
+import com.example.template.ui.screens.schedulerhub.SchedulerHubScreen
 import com.example.template.utils.Constants.SHARED_PREFERENCES_NAME
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.PlacesClient
@@ -34,6 +36,12 @@ object MainAppModule {
     @Singleton
     fun provideEventsRepository(sharedPreferences: SharedPreferences): EventsRepository {
         return EventsRepository(sharedPreferences)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSchedulerRepository(sharedPreferences: SharedPreferences): SchedulesRepository {
+        return SchedulesRepository(sharedPreferences)
     }
 
     @Provides

@@ -70,4 +70,7 @@ sealed class Screen(val route: String) {
     object Scheduler: Screen("scheduler/{userId}/{availabilityType}") {
         fun build(userId: String, availabilityType: String) = "scheduler/${userId}/${availabilityType}"
     }
+    object Conflicts: Screen("conflicts/{userId}/{availabilityType}") {
+        fun build(userId: String, availabilityType: String) = "conflicts/${userId}/${availabilityType}"
+    }
 }
