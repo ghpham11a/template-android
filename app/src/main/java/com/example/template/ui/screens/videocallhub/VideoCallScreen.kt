@@ -36,12 +36,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.amazonaws.mobile.auth.core.internal.util.ThreadUtils.runOnUiThread
 import com.azure.android.communication.calling.AcceptCallOptions
-import com.azure.android.communication.calling.Call
-import com.azure.android.communication.calling.CallAgent
-import com.azure.android.communication.calling.CallClient
+import com.azure.android.communication.calling.CallEndReason
 import com.azure.android.communication.calling.CallState
 import com.azure.android.communication.calling.CreateViewOptions
-import com.azure.android.communication.calling.DeviceManager
 import com.azure.android.communication.calling.IncomingCall
 import com.azure.android.communication.calling.LocalVideoStream
 import com.azure.android.communication.calling.ParticipantsUpdatedEvent
@@ -130,22 +127,21 @@ fun VideoCallScreen(navController: NavController, id: String) {
     }
 
     fun createAgent() {
+
+        if (viewModel.callAgent != null) {
+            Toast.makeText(context, "Call agent exists", Toast.LENGTH_LONG).show()
+            return
+        }
+
         val userToken = viewModel.getAccessToken(id) ?: return
+        Log.d("__DEBUG", "userToken ${userToken}")
         try {
             val credential = CommunicationTokenCredential(userToken)
-            val callClient = CallClient()
-            viewModel.callAgent = callClient.createCallAgent(context, credential).get()
+            viewModel.callAgent = viewModel.callClient.createCallAgent(context, credential).get()
+            Toast.makeText(context, "Call agent created", Toast.LENGTH_LONG).show()
+
         } catch (ex: Exception) {
             Toast.makeText(context, "Failed to create call agent.", Toast.LENGTH_LONG).show()
-        }
-    }
-
-    fun setDeviceManager() {
-        try {
-            val callClient = CallClient()
-            viewModel.deviceManager = callClient.getDeviceManager(context).get()
-        } catch (ex: java.lang.Exception) {
-            Toast.makeText(context, "Failed to set device manager.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -175,6 +171,32 @@ fun VideoCallScreen(navController: NavController, id: String) {
             switchSourceButton?.visibility = View.VISIBLE
         }
     }
+
+    fun setDeviceManager() {
+        try {
+            viewModel.deviceManager = viewModel.callClient.getDeviceManager(context).get()
+            Toast.makeText(context, "Device manager set", Toast.LENGTH_SHORT).show()
+
+            //
+            val acceptCallOptions = AcceptCallOptions()
+            val cameras = viewModel.deviceManager?.cameras
+            if (cameras?.isNotEmpty() == true) {
+                currentCamera = getNextAvailableCamera(null)
+                currentVideoStream = LocalVideoStream(currentCamera, context)
+                val videoStreams = arrayOf(currentVideoStream)
+                val videoOptions = VideoOptions(videoStreams)
+                acceptCallOptions.videoOptions = videoOptions
+                currentVideoStream?.let {
+                    showPreview(it)
+                }
+            }
+            //////////////
+
+        } catch (ex: java.lang.Exception) {
+            Toast.makeText(context, "Failed to set device manager.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
 
     fun switchSource() {
         if (currentVideoStream != null) {
@@ -261,6 +283,7 @@ fun VideoCallScreen(navController: NavController, id: String) {
     }
 
     fun handleAddedParticipants(participants: MutableList<RemoteParticipant>?) {
+        println("h")
         for (remoteParticipant in participants ?: emptyList<RemoteParticipant>()) {
             if (!joinedParticipants.contains(getId(remoteParticipant))) {
                 joinedParticipants.add(getId(remoteParticipant))
@@ -321,10 +344,13 @@ fun VideoCallScreen(navController: NavController, id: String) {
                     handleCallState()
                 }
                 CallState.DISCONNECTED -> {
+                    val pussy = viewModel.call
+                    val message: CallEndReason? = pussy?.callEndReason
+                    println("Hello World")
                     runOnUiThread {
-                        Toast.makeText(context, "Call is DISCONNECTED", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Call is DISCONNECTED answerIncomingCall2", Toast.LENGTH_SHORT).show()
                     }
-                    previewRenderer?.dispose()
+                    // previewRenderer?.dispose()
                     switchSourceButton?.visibility = View.INVISIBLE
                 }
                 else -> {}
@@ -365,7 +391,11 @@ fun VideoCallScreen(navController: NavController, id: String) {
                 }
             }
         }
+
+        val otherId = viewModel.getIdentityReversed(id) ?: return
+        Log.d("__DEBUG", "callId ${callId}")
         participants.add(CommunicationUserIdentifier(callId))
+        // participants.add(CommunicationUserIdentifier(otherId))
 
         viewModel.call = viewModel.callAgent?.startCall(
             context,
@@ -389,8 +419,11 @@ fun VideoCallScreen(navController: NavController, id: String) {
                     handleCallState()
                 }
                 CallState.DISCONNECTED -> {
+                    val pussy = viewModel.call
+                    val message = pussy?.callEndReason?.code
+                    println("Hello World")
                     runOnUiThread {
-                        Toast.makeText(context, "Call is DISCONNECTED", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Call is DISCONNECTED startCall", Toast.LENGTH_SHORT).show()
                     }
                     previewRenderer?.dispose()
                     switchSourceButton?.visibility = View.INVISIBLE

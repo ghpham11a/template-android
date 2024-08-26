@@ -319,7 +319,7 @@ fun VoiceCallScreen(navController: NavController, id: String) {
                 }
                 CallState.DISCONNECTED -> {
                     runOnUiThread {
-                        Toast.makeText(context, "Call is DISCONNECTED", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Call is DISCONNECTED answerIncomingCall", Toast.LENGTH_SHORT).show()
                     }
                     previewRenderer?.dispose()
                     switchSourceButton?.visibility = View.INVISIBLE
@@ -386,8 +386,10 @@ fun VoiceCallScreen(navController: NavController, id: String) {
                     handleCallState()
                 }
                 CallState.DISCONNECTED -> {
+                    val pussy = viewModel.call
+                    println("Hello World")
                     runOnUiThread {
-                        Toast.makeText(context, "Call is DISCONNECTED", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Call is DISCONNECTED startCall", Toast.LENGTH_SHORT).show()
                     }
                     previewRenderer?.dispose()
                     switchSourceButton?.visibility = View.INVISIBLE

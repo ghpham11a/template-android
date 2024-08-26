@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.azure.android.communication.calling.Call
 import com.azure.android.communication.calling.CallAgent
+import com.azure.android.communication.calling.CallClient
 import com.azure.android.communication.calling.DeviceManager
 import com.example.template.models.DynamoDBUser
 import com.example.template.models.VideoCallEvent
@@ -15,13 +16,22 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
+object CallAgentHolder {
+    var callAgent: CallAgent? = null
+}
+
 @HiltViewModel
 class VideoCallViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val eventsRepository: EventsRepository
 ): ViewModel() {
 
-    var callAgent: CallAgent? = null
+    val callClient = CallClient()
+    var callAgent: CallAgent?
+        get() = CallAgentHolder.callAgent
+        set(value) {
+            CallAgentHolder.callAgent = value
+        }
     var call: Call? = null
     var deviceManager: DeviceManager? = null
 
@@ -43,12 +53,27 @@ class VideoCallViewModel @Inject constructor(
     fun getIdentity(id: String): String? {
         eventsRepository.videoCalls?.find { it.id == id }?.let {videoCall ->
             if (videoCall.senderId == userRepository.userId) {
-                videoCall.senderIdentity?.let { token ->
-                    return token
+                videoCall.receiverIdentity?.let { identity ->
+                    return identity
                 }
             } else {
-                videoCall.receiverId?.let { token ->
-                    return token
+                videoCall.senderIdentity?.let { identity ->
+                    return identity
+                }
+            }
+        }
+        return null
+    }
+
+    fun getIdentityReversed(id: String): String? {
+        eventsRepository.videoCalls?.find { it.id == id }?.let {videoCall ->
+            if (videoCall.senderId == userRepository.userId) {
+                videoCall.senderIdentity?.let { identity ->
+                    return identity
+                }
+            } else {
+                videoCall.receiverIdentity?.let { identity ->
+                    return identity
                 }
             }
         }
